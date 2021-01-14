@@ -139,7 +139,7 @@ class CallActivity : AppCompatActivity() {
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyyMMdd.HHmmss")
         val formatted = current.format(formatter)
-        val fileName: String = formatted.toString() + ".mp3"
+        val fileName: String = formatted.toString()
         output = Environment.getExternalStorageDirectory().absolutePath + "/Download/" + fileName //내장메모리 밑에 위치
         mediaRecorder = MediaRecorder()
         mediaRecorder?.setAudioSource((MediaRecorder.AudioSource.MIC))
