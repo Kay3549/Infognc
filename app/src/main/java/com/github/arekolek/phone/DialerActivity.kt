@@ -3,20 +3,23 @@ package com.github.arekolek.phone
 import android.Manifest.permission.CALL_PHONE
 import android.app.role.RoleManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.MediaRecorder
-import android.os.Build
 import android.os.Bundle
-import android.telecom.TelecomManager
-import android.telecom.TelecomManager.ACTION_CHANGE_DEFAULT_DIALER
-import android.telecom.TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME
+import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.core.net.toUri
+import kotlinx.android.synthetic.main.abcd.*
 import kotlinx.android.synthetic.main.dddd.*
+import java.io.IOException
+import java.util.*
 
 
 class DialerActivity : AppCompatActivity() {
@@ -115,4 +118,5 @@ class DialerActivity : AppCompatActivity() {
             }
         }
     }
+
 }
