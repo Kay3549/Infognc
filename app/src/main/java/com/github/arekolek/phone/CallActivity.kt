@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Bundle
+import android.os.Environment
 import android.telecom.Call
 import android.view.View
 import android.widget.Toast
@@ -17,6 +18,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposables
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.abcd.*
+import java.io.File
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -27,7 +29,6 @@ class CallActivity : AppCompatActivity() {
     private lateinit var number: String
     private var timerDisposable = Disposables.empty()
 
-    private var output: String? = null
     private var mediaRecorder: MediaRecorder? = null
     private var state: Boolean = false
 
@@ -35,7 +36,6 @@ class CallActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.abcd)
 
-        hideBottomNavigationBar()
         number = intent.data.schemeSpecificPart
 
         record.setOnClickListener {
@@ -119,9 +119,6 @@ class CallActivity : AppCompatActivity() {
 
     }
 
-    private fun hideBottomNavigationBar() {
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-    }
 
     override fun onStop() {
         super.onStop()
@@ -140,13 +137,13 @@ class CallActivity : AppCompatActivity() {
 
     private fun startRecording() {
         val fileName: String = Date().getTime().toString() + ".m4a"
-        output = externalCacheDir.absolutePath + "/Download/" + fileName //내장메모리 밑에 위치
+        val file = File(this.externalCacheDir!!.absolutePath, fileName)
         mediaRecorder = MediaRecorder()
         mediaRecorder?.setAudioSource((MediaRecorder.AudioSource.MIC))
         mediaRecorder?.setOutputFormat((MediaRecorder.OutputFormat.MPEG_4))
         mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-        mediaRecorder?.setOutputFile(output)
-        Toast.makeText(this, "$output", Toast.LENGTH_SHORT).show()
+        mediaRecorder?.setOutputFile(file)
+        Toast.makeText(this, "$file", Toast.LENGTH_SHORT).show()
 
         try {
             mediaRecorder?.prepare()
