@@ -14,7 +14,7 @@ fun Int.asString(): String = when (this) {
     Call.STATE_DISCONNECTING -> "DISCONNECTING"
     Call.STATE_SELECT_PHONE_ACCOUNT -> "SELECT_PHONE_ACCOUNT"
     else -> {
-        Timber.w("Unknown state ${this}")
+        Timber.w("Unknown state $this")
         "UNKNOWN"
     }
 }

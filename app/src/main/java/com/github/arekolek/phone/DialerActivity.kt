@@ -114,29 +114,6 @@ class DialerActivity : AppCompatActivity() {
             number.text.clear()
             number.text = number.text.append(temp)
         }
-        E.setOnClickListener{
-            if (
-                ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.RECORD_AUDIO
-            ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                val permissions = arrayOf(
-                    android.Manifest.permission.RECORD_AUDIO,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
-                )
-                requestPermissions(this, permissions, 0)
-            } else {
-            startRecording()
-        }
-        }
-        button6.setOnClickListener{
-            stopRecording()
-        }
     }
 
     override fun onStart() {

@@ -57,12 +57,6 @@
                 android:textSize="30dp"
                 android:text="7" />
 
-            <Button
-                android:id="@+id/E"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Button"
-                />
 
         </LinearLayout>
 
@@ -134,13 +128,6 @@
                 android:layout_marginTop="20dp"
                 android:textSize="30dp"
                 android:text="9" />
-
-            <Button
-                android:id="@+id/button6"
-                android:layout_width="match_parent"
-                android:layout_height="37dp"
-                android:text="Button"
-                />
 
         </LinearLayout>
     </LinearLayout>
