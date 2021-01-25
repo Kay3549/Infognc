@@ -23,7 +23,7 @@ class CallActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.abcd)
+        setContentView(R.layout.activity_call)
 
         number = intent.data.schemeSpecificPart
 

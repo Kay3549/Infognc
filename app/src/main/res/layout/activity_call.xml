@@ -8,38 +8,85 @@
     tools:context=".CallActivity"
     >
 
+    <ImageView
+        android:id="@+id/imageBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg"
+        android:fitsSystemWindows="false"
+        android:foreground="#33000000"
+        tools:layout_editor_absoluteX="-88dp"
+        tools:layout_editor_absoluteY="0dp"
+        />
+
     <TextView
-        android:id="@+id/callInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.3"
-        tools:text="Hello World!"
-        />
-
-    <Button
-        android:id="@+id/answer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Answer"
-        app:layout_constraintBaseline_toBaselineOf="@+id/hangup"
+        android:id="@+id/textStatus"
+        android:layout_width="158dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="68dp"
+        android:gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textColor="#6480DF"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/hangup"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Calling…"
         />
 
-    <Button
-        android:id="@+id/hangup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hang up"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/answer"
+    <TextView
+        android:id="@+id/textDuration"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="32dp"
+        android:gravity="center_horizontal"
+        android:text="00:00:00"
+        android:textAlignment="center"
+        android:textColor="#6480DF"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/callInfo"
+        app:layout_constraintTop_toBottomOf="@+id/textStatus"
         />
+
+
+    <ImageView
+        android:id="@+id/buttonHangup"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/ic_hangup_button_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="center"
+        android:src="@drawable/ic_call_end"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/buttonAnswer"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_goneMarginEnd="40dp"
+        />
+
+    <ImageView
+        android:id="@+id/buttonAnswer"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/ic_answer_button_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="center"
+        android:src="@drawable/ic_call"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/buttonHangup"
+        tools:visibility="visible"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
