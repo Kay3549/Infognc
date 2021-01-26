@@ -16,7 +16,7 @@ import androidx.core.app.ActivityCompat.*
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.core.net.toUri
-import kotlinx.android.synthetic.main.dddd.*
+import kotlinx.android.synthetic.main.activity_dialer.*
 import java.io.File
 import java.io.IOException
 import java.util.*

@@ -12,7 +12,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposables
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.abcd.*
+import kotlinx.android.synthetic.main.activity_call.*
 import java.util.concurrent.TimeUnit
 
 class CallActivity : AppCompatActivity() {
