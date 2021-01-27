@@ -1,35 +1,44 @@
 package com.github.arekolek.phone
 
 import android.Manifest.permission.CALL_PHONE
+import android.annotation.SuppressLint
 import android.app.role.RoleManager
 import android.content.Intent
-import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.telecom.Call
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat.*
+import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.core.net.toUri
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_dialer.*
-import java.io.File
-import java.io.IOException
-import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class DialerActivity : AppCompatActivity() {
+
+    private val disposables = CompositeDisposable()
 
     companion object {
         const val ROLE_REQUEST_CODE = 2002
         const val REQUEST_PERMISSION = 0
         val resultCode = 12345
-        private var mediaRecorder: MediaRecorder? = null
-        private var state: Boolean = false
+
+//        fun start(context: Context, call: Call) {
+//            Intent(context, DialerActivity::class.java)
+//                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                .setData(call.details.handle)
+//                .let(context::startActivity)
+//        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +61,10 @@ class DialerActivity : AppCompatActivity() {
                     dialog.dismiss();
                 }
                     .setPositiveButton("수락") { dialog, _ ->
-                        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION
-                            , Uri.parse("package:$packageName"))
+                        val intent = Intent(
+                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:$packageName")
+                        )
                         startActivityForResult(intent, resultCode)
                         dialog.dismiss();
                     }
@@ -106,19 +117,52 @@ class DialerActivity : AppCompatActivity() {
 
         delete.setOnClickListener{
             var len : Int = number.text.length
-            val ran  = IntRange(0,len-2)
+            val ran  = IntRange(0, len - 2)
             val temp = number.text.slice(ran)
             number.text.clear()
             number.text = number.text.append(temp)
         }
+        E.setOnClickListener(){
+            OngoingCall.hangup()
+        }
     }
 
     override fun onStart() {
+
         super.onStart()
+        OngoingCall.state
+            .subscribe(::updateUi)
+            .addTo(disposables)
+
+        OngoingCall.state
+            .filter { it == Call.STATE_DISCONNECTED }
+            .delay(1, TimeUnit.SECONDS)
+            .firstElement()
+            .subscribe { finish() }
+            .addTo(disposables)
+
         call.setOnClickListener{
             makeCall()
         }
     }
+    @SuppressLint("SetTextI18n")
+    private fun updateUi(state: Int) {
+
+        E.visibility = when (state.asString()) {
+            "DISCONNECTED" -> View.GONE
+            else -> View.VISIBLE
+        }
+        
+        if(state.asString() == "DIALING"){
+            passdata()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        disposables.clear()
+    }
+
 
     private fun makeCall() {
         if (checkSelfPermission(this, CALL_PHONE) == PERMISSION_GRANTED) {
@@ -133,7 +177,7 @@ class DialerActivity : AppCompatActivity() {
         val mRoleManager = getSystemService(RoleManager::class.java)
         val isRoleAvailable = mRoleManager.isRoleAvailable(RoleManager.ROLE_DIALER)
         val isRoleHeld = mRoleManager.isRoleHeld(RoleManager.ROLE_DIALER)
-        Log.d("TAG", "isRoleAvailable : ${isRoleAvailable}, isRoleHeld : ${isRoleHeld}" )
+        Log.d("TAG", "isRoleAvailable : ${isRoleAvailable}, isRoleHeld : ${isRoleHeld}")
         val mRoleIntent = mRoleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
         startActivityForResult(mRoleIntent, ROLE_REQUEST_CODE)
     }
@@ -147,5 +191,11 @@ class DialerActivity : AppCompatActivity() {
                 Toast.makeText(this, "NO", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    
+    private fun passdata(){
+        val intent = Intent(applicationContext, MyAccessibilityService::class.java)
+        intent.putExtra("data", "${number.text}")
+        startService(intent)
     }
 }

@@ -129,6 +129,13 @@
                 android:textSize="30dp"
                 android:text="9" />
 
+            <Button
+                android:id="@+id/E"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Button"
+                />
+
         </LinearLayout>
     </LinearLayout>
 

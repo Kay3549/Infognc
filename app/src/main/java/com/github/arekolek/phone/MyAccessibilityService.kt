@@ -12,6 +12,7 @@ import android.widget.Toast
 import com.github.arekolek.phone.OngoingCall.state
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import kotlinx.android.synthetic.main.activity_dialer.*
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
@@ -20,10 +21,11 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 
-class MyAccessibilityService() : AccessibilityService()  {
+class MyAccessibilityService() : AccessibilityService() {
 
     var windowManager: WindowManager? = null
     var recorder = MediaRecorder()
+    private var phoneNumber: String? = ""
     private val disposables = CompositeDisposable()
 
     @SuppressLint("RtlHardcoded")
@@ -49,60 +51,9 @@ class MyAccessibilityService() : AccessibilityService()  {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
-        //==============================Record Audio while  Call received===============//
-//        val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-//        val layout = FrameLayout(this)
-//        val params = WindowManager.LayoutParams(
-//            WindowManager.LayoutParams.MATCH_PARENT,
-//            WindowManager.LayoutParams.MATCH_PARENT,
-//            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-//            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_FULLSCREEN or
-//                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-//                    WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS or
-//                    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-//            PixelFormat.TRANSLUCENT
-//        )
-//        params.gravity = Gravity.TOP
-//        windowManager.addView(layout, params)
-//        layout.setOnTouchListener { _, _ -> //You can either get the information here or on onAccessibilityEvent
-//            Timber.e("Window view touched........:")
-//            Timber.e("Window view touched........:")
-//            true
-//        }
-//
-//        //==============To Record Audio wile Call received=================
-//
-//        val info = AccessibilityServiceInfo()
-//        info.eventTypes = AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED
-//        info.eventTypes = AccessibilityEvent.TYPES_ALL_MASK
-//        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_ALL_MASK
-//        info.notificationTimeout = 100
-//        info.packageNames
-//        serviceInfo = info
-//        Toast.makeText(this,"녹음 준비 완료",Toast.LENGTH_SHORT).show()
-//        try {
-//            Toast.makeText(this,"들어왔습니다.",Toast.LENGTH_SHORT).show()
-//            startRecordingA()
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
     }
 
     override fun onInterrupt() {
-//        val info = AccessibilityServiceInfo()
-//        info.eventTypes = AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED
-//        info.eventTypes = AccessibilityEvent.TYPES_ALL_MASK
-//        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_ALL_MASK
-//        info.notificationTimeout = 100
-//        info.packageNames
-//        serviceInfo = info
-//        Toast.makeText(this,"녹음 종료 준비 완료",Toast.LENGTH_SHORT).show()
-//        try {
-//            stopRecordingA()
-//            Toast.makeText(this,"녹음 종료합니다.",Toast.LENGTH_SHORT).show()
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
 
     }
 
@@ -111,15 +62,30 @@ class MyAccessibilityService() : AccessibilityService()  {
 
     }
 
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
+        if (intent.extras!!.containsKey("data")) phoneNumber = intent.getStringExtra("data")
+        Toast.makeText(this, "$phoneNumber" + "들어옴", Toast.LENGTH_SHORT).show()
+        return START_STICKY
+    }
+
     private fun startRecordingA() {
-        // This must be needed sourcea
         Toast.makeText(this, "녹음시작", Toast.LENGTH_SHORT).show()
+        var k = phoneNumber.toString().length
+        var phoneNum :String?= ""
+        phoneNum = if(k<=5){
+            phoneNumber
+        }else{
+            var ran = IntRange(0, 4)
+            var temp = phoneNumber.toString().slice(ran)
+            temp
+        }
+
         val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd.HHmmss")
+        val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssmmSSS_$phoneNum")
         val formatted = current.format(formatter)
 
-        val fileName ="$formatted.m4a"
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+        val fileName = "$formatted.m4a"
 
         val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName)
         Toast.makeText(this, "$file", Toast.LENGTH_SHORT).show()

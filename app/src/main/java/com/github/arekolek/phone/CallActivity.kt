@@ -6,6 +6,7 @@ import android.media.MediaRecorder
 import android.os.Bundle
 import android.telecom.Call
 import android.view.View
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -66,11 +67,11 @@ class CallActivity : AppCompatActivity() {
 
         buttonHangup.visibility = when (state.asString()) {
             "DISCONNECTED" -> View.GONE
-            else -> View.VISIBLE
+            else -> VISIBLE
         }
 
         buttonAnswer.visibility = when (state.asString()) {
-            "RINGING" -> View.VISIBLE
+            "RINGING" -> VISIBLE
             else -> View.GONE
         }
     }
