@@ -148,38 +148,4 @@ class DialerActivity : AppCompatActivity() {
             }
         }
     }
-
-    private fun startRecording() {
-        val fileName: String = Date().getTime().toString() + ".m4a"
-        val file = File(this.externalCacheDir!!.absolutePath, fileName)
-        mediaRecorder = MediaRecorder()
-        mediaRecorder?.setAudioSource((MediaRecorder.AudioSource.MIC))
-        mediaRecorder?.setOutputFormat((MediaRecorder.OutputFormat.MPEG_4))
-        mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-        mediaRecorder?.setOutputFile(file)
-        Toast.makeText(this, "$file", Toast.LENGTH_SHORT).show()
-
-        try {
-            mediaRecorder?.prepare()
-            mediaRecorder?.start()
-            state = true
-            Toast.makeText(this, "레코딩 시작되었습니다.", Toast.LENGTH_SHORT).show()
-        } catch (e: IllegalStateException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun stopRecording() {
-        if (state) {
-            mediaRecorder?.stop()
-            mediaRecorder?.reset()
-            mediaRecorder?.release()
-            state = false
-            Toast.makeText(this, "중지 되었습니다.", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, "레코딩 상태가 아닙니다.", Toast.LENGTH_SHORT).show()
-        }
-    }
 }
