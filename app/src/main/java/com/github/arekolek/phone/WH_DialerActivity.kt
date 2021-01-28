@@ -20,11 +20,11 @@ import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.core.net.toUri
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.activity_dialer.*
+import kotlinx.android.synthetic.main.wh_activity_dialer.*
 import java.util.concurrent.TimeUnit
 
 
-class DialerActivity : AppCompatActivity() {
+class WH_DialerActivity : AppCompatActivity() {
 
     private val disposables = CompositeDisposable()
 
@@ -43,7 +43,7 @@ class DialerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dialer)
+        setContentView(R.layout.wh_activity_dialer)
         checkDefaultDialer()
         if(
         // 엑티비티 실행에만 사용할 예정이라서 이슈가 있는 10 버전인지 확인하기 위함
@@ -123,18 +123,18 @@ class DialerActivity : AppCompatActivity() {
             number.text = number.text.append(temp)
         }
         E.setOnClickListener(){
-            OngoingCall.hangup()
+            WH_OngoingCall.hangup()
         }
     }
 
     override fun onStart() {
 
         super.onStart()
-        OngoingCall.state
+        WH_OngoingCall.state
             .subscribe(::updateUi)
             .addTo(disposables)
 
-        OngoingCall.state
+        WH_OngoingCall.state
             .filter { it == Call.STATE_DISCONNECTED }
             .delay(1, TimeUnit.SECONDS)
             .firstElement()
@@ -194,7 +194,7 @@ class DialerActivity : AppCompatActivity() {
     }
     
     private fun passdata(){
-        val intent = Intent(applicationContext, MyAccessibilityService::class.java)
+        val intent = Intent(applicationContext, WH_MyAccessibilityService::class.java)
         intent.putExtra("data", "${number.text}")
         startService(intent)
     }

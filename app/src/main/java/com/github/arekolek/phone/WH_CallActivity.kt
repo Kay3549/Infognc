@@ -2,7 +2,6 @@ package com.github.arekolek.phone
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.media.MediaRecorder
 import android.os.Bundle
 import android.telecom.Call
 import android.view.View
@@ -13,10 +12,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposables
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.activity_call.*
+import kotlinx.android.synthetic.main.wh_activity_call.*
 import java.util.concurrent.TimeUnit
 
-class CallActivity : AppCompatActivity() {
+class WH_CallActivity : AppCompatActivity() {
 
     private val disposables = CompositeDisposable()
     private lateinit var number: String
@@ -24,7 +23,7 @@ class CallActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_call)
+        setContentView(R.layout.wh_activity_call)
 
         number = intent.data.schemeSpecificPart
 
@@ -34,18 +33,18 @@ class CallActivity : AppCompatActivity() {
         super.onStart()
 
         buttonAnswer.setOnClickListener {
-            OngoingCall.answer()
+            WH_OngoingCall.answer()
         }
 
         buttonHangup.setOnClickListener {
-            OngoingCall.hangup()
+            WH_OngoingCall.hangup()
         }
 
-        OngoingCall.state
+        WH_OngoingCall.state
             .subscribe(::updateUi)
             .addTo(disposables)
 
-        OngoingCall.state
+        WH_OngoingCall.state
             .filter { it == Call.STATE_DISCONNECTED }
             .delay(1, TimeUnit.SECONDS)
             .firstElement()
@@ -93,7 +92,7 @@ class CallActivity : AppCompatActivity() {
 
     companion object {
         fun start(context: Context, call: Call) {
-            Intent(context, CallActivity::class.java)
+            Intent(context, WH_CallActivity::class.java)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .setData(call.details.handle)
                 .let(context::startActivity)

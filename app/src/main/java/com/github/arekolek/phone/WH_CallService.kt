@@ -3,14 +3,14 @@ package com.github.arekolek.phone
 import android.telecom.Call
 import android.telecom.InCallService
 
-class CallService : InCallService() {
+class WH_CallService : InCallService() {
 
     override fun onCallAdded(call: Call) {
-        OngoingCall.call = call
+        WH_OngoingCall.call = call
         //DialerActivity.start(this, call)
     }
 
     override fun onCallRemoved(call: Call) {
-        OngoingCall.call = null
+        WH_OngoingCall.call = null
     }
 }

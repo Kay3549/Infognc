@@ -5,7 +5,7 @@ import android.telecom.VideoProfile
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
-object OngoingCall {
+object WH_OngoingCall {
     var state: BehaviorSubject<Int> = BehaviorSubject.create()
 
     private val callback = object : Call.Callback() {

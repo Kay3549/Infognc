@@ -9,10 +9,9 @@ import android.telecom.Call
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
-import com.github.arekolek.phone.OngoingCall.state
+import com.github.arekolek.phone.WH_OngoingCall.state
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.activity_dialer.*
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
@@ -21,7 +20,7 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 
-class MyAccessibilityService() : AccessibilityService() {
+class WH_MyAccessibilityService() : AccessibilityService() {
 
     var windowManager: WindowManager? = null
     var recorder = MediaRecorder()
