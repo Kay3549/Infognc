@@ -211,12 +211,8 @@ class WH_MyAccessibilityService() : AccessibilityService() {
 
             con.setFileType(FTP.BINARY_FILE_TYPE, FTP.BINARY_FILE_TYPE)
             con.setFileTransferMode(FTP.BINARY_FILE_TYPE)
-//            Toast.makeText(this, data, Toast.LENGTH_SHORT).show() //경로
-//            Toast.makeText(this, destination, Toast.LENGTH_SHORT).show() // true or false
 
             con.storeFile(fileName, FileInputStream(File(data)))
-//            val code : Int = con.replyCode
-//            Toast.makeText(this, "$code", Toast.LENGTH_SHORT).show() //code 226 성공적으로 전달 커넥션 종료
             FileInputStream(File(data)).close()
             con.logout()
             con.disconnect()

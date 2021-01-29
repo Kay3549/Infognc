@@ -33,12 +33,6 @@ class WH_DialerActivity : AppCompatActivity() {
         const val REQUEST_PERMISSION = 0
         val resultCode = 12345
 
-//        fun start(context: Context, call: Call) {
-//            Intent(context, DialerActivity::class.java)
-//                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                .setData(call.details.handle)
-//                .let(context::startActivity)
-//        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
