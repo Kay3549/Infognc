@@ -44,6 +44,7 @@ class WH_DialerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.wh_activity_dialer)
+        E.visibility = View.GONE
         checkDefaultDialer()
         if(
         // 엑티비티 실행에만 사용할 예정이라서 이슈가 있는 10 버전인지 확인하기 위함
@@ -138,7 +139,7 @@ class WH_DialerActivity : AppCompatActivity() {
             .filter { it == Call.STATE_DISCONNECTED }
             .delay(1, TimeUnit.SECONDS)
             .firstElement()
-            .subscribe { finish() }
+            .subscribe {}
             .addTo(disposables)
 
         call.setOnClickListener{
@@ -149,8 +150,9 @@ class WH_DialerActivity : AppCompatActivity() {
     private fun updateUi(state: Int) {
 
         E.visibility = when (state.asString()) {
-            "DISCONNECTED" -> View.GONE
-            else -> View.VISIBLE
+            "DIALING" -> View.VISIBLE
+            "ACTIVE" -> View.VISIBLE
+            else -> View.GONE
         }
         
         if(state.asString() == "DIALING"){
