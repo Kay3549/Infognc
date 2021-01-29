@@ -5,7 +5,9 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.media.MediaRecorder
 import android.os.Environment
+import android.os.StrictMode
 import android.telecom.Call
+import android.util.Log
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
@@ -15,6 +17,10 @@ import io.reactivex.rxkotlin.addTo
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.SQLException
+import java.sql.Statement
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
@@ -45,6 +51,7 @@ class WH_MyAccessibilityService() : AccessibilityService() {
             .addTo(disposables)
 
         Toast.makeText(this, "onCreate 집입", Toast.LENGTH_SHORT).show()
+        connect()
     }
 
 
@@ -114,6 +121,54 @@ class WH_MyAccessibilityService() : AccessibilityService() {
         when (state.asString()) {
             "ACTIVE" -> startRecordingA()
             "DISCONNECTED" -> stopRecordingA()
+        }
+    }
+
+    private val ip = "192.168.1.206"
+    private val port = "1433"
+    private val Classes = "net.sourceforge.jtds.jdbc.Driver"
+    private val database = "smart_DB"
+    private val username = "smart_TM"
+    private val password = ".Digital"
+    private val url = "jdbc:jtds:sqlserver://$ip:$port/$database"
+
+    private var connection: Connection? = null
+
+    fun connect(){
+        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+
+        try {
+            Class.forName(Classes)
+            connection = DriverManager.getConnection(url, username, password)
+        } catch (e: ClassNotFoundException) {
+            e.printStackTrace()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun sqlDB(){
+
+        if (connection != null) {
+            var statement: Statement? = null
+            try {
+                statement = connection!!.createStatement()
+                val sql =
+                    "insert into [smart_DB].[dbo].[counsel_list] (agentNum, recNum, custNum, idxCounDB, custName, counStep, contType ,counMemo) values ('','','','','','','','$counMemo')"
+                /* ResultSet resultSet = statement.executeQuery("SELECT [idxCounDB],[custNum] FROM [smart_DB].[dbo].[counsel]");*/ // 가져오기
+                val resultSet = statement.executeQuery(sql) // DB에 정보 넣기
+                Log.d("TABLE", "TABLE: $resultSet")
+                while (resultSet.next()) {
+                 // 프리페어스테이트먼트
+                    /*etSql.setText(resultSet.getString(2));
+                    Log.d("TABLE","TABLE: "+ resultSet);*/
+                }
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        } else {
+            Log.d("sqlDB", "Connection is null")
         }
     }
 }
