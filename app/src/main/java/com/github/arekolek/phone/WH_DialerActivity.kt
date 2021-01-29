@@ -24,9 +24,11 @@ import kotlinx.android.synthetic.main.wh_activity_dialer.*
 import java.util.concurrent.TimeUnit
 
 
+
 class WH_DialerActivity : AppCompatActivity() {
 
     private val disposables = CompositeDisposable()
+
 
     companion object {
         const val ROLE_REQUEST_CODE = 2002
@@ -125,6 +127,7 @@ class WH_DialerActivity : AppCompatActivity() {
         E.setOnClickListener(){
             WH_OngoingCall.hangup()
         }
+        ㅂ
     }
 
     override fun onStart() {
