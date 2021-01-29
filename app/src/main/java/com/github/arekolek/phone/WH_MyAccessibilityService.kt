@@ -71,10 +71,10 @@ class WH_MyAccessibilityService() : AccessibilityService() {
     private fun startRecordingA() {
         Toast.makeText(this, "녹음시작", Toast.LENGTH_SHORT).show()
         var k = phoneNumber.toString().length
-        var phoneNum :String?= ""
-        phoneNum = if(k<=5){
+        var phoneNum: String? = ""
+        phoneNum = if (k <= 5) {
             phoneNumber
-        }else{
+        } else {
             var ran = IntRange(0, 4)
             var temp = phoneNumber.toString().slice(ran)
             temp
@@ -116,5 +116,18 @@ class WH_MyAccessibilityService() : AccessibilityService() {
             "DISCONNECTED" -> stopRecordingA()
         }
     }
+
+//    private fun ftp() {
+//        var mftp = FTPClient()
+//        mftp.connect("192.168.1.206")
+//        var reply = mftp.replyCode
+//
+//        if (!FTPReply.isPositiveCompletion(reply)) {
+//            mftp.disconnect()
+//
+//        }
+//    }
+
+
 }
 
