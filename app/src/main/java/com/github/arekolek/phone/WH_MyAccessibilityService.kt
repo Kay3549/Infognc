@@ -41,7 +41,7 @@ class WH_MyAccessibilityService() : AccessibilityService() {
             .filter { it == Call.STATE_DISCONNECTED }
             .delay(1, TimeUnit.SECONDS)
             .firstElement()
-            .subscribe { System.exit(0) }
+            .subscribe {}
             .addTo(disposables)
 
         Toast.makeText(this, "onCreate 집입", Toast.LENGTH_SHORT).show()
