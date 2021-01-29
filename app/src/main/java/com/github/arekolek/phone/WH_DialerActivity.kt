@@ -141,7 +141,7 @@ class WH_DialerActivity : AppCompatActivity() {
             .filter { it == Call.STATE_DISCONNECTED }
             .delay(1, TimeUnit.SECONDS)
             .firstElement()
-            .subscribe { finish() }
+            .subscribe {}
             .addTo(disposables)
 
         call.setOnClickListener{

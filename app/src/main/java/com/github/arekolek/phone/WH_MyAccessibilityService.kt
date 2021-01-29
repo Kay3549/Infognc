@@ -2,14 +2,10 @@ package com.github.arekolek.phone
 
 import android.accessibilityservice.AccessibilityService
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.media.MediaRecorder
 import android.os.Environment
-import android.os.StrictMode
 import android.telecom.Call
-import android.util.Log
-import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
@@ -19,22 +15,17 @@ import io.reactivex.rxkotlin.addTo
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.SQLException
-import java.sql.Statement
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 
-open class WH_MyAccessibilityService() : AccessibilityService() {
+class WH_MyAccessibilityService() : AccessibilityService() {
 
     var windowManager: WindowManager? = null
     var recorder = MediaRecorder()
     private var phoneNumber: String? = ""
     private val disposables = CompositeDisposable()
-    private var fileName:String? = ""
 
     @SuppressLint("RtlHardcoded")
     override fun onCreate() {
@@ -54,7 +45,6 @@ open class WH_MyAccessibilityService() : AccessibilityService() {
             .addTo(disposables)
 
         Toast.makeText(this, "onCreate 집입", Toast.LENGTH_SHORT).show()
-        connection()
     }
 
 
@@ -94,7 +84,7 @@ open class WH_MyAccessibilityService() : AccessibilityService() {
         val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssmmSSS_$phoneNum")
         val formatted = current.format(formatter)
 
-        fileName = "$formatted.m4a"
+        val fileName = "$formatted.m4a"
 
         val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName)
         Toast.makeText(this, "$file", Toast.LENGTH_SHORT).show()
@@ -111,9 +101,7 @@ open class WH_MyAccessibilityService() : AccessibilityService() {
             Timber.e("prepare() failed")
         }
         recorder.start()
-
     }
-
 
     private fun stopRecordingA() {
         Toast.makeText(this, "녹음 종료", Toast.LENGTH_SHORT).show()
@@ -122,73 +110,11 @@ open class WH_MyAccessibilityService() : AccessibilityService() {
         recorder.release()
     }
 
-    private val ip = "192.168.1.206"
-    private val port = "1433"
-    private val Classes = "net.sourceforge.jtds.jdbc.Driver"
-    private val database = "smart_DB"
-    private val username = "smart_TM"
-    private val password = ".Digital"
-    private val url = "jdbc:jtds:sqlserver://$ip:$port/$database"
-    private var connect: Connection? = null
-
-    fun connection(){
-        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
-
-        try {
-            Class.forName(Classes)
-            connect = DriverManager.getConnection(url,username,password)
-            Log.d("sqlDB", "connection: 성공")
-        } catch (e: ClassNotFoundException) {
-            e.printStackTrace()
-            Log.d("sqlDB", "connection: 실패")
-        } catch (e: SQLException) {
-            e.printStackTrace()
-            Log.d("sqlDB", "connection: 실패")
-        }
-    }
-
-    fun sqlDB(){
-        val connection = connection()
-
-        var agentNum = 1  //상담원 번호
-        var recNum = fileName?.replace(".m4a","") // 녹취키
-        var callNum = phoneNumber // 전화번호
-        var custName = "홍길동"
-
-        if (connection != null) {
-            var statement: Statement? = null
-            try {
-                statement = connect?.createStatement()
-                val sql =
-                    "insert into [smart_DB].[dbo].[call_list] (agentNum, recNum, custNum, idxCounDB, custName, counStep, contType ,counMemo) values ('"+agentNum+"','"+recNum+"','','','"+custName+"','','','')"
-                    /*"select custNum from dbo.counsel where idxCounDB='1'"*/
-                /* ResultSet resultSet = statement.executeQuery("SELECT [idxCounDB],[custNum] FROM [smart_DB].[dbo].[counsel]");*/ // 가져오기
-                val resultSet = statement?.executeQuery(sql) // DB에 정보 넣기
-                /*var result:String = resultSet.getSri*/
-                /*Log.d("sqlDB", "TABLE:" + result)*/
-               /* if (resultSet != null) {
-                    while (resultSet.next()) {
-                        *//*Toast.makeText(this, "DB적재 완료", Toast.LENGTH_SHORT).show()*//*
-                    }
-                }*/
-            } catch (e: SQLException) {
-                e.printStackTrace()
-            }
-        } else {
-            Log.d("sqlDB", "Connection is null")
-        }
-    }
-
-
-
     private fun updateUi(state: Int) {
         when (state.asString()) {
             "ACTIVE" -> startRecordingA()
-            /*"ACTIVE" -> sqlDB()*/
             "DISCONNECTED" -> stopRecordingA()
         }
     }
-
 }
 
