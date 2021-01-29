@@ -120,6 +120,9 @@ class WH_DialerActivity : AppCompatActivity() {
         E.setOnClickListener(){
             WH_OngoingCall.hangup()
         }
+        move.setOnClickListener(){
+            startActivity(Intent(this,WH_test::class.java))
+        }
     }
 
     override fun onStart() {
@@ -152,6 +155,7 @@ class WH_DialerActivity : AppCompatActivity() {
         if(state.asString() == "DIALING"){
             passdata()
         }
+
     }
 
     override fun onStop() {
