@@ -21,6 +21,7 @@
         android:id="@+id/listview"
         android:layout_width="match_parent"
         android:layout_height="195dp"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical"
+        android:clickable="true"/>
 
 </LinearLayout>
