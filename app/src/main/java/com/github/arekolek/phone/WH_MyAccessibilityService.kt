@@ -153,22 +153,19 @@ class WH_MyAccessibilityService() : AccessibilityService() {
         val agentNum = "1"
         val recNum = fileName.toString().replace(".m4a", "")
         val callNum = phoneNumber
-        Toast.makeText(this, "db",Toast.LENGTH_SHORT).show()
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
         val formatted = current.format(formatter)
-        Toast.makeText(this, "db0",Toast.LENGTH_SHORT).show()
         if (connection != null) {
             var statement: Statement? = null
             try {
                 if (gubun == "ACTIVE") {
                     statement = connection!!.createStatement()
                     datetemp = System.currentTimeMillis()
-                    Toast.makeText(this, "db1",Toast.LENGTH_SHORT).show()
                     val sql =
                         "insert into [smart_DB].[dbo].[call_list] (agentNum, recNum,callType,callNum,startTime,endTime,duration) values ('$agentNum','$recNum','0','$callNum','$formatted','','')"
                     statement.executeQuery(sql) // DB에 정보 넣기
-                    Toast.makeText(this, "db2",Toast.LENGTH_SHORT).show()
+
                 } else if (gubun == "DISCONNECTED") {
                     statement = connection!!.createStatement()
                     val durations = (System.currentTimeMillis() - datetemp) / 1000
@@ -191,14 +188,12 @@ class WH_MyAccessibilityService() : AccessibilityService() {
             var con = FTPClient()
             con.connect("192.168.1.206")
             con.login("administrator", ".Digital")
+            con.changeWorkingDirectory("/202101")
+val path : String = con.printWorkingDirectory()
+
             con.enterLocalPassiveMode() // important!
             con.setFileType(FTP.BINARY_FILE_TYPE)
-            val destination = con.changeWorkingDirectory("192.168.1.206").toString()
             val data = "$file"
-            val path : String = con.printWorkingDirectory()
-
-            con.setFileType(FTP.BINARY_FILE_TYPE, FTP.BINARY_FILE_TYPE)
-            con.setFileTransferMode(FTP.BINARY_FILE_TYPE)
 
             con.storeFile(fileName, FileInputStream(File(data)))
             FileInputStream(File(data)).close()
