@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         >
-        <activity android:name=".WH_test"></activity>
+        <activity android:name=".WH_test" />
         <activity
             android:name=".WH_DialerActivity"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize"
@@ -63,6 +63,7 @@
             </intent-filter>
         </service>
     </application>
+
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

@@ -54,7 +54,7 @@ class WH_MyAccessibilityService() : AccessibilityService() {
             .filter { it == Call.STATE_DISCONNECTED }
             .delay(1, TimeUnit.SECONDS)
             .firstElement()
-            .subscribe { }
+            .subscribe {}
             .addTo(disposables)
 
         Toast.makeText(this, "onCreate 집입", Toast.LENGTH_SHORT).show()
@@ -135,7 +135,7 @@ class WH_MyAccessibilityService() : AccessibilityService() {
 
     private var connection: Connection? = null
 
-    fun connect() {
+    private fun connect() {
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
@@ -153,20 +153,22 @@ class WH_MyAccessibilityService() : AccessibilityService() {
         val agentNum = "1"
         val recNum = fileName.toString().replace(".m4a", "")
         val callNum = phoneNumber
-
+        Toast.makeText(this, "db",Toast.LENGTH_SHORT).show()
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
         val formatted = current.format(formatter)
-
+        Toast.makeText(this, "db0",Toast.LENGTH_SHORT).show()
         if (connection != null) {
             var statement: Statement? = null
             try {
                 if (gubun == "ACTIVE") {
                     statement = connection!!.createStatement()
                     datetemp = System.currentTimeMillis()
+                    Toast.makeText(this, "db1",Toast.LENGTH_SHORT).show()
                     val sql =
                         "insert into [smart_DB].[dbo].[call_list] (agentNum, recNum,callType,callNum,startTime,endTime,duration) values ('$agentNum','$recNum','0','$callNum','$formatted','','')"
                     statement.executeQuery(sql) // DB에 정보 넣기
+                    Toast.makeText(this, "db2",Toast.LENGTH_SHORT).show()
                 } else if (gubun == "DISCONNECTED") {
                     statement = connection!!.createStatement()
                     val durations = (System.currentTimeMillis() - datetemp) / 1000
@@ -183,20 +185,6 @@ class WH_MyAccessibilityService() : AccessibilityService() {
         }
     }
 
-    private fun connFtp1() {
-        Toast.makeText(this, "ftp", Toast.LENGTH_SHORT).show()
-        Toast.makeText(this, "ftp0", Toast.LENGTH_SHORT).show()
-        val mFtpClient = FTPClient()
-        val check = mFtpClient.connect("192.168.1.206")
-        mFtpClient.login("administrator", ".Digital")
-        Toast.makeText(this, "$check", Toast.LENGTH_SHORT).show()
-        Toast.makeText(this, "ftp2", Toast.LENGTH_SHORT).show()
-        try {
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 
     private fun connFtp() {
         try {
@@ -226,16 +214,15 @@ class WH_MyAccessibilityService() : AccessibilityService() {
         when (state.asString()) {
             "ACTIVE" -> {
                 startRecordingA()
-                // sqlDB("ACTIVE")
+                sqlDB("ACTIVE")
             }
             "DISCONNECTED" -> {
                 stopRecordingA()
-               // connFtp()
-                //sqlDB("DISCONNECTED")
+                sqlDB("DISCONNECTED")
+                connFtp()
             }
         }
     }
-
 }
 
 
