@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="counStep">
+        <item >미접촉</item>
+        <item >거부</item>
+        <item >수신거부</item>
+        <item >결번</item>
+        <item >부재중</item>
+        <item >진행</item>
+        <item >예약</item>
+    </string-array>
+</resources>

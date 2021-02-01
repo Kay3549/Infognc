@@ -8,6 +8,8 @@ import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main_click.*
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -68,9 +70,25 @@ class MainActivity : AppCompatActivity()  {
                                 "on db.custnum = info.custnum\n where agentNum = '1'"
                 val resultSet = statement.executeQuery(sql) // DB
 
-
                 while (resultSet.next()) {
-                    var str = resultSet.getString(1) + " | " + resultSet.getString(4) + " | " + resultSet.getString(2)+ " | " + resultSet.getString(3)
+
+                var counStep:String? = resultSet.getString(2)
+
+
+                Log.d("sqlDB", "counStep: " + counStep)
+
+                counStep = when (resultSet.getString(2)){
+                    "00"-> "미접촉"
+                    "01" -> "거부"
+                    "02" -> "거부"
+                    "03" -> "거부"
+                    "04" -> "거부"
+                    "05" -> "거부"
+                    "06" -> "거부"
+                    "30" -> "가입완료"
+                    else -> "   "
+                }
+                    var str = resultSet.getString(1) + " | " + resultSet.getString(4) + " | " + counStep + " | " + resultSet.getString(3)
                     data.add(str)
                 }
             } catch (e: SQLException) {

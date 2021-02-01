@@ -5,6 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.StrictMode
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.sql.Connection
@@ -43,18 +46,41 @@ class MainActivity_click : AppCompatActivity() {
             Log.d("sqlDB", "ERROR")
         }
 
+        var counStepsp = findViewById<Spinner>(R.id.counStep)
+        counStepsp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>, view: View?,
+                position: Int, id: Long
+            ) {
+                parent.getItemAtPosition(position)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+        var contTypesp = findViewById<Spinner>(R.id.contType)
+        contTypesp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>, view: View?,
+                position: Int, id: Long
+            ) {
+                parent.getItemAtPosition(position)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
         var intent: Intent = intent
 
         var a = intent.getStringExtra("DB")
         Log.d("DB", "DB: " + a)
         var b = a?.split(" | ")
-        Log.d("B","B: "+ b)
+        Log.d("B", "B: " + b)
 
         var custkey = b?.get(0)
         if (custkey != null) {
             sqlDB(custkey)
             var c = sum?.split("|")
-            Log.d("DB","C: " + c)
+            Log.d("DB", "C: " + c)
             var custNum = findViewById<TextView>(R.id.custNum)
             custNum.setText(c?.get(0))
             var custBirth = findViewById<TextView>(R.id.custBirth)
@@ -75,7 +101,7 @@ class MainActivity_click : AppCompatActivity() {
 
     }
 
-    fun sqlDB(custkey:String){
+    fun sqlDB(custkey: String){
         if (connection != null) {
             var statement: Statement? = null
             try {

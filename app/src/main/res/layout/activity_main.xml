@@ -13,8 +13,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="0dp"
         android:gravity="top"
-        android:textSize="15dp"
-        android:text="  No                 고객명                   진행단계                     DB배정일" />
+        android:textSize="18dp"
+        android:text="   No       고객명         진행단계            DB배정일" />
 
 
     <ListView
