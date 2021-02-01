@@ -15,31 +15,34 @@ class WH_test : AppCompatActivity() {
 
     //private var phoneNumber = ""
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val path = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
+        val arrayList = ArrayList<String>()
         val audioPlay = MediaPlayer()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_w_h_test)
         //if (intent.extras!!.containsKey("data")) phoneNumber = intent.getStringExtra("data").toString()
 
-        val path = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
-        val arrayList = ArrayList<String>()
 
-        File("$path").walkBottomUp().forEach {
-            arrayList.add(it.toString())
-        }
-
-        val pf = arrayList[0]
-        audioPlay.setDataSource(pf)
-        audioPlay.prepare()
 
         play.setOnClickListener {
             audioPlay.start();
         }
 
         Donwload.setOnClickListener() {
-            FileDownload()
-        }
+            FileDownload() // 파일 다운로드
+            File("$path").walkBottomUp().forEach {
+                arrayList.add(it.toString())
+            }
+            val pf = arrayList[0]
+            audioPlay.setDataSource(pf)
+            audioPlay.prepare()
+            audioPlay.start()
 
+        }
     }
 
     private fun FileDownload() {
@@ -76,4 +79,5 @@ class WH_test : AppCompatActivity() {
             e.printStackTrace()
         }
     }
+
 }
