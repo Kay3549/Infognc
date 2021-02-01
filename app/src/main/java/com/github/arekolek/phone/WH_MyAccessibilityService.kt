@@ -95,7 +95,7 @@ class WH_MyAccessibilityService() : AccessibilityService() {
         }
 
         val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS_$phoneNum")
+        val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmSSS_$phoneNum")
         val formatted = current.format(formatter)
 
         fileName = "$formatted.m4a"
@@ -230,7 +230,7 @@ class WH_MyAccessibilityService() : AccessibilityService() {
             }
             "DISCONNECTED" -> {
                 stopRecordingA()
-                //connFtp()
+               // connFtp()
                 //sqlDB("DISCONNECTED")
             }
         }

@@ -195,7 +195,10 @@ class WH_DialerActivity : AppCompatActivity() {
     
     private fun passdata(){
         val intent = Intent(applicationContext, WH_MyAccessibilityService::class.java)
+       // val intent1 = Intent(applicationContext, WH_test::class.java)
         intent.putExtra("data", "${number.text}")
+       // intent1.putExtra("date","${number.text}")
         startService(intent)
+        //startActivity(intent1)
     }
 }
