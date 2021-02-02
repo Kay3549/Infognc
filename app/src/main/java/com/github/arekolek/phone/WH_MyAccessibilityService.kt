@@ -61,6 +61,7 @@ class WH_MyAccessibilityService() : AccessibilityService() {
 
         Toast.makeText(this, "onCreate 집입", Toast.LENGTH_SHORT).show()
         connect()
+
     }
 
 
