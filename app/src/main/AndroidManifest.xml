@@ -44,7 +44,7 @@
         </activity>
 
         <service
-            android:name=".WH_CallService"
+            android:name=".CallService"
             android:permission="android.permission.BIND_INCALL_SERVICE"
             >
             <intent-filter>

@@ -22,12 +22,16 @@ import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.core.net.toUri
+import com.mbarrben.dialer.CallManager
 import com.uber.rxdogtag.RxDogTag
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposables
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.wh_activity_dialer.*
 import kotlinx.android.synthetic.main.wh_activity_main_click.*
+import timber.log.Timber
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -37,7 +41,7 @@ import java.util.concurrent.TimeUnit
 
 class WH_DialerActivity : AppCompatActivity() {
 
-    private val disposables = CompositeDisposable()
+    private var updatesDisposable = Disposables.empty()
     private var callbutton = 0
     private var connect = 0
     private var number =""
@@ -168,17 +172,6 @@ class WH_DialerActivity : AppCompatActivity() {
     override fun onStart() {
 
         super.onStart()
-        WH_OngoingCall.state
-            .subscribe(::updateUi)
-            .addTo(disposables)
-
-        WH_OngoingCall.state
-            .filter { it == Call.STATE_DISCONNECTED }
-            .delay(1, TimeUnit.SECONDS)
-            .firstElement()
-            .subscribe {}
-            .addTo(disposables)
-
 
         call1.setOnClickListener {
 
@@ -192,7 +185,7 @@ class WH_DialerActivity : AppCompatActivity() {
                 connect=1
 
             }else{
-                WH_OngoingCall.hangup()
+                CallManager.cancelCall()
                 connect=0
                 call2.visibility = View.VISIBLE
                 call3.visibility = View.VISIBLE
@@ -210,7 +203,7 @@ class WH_DialerActivity : AppCompatActivity() {
                 call2.text="끊기"
                 connect=1
             }else{
-                WH_OngoingCall.hangup()
+                CallManager.cancelCall()
                 call1.visibility = View.VISIBLE
                 call3.visibility = View.VISIBLE
                 connect=0
@@ -228,7 +221,7 @@ class WH_DialerActivity : AppCompatActivity() {
                 call3.text="끊기"
                 connect=1
             }else{
-                WH_OngoingCall.hangup()
+                CallManager.cancelCall()
                 call2.visibility = View.VISIBLE
                 call3.visibility = View.VISIBLE
                 connect=0
@@ -238,20 +231,21 @@ class WH_DialerActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun updateUi(state: Int) {
+    override fun onResume() {
+        super.onResume()
+        updatesDisposable = CallManager.updates()
 
-        if (state.asString() == "DIALING") {
-            passdata()
+            .doOnEach { Timber.e("$it") }
+            .doOnError { Timber.e("Error processing call") }
+            .subscribe { updateView(it) }
+    }
+
+    private fun updateView(gsmCall: GsmCall) {
+
+        if(gsmCall.status==GsmCall.Status.DIALING){
+            //passdata()
         }
-
     }
-
-    override fun onStop() {
-        super.onStop()
-        disposables.clear()
-    }
-
 
     private fun makeCall(number:String) {
         if (checkSelfPermission(this, CALL_PHONE) == PERMISSION_GRANTED) {
