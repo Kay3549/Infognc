@@ -184,7 +184,6 @@ class WH_MyAccessibilityService() : AccessibilityService() {
                     statement.executeQuery(sql) // DB에 정보 넣기
                 }
 
-
             } catch (e: SQLException) {
                 e.printStackTrace()
             }
