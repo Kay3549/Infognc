@@ -257,7 +257,7 @@
         />
 
     <TextView
-        android:id="@+id/tellNum"
+        android:id="@+id/callNum"
         android:layout_width="180dp"
         android:layout_height="30dp"
         android:text="TextView"
@@ -283,7 +283,7 @@
         />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/call1"
         android:layout_width="90dp"
         android:layout_height="30dp"
         android:text="연결1"
@@ -309,7 +309,7 @@
         />
 
     <TextView
-        android:id="@+id/cellNum"
+        android:id="@+id/phoneNum"
         android:layout_width="180dp"
         android:layout_height="30dp"
         android:text="TextView"
@@ -335,7 +335,7 @@
         />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/call3"
         android:layout_width="90dp"
         android:layout_height="30dp"
         android:text="연결3"
@@ -348,7 +348,7 @@
         />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/call2"
         android:layout_width="90dp"
         android:layout_height="30dp"
         android:layout_marginStart="156dp"
@@ -362,7 +362,7 @@
         />
 
     <TextView
-        android:id="@+id/textView30"
+        android:id="@+id/dirctNum"
         android:layout_width="180dp"
         android:layout_height="30dp"
         android:text="TextView"

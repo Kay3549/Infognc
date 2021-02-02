@@ -8,8 +8,7 @@ import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_main_click.*
+import kotlinx.android.synthetic.main.wh_activity_main_click.*
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -45,8 +44,8 @@ class MainActivity : AppCompatActivity()  {
             Log.d("sqlDB", "ERROR")
         }
         sqlDB()
-        var list = findViewById<ListView>(R.id.listview)
-        var adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, data)
+        val list = findViewById<ListView>(R.id.listview)
+        val adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, data)
         list.setAdapter(adapter)
 
         adapter.addAll(data)
@@ -55,13 +54,13 @@ class MainActivity : AppCompatActivity()  {
         Log.d("sqlCall","적재성공")
         
         list.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-            var intent = Intent(this, MainActivity_click::class.java)
+            val intent = Intent(this, WH_DialerActivity::class.java)
             intent.putExtra("DB", data[position])
             startActivity(intent)
         }
     }
     fun sqlDB(){
-        data = ArrayList<String>()
+        data = ArrayList()
         if (connection != null) {
             var statement: Statement? = null
             try {

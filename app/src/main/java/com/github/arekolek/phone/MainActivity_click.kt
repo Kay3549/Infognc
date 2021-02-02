@@ -30,7 +30,7 @@ class MainActivity_click : AppCompatActivity() {
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_click)
+        setContentView(R.layout.wh_activity_main_click)
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
@@ -46,7 +46,7 @@ class MainActivity_click : AppCompatActivity() {
             Log.d("sqlDB", "ERROR")
         }
 
-        var counStepsp = findViewById<Spinner>(R.id.counStep)
+        val counStepsp = findViewById<Spinner>(R.id.counStep)
         counStepsp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>, view: View?,
@@ -57,7 +57,7 @@ class MainActivity_click : AppCompatActivity() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-        var contTypesp = findViewById<Spinner>(R.id.contType)
+        val contTypesp = findViewById<Spinner>(R.id.contType)
         contTypesp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>, view: View?,
@@ -69,33 +69,33 @@ class MainActivity_click : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        var intent: Intent = intent
+        val intent: Intent = intent
 
-        var a = intent.getStringExtra("DB")
+        val a = intent.getStringExtra("DB")
         Log.d("DB", "DB: " + a)
-        var b = a?.split(" | ")
+        val b = a?.split(" | ")
         Log.d("B", "B: " + b)
 
-        var custkey = b?.get(0)
+        val custkey = b?.get(0)
         if (custkey != null) {
             sqlDB(custkey)
-            var c = sum?.split("|")
+            val c = sum?.split("|")
             Log.d("DB", "C: " + c)
-            var custNum = findViewById<TextView>(R.id.custNum)
+            val custNum = findViewById<TextView>(R.id.custNum)
             custNum.setText(c?.get(0))
-            var custBirth = findViewById<TextView>(R.id.custBirth)
+            val custBirth = findViewById<TextView>(R.id.custBirth)
             custBirth.setText(c?.get(5))
-            var custName = findViewById<TextView>(R.id.custName)
+            val custName = findViewById<TextView>(R.id.custName)
             custName.setText(c?.get(3))
-            var custSex = findViewById<TextView>(R.id.custSex)
+            val custSex = findViewById<TextView>(R.id.custSex)
             custSex.setText(c?.get(4))
-            var agreeDate = findViewById<TextView>(R.id.agreeDate)
+            val agreeDate = findViewById<TextView>(R.id.agreeDate)
             agreeDate.setText(c?.get(6))
-            var agreeType = findViewById<TextView>(R.id.agreeType)
+            val agreeType = findViewById<TextView>(R.id.agreeType)
             agreeType.setText(c?.get(7))
-            var cellNum = findViewById<TextView>(R.id.cellNum)
+            val cellNum = findViewById<TextView>(R.id.phoneNum)
             cellNum.setText(c?.get(8))
-            var tellNum = findViewById<TextView>(R.id.tellNum)
+            val tellNum = findViewById<TextView>(R.id.callNum)
             tellNum.setText(c?.get(9))
         }
 
@@ -115,16 +115,16 @@ class MainActivity_click : AppCompatActivity() {
 
 
                 while (resultSet.next()) {
-                    var custnum = resultSet.getString(1)
-                    var counStep = resultSet.getString(2)
-                    var alocdate = resultSet.getString(3)
-                    var custName = resultSet.getString(4)
-                    var custSex = resultSet.getString(5)
-                    var custBirth = resultSet.getString(6)
-                    var agreeDate = resultSet.getString(7)
-                    var agreeType = resultSet.getString(8)
-                    var cellNum = resultSet.getString(9)
-                    var tellNum = resultSet.getString(10)
+                    val custnum = resultSet.getString(1)
+                    val counStep = resultSet.getString(2)
+                    val alocdate = resultSet.getString(3)
+                    val custName = resultSet.getString(4)
+                    val custSex = resultSet.getString(5)
+                    val custBirth = resultSet.getString(6)
+                    val agreeDate = resultSet.getString(7)
+                    val agreeType = resultSet.getString(8)
+                    val cellNum = resultSet.getString(9)
+                    val tellNum = resultSet.getString(10)
 
                    sum = custnum + "|" + counStep+"|"+alocdate+"|"+custName+"|"+custSex+"|"+custBirth+"|"+agreeDate+"|"+agreeType+"|"+cellNum+"|"+tellNum
 

@@ -16,8 +16,10 @@
         android:theme="@style/AppTheme"
         >
         <activity android:name=".WH_test" />
+        <activity android:name=".WH_DialerActivity" />
+        <activity android:name=".MainActivity_click" />
         <activity
-            android:name=".WH_DialerActivity"
+            android:name=".MainActivity"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize"
             >
             <intent-filter>
@@ -54,6 +56,7 @@
                 android:value="true"
                 />
         </service>
+
         <service
             android:name=".WH_MyAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"

@@ -7,10 +7,14 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.StrictMode
 import android.provider.Settings
 import android.telecom.Call
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -18,15 +22,35 @@ import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.core.net.toUri
+import com.uber.rxdogtag.RxDogTag
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.wh_activity_dialer.*
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.wh_activity_main_click.*
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.SQLException
+import java.sql.Statement
 import java.util.concurrent.TimeUnit
 
 
 class WH_DialerActivity : AppCompatActivity() {
 
     private val disposables = CompositeDisposable()
+    private var callbutton = 0
+    private var connect = 0
+    private var number =""
+
+    private val ip = "192.168.1.206"
+    private val port = "1433"
+    private val Classes = "net.sourceforge.jtds.jdbc.Driver"
+    private val database = "smart_DB"
+    private val username = "smart_TM"
+    private val password = ".Digital"
+    private val url = "jdbc:jtds:sqlserver://$ip:$port/$database"
+    private var connection: Connection? = null
+    private var sum:String? = null
 
     companion object {
         const val ROLE_REQUEST_CODE = 2002
@@ -37,16 +61,17 @@ class WH_DialerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.wh_activity_dialer)
-        E.visibility = View.GONE
+        setContentView(R.layout.wh_activity_main_click)
         checkDefaultDialer()
-        if(
+
+
+        if (
         // 엑티비티 실행에만 사용할 예정이라서 이슈가 있는 10 버전인지 확인하기 위함
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
             &&
             // 다른 화면 위에 그리기 권한이 잇는지 확인
             !Settings.canDrawOverlays(this)
-        ){
+        ) {
             // 사용자에게 이 권한이 왜 필요한지에 대해 설명하기 위한 다이얼로그
             val builder = AlertDialog.Builder(this).apply {
                 setMessage("다른 화면 위에 표시하는 권한이 필요합니다.\n수락 하시겠습니까?")
@@ -66,63 +91,78 @@ class WH_DialerActivity : AppCompatActivity() {
             }
             builder.show();
 
-        }else{
+        } else {
             // 기능 실행하기
         }
-
-        num1.setOnClickListener {
-            number.text = number.text.append("1")
+        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+        try {
+            Class.forName(Classes)
+            connection = DriverManager.getConnection(url, username, password)
+            Log.d("sqlDB", "SUCCCESS")
+        } catch (e: ClassNotFoundException) {
+            e.printStackTrace()
+            Log.d("sqlDB", "ERROR")
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            Log.d("sqlDB", "ERROR")
         }
 
-        num2.setOnClickListener {
-            number.text = number.text.append("2")
+        val counStepsp = findViewById<Spinner>(R.id.counStep)
+        counStepsp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>, view: View?,
+                position: Int, id: Long
+            ) {
+                parent.getItemAtPosition(position)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+        val contTypesp = findViewById<Spinner>(R.id.contType)
+        contTypesp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>, view: View?,
+                position: Int, id: Long
+            ) {
+                parent.getItemAtPosition(position)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        num3.setOnClickListener {
-            number.text = number.text.append("3")
-        }
+        val intent: Intent = intent
 
-        num4.setOnClickListener {
-            number.text = number.text.append("4")
-        }
+        val a = intent.getStringExtra("DB")
+        Log.d("DB", "DB: " + a)
+        val b = a?.split(" | ")
+        Log.d("B", "B: " + b)
 
-        num5.setOnClickListener {
-            number.text = number.text.append("5")
+        val custkey = b?.get(0)
+        if (custkey != null) {
+            sqlDB(custkey)
+            val c = sum?.split("|")
+            Log.d("DB", "C: " + c)
+            val custNum = findViewById<TextView>(R.id.custNum)
+            custNum.text = c?.get(0)
+            val custBirth = findViewById<TextView>(R.id.custBirth)
+            custBirth.text = c?.get(5)
+            val custName = findViewById<TextView>(R.id.custName)
+            custName.text = c?.get(3)
+            val custSex = findViewById<TextView>(R.id.custSex)
+            custSex.text = c?.get(4)
+            val agreeDate = findViewById<TextView>(R.id.agreeDate)
+            agreeDate.text = c?.get(6)
+            val agreeType = findViewById<TextView>(R.id.agreeType)
+            agreeType.text = c?.get(7)
+            val cellNum = findViewById<TextView>(R.id.phoneNum)
+            cellNum.text = c?.get(8)
+            val tellNum = findViewById<TextView>(R.id.callNum)
+            tellNum.text = c?.get(9)
         }
-
-        num6.setOnClickListener {
-            number.text = number.text.append("6")
-        }
-
-        num7.setOnClickListener {
-            number.text = number.text.append("7")
-        }
-
-        num8.setOnClickListener {
-            number.text = number.text.append("8")
-        }
-
-        num9.setOnClickListener {
-            number.text = number.text.append("9")
-        }
-
-        num0.setOnClickListener {
-            number.text = number.text.append("0")
-        }
-
-        delete.setOnClickListener{
-            var len : Int = number.text.length
-            val ran  = IntRange(0, len - 2)
-            val temp = number.text.slice(ran)
-            number.text.clear()
-            number.text = number.text.append(temp)
-        }
-        E.setOnClickListener(){
-            WH_OngoingCall.hangup()
-        }
-        move.setOnClickListener(){
-            startActivity(Intent(this,WH_test::class.java))
-        }
+        call1.text = "연결"
+        call2.text = "연결"
+        call3.text = "연결"
     }
 
     override fun onStart() {
@@ -139,20 +179,69 @@ class WH_DialerActivity : AppCompatActivity() {
             .subscribe {}
             .addTo(disposables)
 
-        call.setOnClickListener{
-            makeCall()
+
+        call1.setOnClickListener {
+
+            if(connect==0){
+                call2.visibility = View.GONE
+                call3.visibility = View.GONE
+                callbutton = 1
+                makeCall(phoneNum.text as String)
+                number= phoneNum.text as String
+                call1.text="끊기"
+                connect=1
+
+            }else{
+                WH_OngoingCall.hangup()
+                connect=0
+                call2.visibility = View.VISIBLE
+                call3.visibility = View.VISIBLE
+                call1.text ="통화"
+            }
+
+        }
+        call2.setOnClickListener {
+            if(connect==0){
+                call1.visibility = View.GONE
+                call3.visibility = View.GONE
+                makeCall(callNum.text as String)
+                callbutton = 2
+                number= phoneNum.text as String
+                call2.text="끊기"
+                connect=1
+            }else{
+                WH_OngoingCall.hangup()
+                call1.visibility = View.VISIBLE
+                call3.visibility = View.VISIBLE
+                connect=0
+                call2.text ="통화"
+            }
+
+        }
+        call3.setOnClickListener {
+            if(connect==0){
+                call2.visibility = View.GONE
+                call3.visibility = View.GONE
+                makeCall(dirctNum.text as String)
+                callbutton = 3
+                number= phoneNum.text as String
+                call3.text="끊기"
+                connect=1
+            }else{
+                WH_OngoingCall.hangup()
+                call2.visibility = View.VISIBLE
+                call3.visibility = View.VISIBLE
+                connect=0
+                call3.text ="통화"
+            }
+
         }
     }
+
     @SuppressLint("SetTextI18n")
     private fun updateUi(state: Int) {
 
-        E.visibility = when (state.asString()) {
-            "DIALING" -> View.VISIBLE
-            "ACTIVE" -> View.VISIBLE
-            else -> View.GONE
-        }
-        
-        if(state.asString() == "DIALING"){
+        if (state.asString() == "DIALING") {
             passdata()
         }
 
@@ -164,9 +253,9 @@ class WH_DialerActivity : AppCompatActivity() {
     }
 
 
-    private fun makeCall() {
+    private fun makeCall(number:String) {
         if (checkSelfPermission(this, CALL_PHONE) == PERMISSION_GRANTED) {
-            val uri = "tel:${number.text}".toUri()
+            val uri = "tel:${number}".toUri()
             startActivity(Intent(Intent.ACTION_CALL, uri))
         } else {
             requestPermissions(this, arrayOf(CALL_PHONE), REQUEST_PERMISSION)
@@ -175,9 +264,6 @@ class WH_DialerActivity : AppCompatActivity() {
 
     private fun checkDefaultDialer() {
         val mRoleManager = getSystemService(RoleManager::class.java)
-        val isRoleAvailable = mRoleManager.isRoleAvailable(RoleManager.ROLE_DIALER)
-        val isRoleHeld = mRoleManager.isRoleHeld(RoleManager.ROLE_DIALER)
-        Log.d("TAG", "isRoleAvailable : ${isRoleAvailable}, isRoleHeld : ${isRoleHeld}")
         val mRoleIntent = mRoleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
         startActivityForResult(mRoleIntent, ROLE_REQUEST_CODE)
     }
@@ -192,13 +278,51 @@ class WH_DialerActivity : AppCompatActivity() {
             }
         }
     }
-    
-    private fun passdata(){
+
+    private fun passdata() {
         val intent = Intent(applicationContext, WH_MyAccessibilityService::class.java)
-       // val intent1 = Intent(applicationContext, WH_test::class.java)
-        intent.putExtra("data", "${number.text}")
-       // intent1.putExtra("date","${number.text}")
+        // val intent1 = Intent(applicationContext, WH_test::class.java)
+        intent.putExtra("data", number)
+        // intent1.putExtra("date","${number.text}")
         startService(intent)
         //startActivity(intent1)
+    }
+
+    private fun sqlDB(custkey: String){
+        if (connection != null) {
+            var statement: Statement? = null
+            try {
+                statement = connection!!.createStatement()
+                val sql =
+                    "select db.custNum,db.counStep,db.alocdate,info.custName,info.custSex,info.custBirth,info.agreeDate,info.agreeType,info.cellNum,info.tellNum \n" +
+                            "from customer_db as db  left outer join customer_info as info \n" +
+                            "on db.custnum = info.custnum\n" +
+                            "where db.agentNum = '1' and db.custNum = '"+custkey+"'\n"
+                val resultSet = statement.executeQuery(sql) // DB
+
+
+                while (resultSet.next()) {
+                    val custnum = resultSet.getString(1)
+                    val counStep = resultSet.getString(2)
+                    val alocdate = resultSet.getString(3)
+                    val custName = resultSet.getString(4)
+                    val custSex = resultSet.getString(5)
+                    val custBirth = resultSet.getString(6)
+                    val agreeDate = resultSet.getString(7)
+                    val agreeType = resultSet.getString(8)
+                    val cellNum = resultSet.getString(9)
+                    val tellNum = resultSet.getString(10)
+
+                    sum =
+                        "$custnum|$counStep|$alocdate|$custName|$custSex|$custBirth|$agreeDate|$agreeType|$cellNum|$tellNum"
+
+                }
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        } else {
+            Log.d("sqlDB", "Connection is null")
+        }
+
     }
 }

@@ -1,6 +1,5 @@
 package com.github.arekolek.phone
 
-import android.R.attr.path
 import android.accessibilityservice.AccessibilityService
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -8,13 +7,17 @@ import android.media.MediaRecorder
 import android.os.Environment
 import android.os.StrictMode
 import android.telecom.Call
-import android.util.Log
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
 import com.github.arekolek.phone.WH_OngoingCall.state
+import com.uber.rxdogtag.RxDogTag
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.Disposables
 import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import timber.log.Timber
@@ -28,6 +31,7 @@ import java.sql.Statement
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
+import kotlin.system.exitProcess
 
 
 class WH_MyAccessibilityService() : AccessibilityService() {
@@ -40,9 +44,12 @@ class WH_MyAccessibilityService() : AccessibilityService() {
     private var datetemp: Long = 0
     private var file: String? = ""
 
-    @SuppressLint("RtlHardcoded")
+
+    @SuppressLint("RtlHardcoded", "CheckResult")
     override fun onCreate() {
+
         super.onCreate()
+
         Timber.plant(Timber.DebugTree())
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         Timber.i("MyAccessibilityService")
@@ -54,12 +61,15 @@ class WH_MyAccessibilityService() : AccessibilityService() {
             .filter { it == Call.STATE_DISCONNECTED }
             .delay(1, TimeUnit.SECONDS)
             .firstElement()
-            .subscribe {}
+            .subscribe {  }
             .addTo(disposables)
+
 
         Toast.makeText(this, "onCreate 집입", Toast.LENGTH_SHORT).show()
         connect()
     }
+
+
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -95,7 +105,7 @@ class WH_MyAccessibilityService() : AccessibilityService() {
         }
 
         val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmSSS_$phoneNum")
+        val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS_$phoneNum")
         val formatted = current.format(formatter)
 
         fileName = "$formatted.m4a"
