@@ -17,7 +17,8 @@
         >
         <activity android:name=".WH_test" />
         <activity android:name=".WH_DialerActivity" />
-        <activity android:name=".MainActivity_click" />
+        <activity android:name=".MainActivity_list"/>
+        <activity android:name=".MainActivity_history"/>
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize"

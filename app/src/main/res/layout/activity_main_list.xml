@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity_list">
 
     <TextView
         android:layout_width="match_parent"
@@ -13,16 +14,15 @@
         android:layout_marginEnd="0dp"
         android:gravity="top"
         android:textSize="18dp"
-        android:text="   No       고객명         진행단계            DB배정일" />
+        android:text="   No         통화시작시간             고객명       진행단계" />
 
 
 
     <ListView
-        android:id="@+id/listview"
+        android:id="@+id/listview_sangdam"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
         android:scrollbars="vertical"
         />
-
 </LinearLayout>

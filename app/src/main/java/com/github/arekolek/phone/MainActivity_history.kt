@@ -1,0 +1,263 @@
+package com.github.arekolek.phone
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.media.MediaPlayer
+import android.os.Bundle
+import android.os.Environment
+import android.os.StrictMode
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main_history.*
+import org.apache.commons.net.ftp.FTP
+import org.apache.commons.net.ftp.FTPClient
+import java.io.File
+import java.io.FileOutputStream
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.SQLException
+import java.sql.Statement
+
+class MainActivity_history : AppCompatActivity() {
+    private val ip = "192.168.1.206"
+    private val port = "1433"
+    private val Classes = "net.sourceforge.jtds.jdbc.Driver"
+    private val database = "smart_DB"
+    private val username = "smart_TM"
+    private val password = ".Digital"
+    private val url = "jdbc:jtds:sqlserver://$ip:$port/$database"
+    private var connection: Connection? = null
+    private var sum: String? = null
+    private var id = ""
+    var path = ""
+    val arrayList = ArrayList<String>()
+    val audioPlay = MediaPlayer()
+    var start = 0
+    var play = 1
+
+    @SuppressLint("WrongViewCast")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main_history)
+
+
+
+
+        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+        try {
+            Class.forName(Classes)
+            connection = DriverManager.getConnection(url, username, password)
+            Log.d("sqlDB", "SUCCCESS")
+        } catch (e: ClassNotFoundException) {
+            e.printStackTrace()
+            Log.d("sqlDB", "ERROR")
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            Log.d("sqlDB", "ERROR")
+        }
+
+        var intent: Intent = intent
+
+        var a = intent.getStringExtra("DB")
+        Log.d("DB", "DB: " + a)
+        var b = a?.split(" | ")
+        Log.d("B", "B: " + b)
+
+        var custkey = b?.get(0)
+        if (custkey != null) {
+            sqlDB(custkey)
+            var c = sum?.split("|")
+            Log.d("DB", "sum: " + sum)
+            Log.d("DB", "C: " + c)
+            var custNum = findViewById<TextView>(R.id.custNum1)
+            custNum.setText(c?.get(0))
+            var custName = findViewById<TextView>(R.id.custName1)
+            custName.setText(c?.get(1))
+            var custSex = findViewById<TextView>(R.id.custSex1)
+            custSex.setText(c?.get(2))
+            var custBirth = findViewById<TextView>(R.id.custBirth1)
+            custBirth.setText(c?.get(3))
+            var recNum = findViewById<TextView>(R.id.recNum1)
+            recNum.setText(c?.get(4))
+            var startTime = findViewById<TextView>(R.id.startTime1)
+            startTime.setText(c?.get(5))
+            var endTime = findViewById<TextView>(R.id.endTime1)
+            endTime.setText(c?.get(6))
+            var callNum = findViewById<TextView>(R.id.callNum1)
+            callNum.setText(c?.get(7))
+            var counStep = findViewById<TextView>(R.id.counStep1)
+            counStep.setText(c?.get(8))
+            var contType = findViewById<TextView>(R.id.contType1)
+            contType.setText(c?.get(9))
+            var counMemo = findViewById<TextView>(R.id.counMemo1)
+            counMemo.setText(c?.get(10))
+        }
+
+        path = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
+        id = recNum1.text as String
+
+        listen.setOnClickListener() {
+            if (start == 0) {
+                start = 1
+                listen.text = "중지"
+
+                if (play == 1) {
+                    FileDownload()
+                    File(path).walkBottomUp().forEach {
+                        arrayList.add(it.toString())
+                    }
+                    val pf = arrayList[0]
+                    audioPlay.setDataSource(pf)
+                    audioPlay.prepare()
+                    audioPlay.start()
+                    play = 0
+                } else {
+                    if (!audioPlay.isPlaying) {
+                        audioPlay.start()
+                    }
+                }
+
+
+            } else {
+                start = 0
+                listen.text = "듣기"
+                if (audioPlay.isPlaying) {
+                    audioPlay.pause()
+                }
+            }
+
+        }
+
+        audioPlay.setOnCompletionListener {
+            listen.text="듣기"
+            val file = File(path)
+            file.deleteRecursively()
+        }
+
+
+    }
+
+    fun sqlDB(custkey: String) {
+        if (connection != null) {
+            var statement: Statement? = null
+            try {
+                statement = connection!!.createStatement()
+                val sql =
+                    "select coun.custNum,info.custName,info.custSex,info.custBirth,cal.recNum,cal.startTime,cal.endTime,cal.callNum,coun.counStep,coun.contType,coun.counMemo \n" +
+                            "from counsel_list as coun \n" +
+                            "inner join call_list as cal\n" +
+                            "on coun.recNum = cal.recNum\n" +
+                            "inner join customer_info as info\n" +
+                            "on coun.custNum = info.custNum\n" +
+                            "where coun.agentNum = '1' and coun.custNum='" + custkey + "'"
+                val resultSet = statement.executeQuery(sql) // DB
+                Log.d("sql", "sql: " + sql)
+
+                while (resultSet.next()) {
+                    var counStep: String? = resultSet.getString(9)
+                    Log.d("sqlDB", "counStep: " + counStep)
+                    counStep = when (resultSet.getString(9)) {
+                        "00" -> "미접촉   "
+                        "01" -> "거부     "
+                        "02" -> "수신거부"
+                        "03" -> "결번     "
+                        "04" -> "부재중   "
+                        "05" -> "진행     "
+                        "06" -> "예약     "
+                        "30" -> "가입완료"
+                        else -> "   "
+                    }
+
+                    var contType: String? = resultSet.getString(10)
+                    Log.d("contType", "CONTTYPE" + contType)
+                    contType = when (resultSet.getString(10)) {
+                        "00" -> "기본가입"
+                        else -> "  "
+                    }
+                    var custSex = resultSet.getString(3)
+                    custSex = when (resultSet.getString(3)) {
+                        "0" -> "여자"
+                        "1" -> "남자"
+                        else -> "  "
+                    }
+
+                    var custnum = resultSet.getString(1)
+                    var custName = resultSet.getString(2)
+
+                    var custBirth = resultSet.getString(4)
+                    var recNum = resultSet.getString(5)
+                    var startTime = resultSet.getString(6)
+                    var endTime = resultSet.getString(7)
+                    var callNum = resultSet.getString(8)
+
+                    var counMemo = resultSet.getString(11)
+
+                    sum =
+                        custnum + "|" + custName + "|" + custSex + "|" + custBirth + "|" + recNum + "|" + startTime + "|" + endTime + "|" + callNum + "|" + counStep + "|" + contType + "|" + counMemo
+                }
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+        } else {
+            Log.d("sqlDB", "Connection is null")
+        }
+    }
+
+    //액션바
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    //액션바 클릭시 동작
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id: Int = item.getItemId()
+        // 상담
+        if (id == R.id.action_btn1) {
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return true
+        }
+        //이력
+        if (id == R.id.action_btn2) {
+            val intent = Intent(applicationContext, MainActivity_list::class.java)
+            startActivity(intent)
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun FileDownload() {
+
+        try {
+            var con = FTPClient()
+            con.connect("192.168.1.206")
+            con.login("administrator", ".Digital")
+            con.changeWorkingDirectory("/202102")
+            con.enterLocalPassiveMode();
+            con.setFileType(FTP.BINARY_FILE_TYPE);
+            val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "$id.m4a")
+
+            var fos = FileOutputStream(file)
+
+//            val destination = con.changeWorkingDirectory("192.168.1.206").toString()
+//            val daTa= file
+//            val path: String = con.printWorkingDirectory()
+
+            con.retrieveFile("$id.m4a", fos)
+
+            con.logout()
+            con.disconnect()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+}
+

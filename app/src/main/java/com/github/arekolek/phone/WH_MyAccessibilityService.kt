@@ -6,19 +6,11 @@ import android.content.Intent
 import android.media.MediaRecorder
 import android.os.Environment
 import android.os.StrictMode
-import android.telecom.Call
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
-import android.widget.Toast
-import com.github.arekolek.phone.WH_OngoingCall.state
 import com.mbarrben.dialer.CallManager
-import com.uber.rxdogtag.RxDogTag
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.disposables.Disposables
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import timber.log.Timber
@@ -31,8 +23,6 @@ import java.sql.SQLException
 import java.sql.Statement
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
-import kotlin.system.exitProcess
 
 
 class WH_MyAccessibilityService() : AccessibilityService() {
@@ -40,7 +30,7 @@ class WH_MyAccessibilityService() : AccessibilityService() {
     private var updatesDisposable = Disposables.empty()
     var windowManager: WindowManager? = null
     var recorder = MediaRecorder()
-    private var phoneNumber: String? = ""
+    private var rectitle: String? = ""
     private val disposables = CompositeDisposable()
     private var fileName: String? = ""
     private var datetemp: Long = 0
@@ -59,7 +49,6 @@ class WH_MyAccessibilityService() : AccessibilityService() {
             .doOnError { Timber.e("Error processing call") }
             .subscribe { updateView(it) }
 
-        Toast.makeText(this, "onCreate 집입", Toast.LENGTH_SHORT).show()
         connect()
     }
 
@@ -81,31 +70,15 @@ class WH_MyAccessibilityService() : AccessibilityService() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        if (intent.extras!!.containsKey("data")) phoneNumber = intent.getStringExtra("data")
-        Toast.makeText(this, "$phoneNumber" + "들어옴", Toast.LENGTH_SHORT).show()
+        if (intent.extras!!.containsKey("data")) rectitle = intent.getStringExtra("data")
         return START_STICKY
     }
 
     private fun startRecordingA() {
-        Toast.makeText(this, "녹음시작", Toast.LENGTH_SHORT).show()
-        var k = phoneNumber.toString().length
-        var phoneNum: String? = ""
-        phoneNum = if (k <= 15) {
-            phoneNumber
-        } else {
-            var ran = IntRange(0, 14)
-            var temp = phoneNumber.toString().slice(ran)
-            temp
-        }
 
-        val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS_$phoneNum")
-        val formatted = current.format(formatter)
-
-        fileName = "$formatted.m4a"
+        fileName = "$rectitle.m4a"
 
         file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName).toString()
-        Toast.makeText(this, "$file", Toast.LENGTH_SHORT).show()
         recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION)
         recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
         recorder.setOutputFile(file)
@@ -122,7 +95,6 @@ class WH_MyAccessibilityService() : AccessibilityService() {
     }
 
     private fun stopRecordingA() {
-        Toast.makeText(this, "녹음 종료", Toast.LENGTH_SHORT).show()
         Timber.e("stop recording")
         recorder.stop()
         recorder.release()
@@ -154,8 +126,9 @@ class WH_MyAccessibilityService() : AccessibilityService() {
     }
 
     private fun sqlDB(gubun: String) {
+        val phoneNumber = rectitle?.split("_")?.get(1)
         val agentNum = "1"
-        val recNum = fileName.toString().replace(".m4a", "")
+        val recNum = rectitle
         val callNum = phoneNumber
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
@@ -191,8 +164,7 @@ class WH_MyAccessibilityService() : AccessibilityService() {
             var con = FTPClient()
             con.connect("192.168.1.206")
             con.login("administrator", ".Digital")
-            con.changeWorkingDirectory("/202101")
-val path : String = con.printWorkingDirectory()
+            con.changeWorkingDirectory("/202102")
 
             con.enterLocalPassiveMode() // important!
             con.setFileType(FTP.BINARY_FILE_TYPE)
@@ -202,6 +174,8 @@ val path : String = con.printWorkingDirectory()
             FileInputStream(File(data)).close()
             con.logout()
             con.disconnect()
+
+
 
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
@@ -218,6 +192,8 @@ val path : String = con.printWorkingDirectory()
                 stopRecordingA()
                 sqlDB("DISCONNECTED")
                 connFtp()
+                val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString())
+                file.deleteRecursively()
             }
         }
     }

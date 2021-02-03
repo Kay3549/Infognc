@@ -1,27 +1,24 @@
 package com.github.arekolek.phone
 
-import android.app.role.RoleManager
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
-import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.sql.Statement
 
+class MainActivity_list : AppCompatActivity() {
 
-class MainActivity : AppCompatActivity()  {
+    // 통화시작시간: startTime , 고객이름: custName, 진행단계: counStep
+
     private val ip = "192.168.1.206"
     private val port = "1433"
     private val Classes = "net.sourceforge.jtds.jdbc.Driver"
@@ -34,38 +31,7 @@ class MainActivity : AppCompatActivity()  {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        checkDefaultDialer()
-
-        if (
-        // 엑티비티 실행에만 사용할 예정이라서 이슈가 있는 10 버전인지 확인하기 위함
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-            &&
-            // 다른 화면 위에 그리기 권한이 잇는지 확인
-            !Settings.canDrawOverlays(this)
-        ) {
-            // 사용자에게 이 권한이 왜 필요한지에 대해 설명하기 위한 다이얼로그
-            val builder = AlertDialog.Builder(this).apply {
-                setMessage("다른 화면 위에 표시하는 권한이 필요합니다.\n수락 하시겠습니까?")
-                setCancelable(false)
-                setNegativeButton("취소") { dialog, _ ->
-                    // 취소 버튼 터치
-                    dialog.dismiss();
-                }
-                    .setPositiveButton("수락") { dialog, _ ->
-                        val intent = Intent(
-                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:$packageName")
-                        )
-                        startActivityForResult(intent, WH_DialerActivity.resultCode)
-                        dialog.dismiss();
-                    }
-            }
-            builder.show();
-
-        } else {
-            // 기능 실행하기
-        }
+        setContentView(R.layout.activity_main_list)
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
@@ -81,7 +47,7 @@ class MainActivity : AppCompatActivity()  {
             Log.d("sqlDB", "ERROR")
         }
         sqlDB()
-        var list = findViewById<ListView>(R.id.listview)
+        var list = findViewById<ListView>(R.id.listview_sangdam)
 
         var adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
         list.setAdapter(adapter)
@@ -89,14 +55,15 @@ class MainActivity : AppCompatActivity()  {
         adapter.addAll(data)
         adapter.notifyDataSetChanged()
 
-        Log.d("sqlCall", "적재성공")
+        Log.d("sqlCall","적재성공")
 
         list.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-            var intent = Intent(this, WH_DialerActivity::class.java)
+            var intent = Intent(this, MainActivity_history::class.java)
             intent.putExtra("DB", data[position])
             startActivity(intent)
         }
     }
+
     fun sqlDB(){
         data = ArrayList<String>()
         if (connection != null) {
@@ -104,19 +71,21 @@ class MainActivity : AppCompatActivity()  {
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "select db.custNum,db.counStep,db.alocdate,info.custName from customer_db as db  left outer join customer_info as info \n" +
-                            "on db.custnum = info.custnum\n where agentNum = '1'"
+                    "select coun.custNum,cal.startTime,coun.custName,coun.counStep from counsel_list as coun \n" +
+                            "inner join call_list as cal\n" +
+                            "on coun.recNum = cal.recNum\n" +
+                            "where coun.agentNum = '1'"
                 val resultSet = statement.executeQuery(sql) // DB
 
                 Log.d("list", "list: " + sql)
                 while (resultSet.next()) {
+                    Log.d("select", "값: " + resultSet.getString(1))
+                    Log.d("select", "값: " + resultSet.getString(2))
+                    Log.d("select", "값: " + resultSet.getString(3))
 
-                    var counStep:String? = resultSet.getString(2)
-
-
+                    var counStep:String? = resultSet.getString(4)
                     Log.d("sqlDB", "counStep: " + counStep)
-
-                    counStep = when (resultSet.getString(2)){
+                    counStep = when (resultSet.getString(4)){
                         "00" -> "미접촉   "
                         "01" -> "거부     "
                         "02" -> "수신거부"
@@ -128,9 +97,8 @@ class MainActivity : AppCompatActivity()  {
                         else -> "   "
                     }
 
-                    var date = resultSet.getString(3)?.split(" ")
-
-                    var str = resultSet.getString(1) + "  |   " +resultSet.getString(4) + "      |      " + counStep + "        |     " + date?.get(0)
+                    var date = resultSet.getString(2)?.split(".")
+                    var str = resultSet.getString(1) + "  | " + date?.get(0) + "  |   " + resultSet.getString(3) + "    |      " + counStep
                     Log.d("str", "STR: " + str)
                     data.add(str)
                 }
@@ -152,29 +120,12 @@ class MainActivity : AppCompatActivity()  {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id: Int = item.getItemId()
         // 상담
-        //이력
-        if (id == R.id.action_btn2) {
-            val intent = Intent(applicationContext, MainActivity_list::class.java)
+        if (id == R.id.action_btn1) {
+            val intent = Intent(applicationContext, MainActivity::class.java)
             startActivity(intent)
             finish()
             return true
         }
         return super.onOptionsItemSelected(item)
     }
-
-    private fun checkDefaultDialer() {
-        val mRoleManager = getSystemService(RoleManager::class.java)
-        val mRoleIntent = mRoleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
-        startActivityForResult(mRoleIntent, WH_DialerActivity.ROLE_REQUEST_CODE)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == WH_DialerActivity.ROLE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-            } else {
-            }
-        }
-    }
-
 }
