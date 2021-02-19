@@ -22,7 +22,7 @@ import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.core.net.toUri
 import com.mbarrben.dialer.CallManager
-import com.uber.rxdogtag.RxDogTag
+//import com.uber.rxdogtag.RxDogTag
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposables
@@ -58,6 +58,9 @@ class WH_DialerActivity : AppCompatActivity() {
     private var connection: Connection? = null
     private var sum: String? = null
     private var idxCounDB: String? = null
+    //커스텀리스트뷰를 위해 추가
+    private var CodeItem = ArrayList<String>()
+    private var CodeName = ArrayList<String>()
 
     companion object {
         const val ROLE_REQUEST_CODE = 2002
@@ -84,17 +87,15 @@ class WH_DialerActivity : AppCompatActivity() {
             Log.d("sqlDB", "ERROR")
         }
 
+        //스피너
         var counStepsp = findViewById<Spinner>(R.id.counStep)
-        counStepsp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>, view: View?,
-                position: Int, id: Long
-            ) {
-                parent.getItemAtPosition(position)
-            }
+        spinner()
+        var spinnerName = CodeName
+        Log.d("spinnerName" , spinnerName.toString())
+        var spinneradapter:ArrayAdapter<String>
+        spinneradapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerName)
+        counStepsp.setAdapter(spinneradapter)
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
         var contTypesp = findViewById<Spinner>(R.id.contType)
         contTypesp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -111,12 +112,13 @@ class WH_DialerActivity : AppCompatActivity() {
 
         var a = intent.getStringExtra("DB")
         Log.d("DB", "DB: " + a)
-        var b = a?.split(" | ")
+        var b = a?.split(",")
         Log.d("B", "B: " + b)
+        var phnum = b?.get(1).toString()
+        Log.d("PHNUM","phnum: " + phnum)
 
-        var custkey = b?.get(0)
-        if (custkey != null) {
-            sqlDB(custkey)
+        if (phnum != null) {
+            sqlDB(phnum)
             var c = sum?.split("|")
             Log.d("DB", "C: " + c)
             var custNum = findViewById<TextView>(R.id.custNum)
@@ -259,24 +261,21 @@ class WH_DialerActivity : AppCompatActivity() {
         startService(intent)
     }
 
-    fun sqlDB(custkey: String) {
+    fun sqlDB(phnum: String){
         if (connection != null) {
-            var statement: Statement? = null
+            var statement: Statement?
             try {
                 statement = connection!!.createStatement()
                 val sql =
                     "select db.custNum,db.counStep,db.alocdate,info.custName,info.custSex,info.custBirth,info.agreeDate,info.agreeType,info.cellNum,info.tellNum,db.idxCounDB \n" +
                             "from customer_db as db  left outer join customer_info as info \n" +
                             "on db.custnum = info.custnum\n" +
-                            "where db.agentNum = '1' and db.custNum = '" + custkey + "'\n"
+                            "where db.agentNum = '1' and db.custNum = '"+phnum+"'\n"
                 val resultSet = statement.executeQuery(sql) // DB
-
-
-
 
                 while (resultSet.next()) {
                     var custSex = resultSet.getString(5)
-                    custSex = when (resultSet.getString(5)) {
+                    custSex = when(resultSet.getString(5)){
                         "0" -> "여자"
                         "1" -> "남자"
                         else -> "  "
@@ -293,8 +292,7 @@ class WH_DialerActivity : AppCompatActivity() {
                     var tellNum = resultSet.getString(10)
                     idxCounDB = resultSet.getString(11)
 
-                    sum =
-                        custnum + "|" + counStep + "|" + alocdate + "|" + custName + "|" + custSex + "|" + custBirth + "|" + agreeDate + "|" + agreeType + "|" + cellNum + "|" + tellNum + "|" + idxCounDB
+                    sum = custnum+"|"+counStep+"|"+alocdate+"|"+custName+"|"+custSex+"|"+custBirth+"|"+agreeDate+"|"+agreeType+"|"+cellNum+"|"+tellNum +"|"+idxCounDB
 
                 }
             } catch (e: SQLException) {
@@ -305,42 +303,43 @@ class WH_DialerActivity : AppCompatActivity() {
         }
     }
 
-    fun insertDB() {
+    fun insertDB(){
 
         var custNum = findViewById<TextView>(R.id.custNum)
         var num = custNum.text.toString()
         var custName = findViewById<TextView>(R.id.custName)
         var name = custName.text.toString()
         var counStepsp = findViewById<Spinner>(R.id.counStep)
-        var coun = counStepsp.selectedItem.toString()
-        var step = when (coun) {
-            "미접촉" -> "00"
-            "거부" -> "01"
-            "수신거부" -> "02"
-            "결번" -> "03"
-            "부재중" -> "04"
-            "진행" -> "05"
-            "예약" -> "06"
-            "가입완료" -> "30"
-            else -> "   "
+        var selcectstep = counStepsp.selectedItem.toString()
+        Log.d("selcectstep","selcectstep: " + selcectstep)
+        var step = ""
+        var codeitem = CodeItem
+        var codename = CodeName
+        for(i in codeitem.indices){
+            var cd = codeitem.get(i)
+            var cd2 = codename.get(i)
+            Log.d("step", "cd: " + cd +" cd2: " + cd2)
+            if(cd2 == selcectstep){
+                step = cd
+            }
         }
         var counMemo = findViewById<EditText>(R.id.counMemo)
         var memo = counMemo.text.toString()
 
 
         if (connection != null) {
-            var statement: Statement? = null
+            var statement: Statement?
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "insert into counsel_list (agentNum,recNum,custNum,idxCounDB,custName,counStep,counMemo)values('1','$formatted','" + num + "','" + idxCounDB + " ', '" + name + "','" + step + "','" + memo + "')"
+                    "insert into counsel_list (agentNum,recNum,custNum,idxCounDB,custName,counStep,counMemo)values('1','"+formatted+"','" + num + "','"+idxCounDB+" ', '" + name + "','" + step + "','" + memo + "')"
                 Log.d("sql", "SQL: " + sql)
 
                 statement.executeQuery(sql) // DB
 
                 Log.d("insertDB", "insert")
 
-            } catch (e: SQLException) {
+            }catch (e: SQLException) {
                 e.printStackTrace()
             }
         } else {
@@ -348,42 +347,69 @@ class WH_DialerActivity : AppCompatActivity() {
         }
     }
 
-    fun update() {
+    fun update(){
         var custNum = findViewById<TextView>(R.id.custNum)
         var num = custNum.text.toString()
         var counStepsp = findViewById<Spinner>(R.id.counStep)
-        var coun = counStepsp.selectedItem.toString()
-        var step = when (coun) {
-            "미접촉   " -> "00"
-            "거부     " -> "01"
-            "수신거부" -> "02"
-            "결번     " -> "03"
-            "부재중   " -> "04"
-            "진행     " -> "05"
-            "예약     " -> "06"
-            "가입완료" -> "30"
-            else -> "   "
+        var selcectstep = counStepsp.selectedItem.toString()
+        var step = ""
+        var codeitem = CodeItem
+        var codename = CodeName
+        for(i in codeitem.indices){
+            var cd = codeitem.get(i)
+            var cd2 = codename.get(i)
+            Log.d("step", "cd: " + cd +" cd2: " + cd2)
+            if(cd2 == selcectstep){
+                step = cd
+            }
         }
 
         if (connection != null) {
-            var statement: Statement? = null
+            var statement: Statement?
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "update customer_db set counStep='" + step + "' where custNum='" + num + "' and agentNum='1'"
+                    "update customer_db set counStep='"+step+"' where custNum='"+num+"' and agentNum='1'"
                 Log.d("sql", "SQL: " + sql)
 
                 statement.executeQuery(sql) // DB
 
                 Log.d("insertDB", "insert")
 
-            } catch (e: SQLException) {
+            }catch (e: SQLException) {
                 e.printStackTrace()
             }
         } else {
             Log.d("sqlDB", "Connection is null")
         }
+    }
+    // 스피너 함수 추가
+    fun spinner(){
+        if(connection != null){
+            var statement: Statement?
+            try{
+                statement = connection!!.createStatement()
+                val sql =
+                    "select codeItem,codeName from code_manager"
 
+                val resultSet = statement.executeQuery(sql)
+
+                Log.d("Spinner", "Spinner")
+
+                while(resultSet.next()){
+                    var codeItem = resultSet.getString(1)
+                    var codeName = resultSet.getString(2)
+                    Log.d("code","codeItem: " + codeItem+", codeName: "+ codeName)
+
+                    CodeName.add(codeName)
+                    CodeItem.add(codeItem)
+                }
+            } catch (e:SQLException){
+                e.printStackTrace()
+            }
+        } else{
+            Log.d("sqlDB", "Connection is null")
+        }
     }
 
     //액션바

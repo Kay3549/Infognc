@@ -40,6 +40,7 @@ dependencies {
     implementation files('libs\\rxdogtag-1.0.0.jar')
     implementation files('libs\\commons-net-3.7.2.jar')
     implementation files('libs\\jtds-1.2.7.jar')
+    implementation files('libs\\ftp4j-1.7.2.jar')
 
 
     testImplementation 'junit:junit:4.12'

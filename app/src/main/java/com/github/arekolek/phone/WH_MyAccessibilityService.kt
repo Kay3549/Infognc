@@ -6,6 +6,7 @@ import android.content.Intent
 import android.media.MediaRecorder
 import android.os.Environment
 import android.os.StrictMode
+import android.util.Log
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import com.mbarrben.dialer.CallManager
@@ -133,6 +134,7 @@ class WH_MyAccessibilityService() : AccessibilityService() {
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
         val formatted = current.format(formatter)
+        Log.d("err","recnum: "+ recNum)
         if (connection != null) {
             var statement: Statement? = null
             try {
@@ -140,8 +142,9 @@ class WH_MyAccessibilityService() : AccessibilityService() {
                     statement = connection!!.createStatement()
                     datetemp = System.currentTimeMillis()
                     val sql =
-                        "insert into [smart_DB].[dbo].[call_list] (agentNum, recNum,callType,callNum,startTime,endTime,duration) values ('$agentNum','$recNum','0','$callNum','$formatted','','')"
+                        "insert into [smart_DB].[dbo].[call_list] (agentNum, recNum,callType,callNum,startTime,endTime,duration) values ( '"+agentNum+"','"+recNum+"','0','"+callNum+"','$formatted','','')"
                     statement.executeQuery(sql) // DB에 정보 넣기
+                    Log.d("insert","insertDB:" + sql)
 
                 } else if (gubun == "DISCONNECTED") {
                     statement = connection!!.createStatement()

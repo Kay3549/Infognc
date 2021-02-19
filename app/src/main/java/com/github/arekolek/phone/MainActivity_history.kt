@@ -31,6 +31,10 @@ class MainActivity_history : AppCompatActivity() {
     private val url = "jdbc:jtds:sqlserver://$ip:$port/$database"
     private var connection: Connection? = null
     private var sum: String? = null
+    //커스텀리스트뷰를 위해 추가
+    private var CodeItem = ArrayList<String>()
+    private var CodeName = ArrayList<String>()
+
     private var id = ""
     var path = ""
     val arrayList = ArrayList<String>()
@@ -42,9 +46,6 @@ class MainActivity_history : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_history)
-
-
-
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
@@ -64,12 +65,12 @@ class MainActivity_history : AppCompatActivity() {
 
         var a = intent.getStringExtra("DB")
         Log.d("DB", "DB: " + a)
-        var b = a?.split(" | ")
+        var b = a?.split(",")
         Log.d("B", "B: " + b)
+        var phnum = b?.get(1).toString()
 
-        var custkey = b?.get(0)
-        if (custkey != null) {
-            sqlDB(custkey)
+        if (phnum != null) {
+            sqlDB(phnum)
             var c = sum?.split("|")
             Log.d("DB", "sum: " + sum)
             Log.d("DB", "C: " + c)
@@ -141,7 +142,9 @@ class MainActivity_history : AppCompatActivity() {
 
     }
 
-    fun sqlDB(custkey: String) {
+    fun sqlDB(phnum: String){
+        //step()함수 사용
+        step()
         if (connection != null) {
             var statement: Statement? = null
             try {
@@ -153,33 +156,32 @@ class MainActivity_history : AppCompatActivity() {
                             "on coun.recNum = cal.recNum\n" +
                             "inner join customer_info as info\n" +
                             "on coun.custNum = info.custNum\n" +
-                            "where coun.agentNum = '1' and coun.custNum='" + custkey + "'"
+                            "where coun.agentNum = '1' and coun.custNum='"+phnum+"'"
                 val resultSet = statement.executeQuery(sql) // DB
-                Log.d("sql", "sql: " + sql)
+                Log.d("sql", "sql: "+sql)
 
                 while (resultSet.next()) {
-                    var counStep: String? = resultSet.getString(9)
+                    var counStep:String? = resultSet.getString(9)
                     Log.d("sqlDB", "counStep: " + counStep)
-                    counStep = when (resultSet.getString(9)) {
-                        "00" -> "미접촉   "
-                        "01" -> "거부     "
-                        "02" -> "수신거부"
-                        "03" -> "결번     "
-                        "04" -> "부재중   "
-                        "05" -> "진행     "
-                        "06" -> "예약     "
-                        "30" -> "가입완료"
-                        else -> "   "
+                    var step = ""
+                    var codeitem = CodeItem
+                    var codename = CodeName
+                    for(i in codeitem.indices){
+                        var cd = codeitem.get(i)
+                        var cd2 = codename.get(i)
+                        if(cd == counStep){
+                            step = cd2
+                        }
                     }
 
-                    var contType: String? = resultSet.getString(10)
+                    var contType:String? = resultSet.getString(10)
                     Log.d("contType", "CONTTYPE" + contType)
-                    contType = when (resultSet.getString(10)) {
+                    contType = when(resultSet.getString(10)){
                         "00" -> "기본가입"
                         else -> "  "
                     }
                     var custSex = resultSet.getString(3)
-                    custSex = when (resultSet.getString(3)) {
+                    custSex = when(resultSet.getString(3)){
                         "0" -> "여자"
                         "1" -> "남자"
                         else -> "  "
@@ -196,13 +198,39 @@ class MainActivity_history : AppCompatActivity() {
 
                     var counMemo = resultSet.getString(11)
 
-                    sum =
-                        custnum + "|" + custName + "|" + custSex + "|" + custBirth + "|" + recNum + "|" + startTime + "|" + endTime + "|" + callNum + "|" + counStep + "|" + contType + "|" + counMemo
+                    sum = custnum + "|" + custName+"|"+custSex+"|"+custBirth+"|"+recNum+"|"+startTime+"|"+endTime+"|"+callNum+"|"+step+"|"+contType +"|"+counMemo
                 }
             } catch (e: SQLException) {
                 e.printStackTrace()
             }
         } else {
+            Log.d("sqlDB", "Connection is null")
+        }
+    }
+
+    // step()함수 추가
+    fun step(){
+        if(connection != null){
+            var statement: Statement?
+            try{
+                statement = connection!!.createStatement()
+                val sql =
+                    "select codeItem,codeName from code_manager"
+
+                val resultSet = statement.executeQuery(sql)
+
+                Log.d("Spinner", "Spinner")
+
+                while(resultSet.next()){
+                    var codeItem = resultSet.getString(1)
+                    var codeName = resultSet.getString(2)
+                    CodeName.add(codeName)
+                    CodeItem.add(codeItem)
+                }
+            } catch (e:SQLException){
+                e.printStackTrace()
+            }
+        } else{
             Log.d("sqlDB", "Connection is null")
         }
     }
