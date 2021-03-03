@@ -1,22 +1,17 @@
 package com.github.arekolek.phone
 
-import android.accessibilityservice.AccessibilityService
-import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
-import android.media.MediaRecorder
 import android.os.Environment
 import android.os.StrictMode
-import android.view.WindowManager
-import android.view.accessibility.AccessibilityEvent
-import com.mbarrben.dialer.CallManager
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposables
+import android.telephony.TelephonyManager
+import android.util.Log
+import android.widget.Toast
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
-import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
-import java.io.IOException
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -24,82 +19,45 @@ import java.sql.Statement
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+class BCallService : BroadcastReceiver() {
 
-class WH_MyAccessibilityService() : AccessibilityService() {
-
-    private var updatesDisposable = Disposables.empty()
-    var windowManager: WindowManager? = null
-    var recorder = MediaRecorder()
+    private var mLastState: String = ""
     private var rectitle: String? = ""
-    private val disposables = CompositeDisposable()
-    private var fileName: String? = ""
-    private var datetemp: Long = 0
-    private var file: String? = ""
+    private var datetemp: kotlin.Long = 0
+    private var fileName: String = ""
+    private var path = "/storage/emulated/0/Call"
 
+    override fun onReceive(context: Context, intent: Intent) {
 
-    @SuppressLint("RtlHardcoded", "CheckResult")
-    override fun onCreate() {
+            rectitle = Data.retundata()
 
-        super.onCreate()
-
-        Timber.plant(Timber.DebugTree())
-        updatesDisposable = CallManager.updates()
-
-            .doOnEach { Timber.e("$it") }
-            .doOnError { Timber.e("Error processing call") }
-            .subscribe { updateView(it) }
-
-        connect()
-    }
-
-
-
-
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onAccessibilityEvent(event: AccessibilityEvent) {
-    }
-
-    override fun onInterrupt() {
-
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onServiceConnected() {
-
-    }
-
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-        if (intent.extras!!.containsKey("data")) rectitle = intent.getStringExtra("data")
-        return START_STICKY
-    }
-
-    private fun startRecordingA() {
-
-        fileName = "$rectitle.m4a"
-
-        file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName).toString()
-        recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION)
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        recorder.setOutputFile(file)
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC)
-        recorder.setAudioEncodingBitRate(48000)
-        recorder.setAudioSamplingRate(16000)
-
-        try {
-            recorder.prepare()
-        } catch (e: IOException) {
-            Timber.e("prepare() failed")
+        // 시스템에서 broadcast Receiver를 계속 호출함. 그래서 계속 호출한은 것을 방지하는 부분
+        val state: String? = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
+        if (state.equals(mLastState)) {
+            return
+        } else {
+            if (state != null) {
+                mLastState = state
+            }
         }
-        recorder.start()
-    }
 
-    private fun stopRecordingA() {
-        Timber.e("stop recording")
-        recorder.stop()
-        recorder.release()
-    }
+        //통화가 시작되었을 때
+        if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
 
+            Toast.makeText(context,"전화",Toast.LENGTH_SHORT).show()
+            connect()
+            sqlDB("ACTIVE")
+
+            //통화중이 아닐 때
+        } else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+
+            Toast.makeText(context,"통화 종료",Toast.LENGTH_SHORT).show()
+           connect()     //db connect
+            sqlDB("DISCONNECTED")  // db 적재
+            connFtp() //ftp 올리기
+
+        }
+    }
 
     private val ip = "192.168.1.206"
     private val port = "1433"
@@ -161,6 +119,15 @@ class WH_MyAccessibilityService() : AccessibilityService() {
 
     private fun connFtp() {
         try {
+
+            val arrayList = ArrayList<String>()
+            File(path).walkBottomUp().forEach {
+            arrayList.add(it.name)
+            }
+
+            val len = arrayList.size-2
+            val filename = arrayList[len]
+
             var con = FTPClient()
             con.connect("192.168.1.206")
             con.login("administrator", ".Digital")
@@ -168,36 +135,20 @@ class WH_MyAccessibilityService() : AccessibilityService() {
 
             con.enterLocalPassiveMode() // important!
             con.setFileType(FTP.BINARY_FILE_TYPE)
-            val data = "$file"
 
-            con.storeFile(fileName, FileInputStream(File(data)))
+            val data = File(path,filename).toString()
+
+            con.storeFile("$rectitle.m4a", FileInputStream(File(data)))
             FileInputStream(File(data)).close()
             con.logout()
             con.disconnect()
 
-
+            val file = File(path)
+            file.deleteRecursively()
 
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun updateView(gsmCall: GsmCall) {
-        when (gsmCall.status) {
-            GsmCall.Status.ACTIVE -> {
-                startRecordingA()
-                sqlDB("ACTIVE")
-            }
-            GsmCall.Status.DISCONNECTED -> {
-                stopRecordingA()
-                sqlDB("DISCONNECTED")
-                connFtp()
-                val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString())
-                file.deleteRecursively()
-            }
-        }
-    }
 }
-
-
-

@@ -1,33 +1,22 @@
 package com.github.arekolek.phone
 
 import android.Manifest.permission.CALL_PHONE
-import android.annotation.SuppressLint
-import android.app.role.RoleManager
+import android.content.BroadcastReceiver
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.StrictMode
-import android.provider.Settings
-import android.telecom.Call
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.core.net.toUri
-import com.mbarrben.dialer.CallManager
-import com.uber.rxdogtag.RxDogTag
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposables
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.wh_activity_dialer.*
 import kotlinx.android.synthetic.main.wh_activity_main_click.*
 import timber.log.Timber
@@ -37,7 +26,6 @@ import java.sql.SQLException
 import java.sql.Statement
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
 
 
 class WH_DialerActivity : AppCompatActivity() {
@@ -146,9 +134,9 @@ class WH_DialerActivity : AppCompatActivity() {
             finish()
         }
 
-        call1.text = "연결"
-        call2.text = "연결"
-        call3.text = "연결"
+        call1.text = "통화"
+        call2.text = "통화"
+        call3.text = "통화"
     }
 
     override fun onStart() {
@@ -157,76 +145,90 @@ class WH_DialerActivity : AppCompatActivity() {
 
         call1.setOnClickListener {
 
-            if (connect == 0) {
-                call2.visibility = View.GONE
-                call3.visibility = View.GONE
-                callbutton = 1
-                makeCall(phoneNum.text as String)
-                number = phoneNum.text as String
-                call1.text = "끊기"
-                connect = 1
+            number = phoneNum.text as String
+            passdata(number)
+            makeCall(phoneNum.text as String)
 
-            } else {
-                CallManager.cancelCall()
-                connect = 0
-                call2.visibility = View.VISIBLE
-                call3.visibility = View.VISIBLE
-                call1.text = "통화"
-            }
+//            if (connect == 0) {
+//                call2.visibility = View.GONE
+//                call3.visibility = View.GONE
+//                callbutton = 1
+//                makeCall(phoneNum.text as String)
+//                number = phoneNum.text as String
+//                call1.text = "끊기"
+//                connect = 1
+//
+//            } else {
+//                CallManager.cancelCall()
+//                connect = 0
+//                call2.visibility = View.VISIBLE
+//                call3.visibility = View.VISIBLE
+//                call1.text = "통화"
+//            }
 
         }
         call2.setOnClickListener {
-            if (connect == 0) {
-                call1.visibility = View.GONE
-                call3.visibility = View.GONE
-                makeCall(callNum.text as String)
-                callbutton = 2
-                number = callNum.text as String
-                call2.text = "끊기"
-                connect = 1
-            } else {
-                CallManager.cancelCall()
-                call1.visibility = View.VISIBLE
-                call3.visibility = View.VISIBLE
-                connect = 0
-                call2.text = "통화"
-            }
+
+            number = callNum.text as String
+            passdata(number)
+            makeCall(callNum.text as String)
+//            if (connect == 0) {
+//                call1.visibility = View.GONE
+//                call3.visibility = View.GONE
+//                makeCall(callNum.text as String)
+//                callbutton = 2
+//                number = callNum.text as String
+//                call2.text = "끊기"
+//                connect = 1
+//            } else {
+//                CallManager.cancelCall()
+//                call1.visibility = View.VISIBLE
+//                call3.visibility = View.VISIBLE
+//                connect = 0
+//                call2.text = "통화"
+//            }
 
         }
         call3.setOnClickListener {
-            if (connect == 0) {
-                call1.visibility = View.GONE
-                call2.visibility = View.GONE
-                makeCall(dirctNum.text.toString())
-                callbutton = 3
-                number = dirctNum.text.toString()
-                call3.text = "끊기"
-                connect = 1
-            } else {
-                CallManager.cancelCall()
-                call2.visibility = View.VISIBLE
-                call1.visibility = View.VISIBLE
-                connect = 0
-                call3.text = "통화"
-            }
-        }
-    }
 
-    override fun onResume() {
-        super.onResume()
-        updatesDisposable = CallManager.updates()
-
-            .doOnEach { Timber.e("$it") }
-            .doOnError { Timber.e("Error processing call") }
-            .subscribe { updateView(it) }
-    }
-
-    private fun updateView(gsmCall: GsmCall) {
-
-        if (gsmCall.status == GsmCall.Status.DIALING) {
+            number = dirctNum.text.toString()
             passdata(number)
+            makeCall(dirctNum.text.toString())
+
+//            if (connect == 0) {
+//                call1.visibility = View.GONE
+//                call2.visibility = View.GONE
+//                makeCall(dirctNum.text.toString())
+//                callbutton = 3
+//                number = dirctNum.text.toString()
+//                call3.text = "끊기"
+//                connect = 1
+//            } else {
+//                CallManager.cancelCall()
+//                call2.visibility = View.VISIBLE
+//                call1.visibility = View.VISIBLE
+//                connect = 0
+//                call3.text = "통화"
+//            }
         }
     }
+
+//    override fun onResume() {
+//        super.onResume()
+//        updatesDisposable = CallManager.updates()
+//
+//            .doOnEach { Timber.e("$it") }
+//            .doOnError { Timber.e("Error processing call") }
+//            .subscribe { updateView(it) }
+//    }
+
+//    private fun updateView(gsmCall: GsmCall) {
+//
+//        if (gsmCall.status == GsmCall.Status.DIALING) {
+//            passdata(number)
+//        }
+//    }
+
 
     private fun makeCall(number: String) {
 
@@ -254,9 +256,9 @@ class WH_DialerActivity : AppCompatActivity() {
         val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS_$phoneNum")
         formatted = current.format(formatter) // 녹취키
 
-        val intent = Intent(applicationContext, WH_MyAccessibilityService::class.java)
-        intent.putExtra("data", formatted)
-        startService(intent)
+        Data.setdata(formatted)
+
+
     }
 
     fun sqlDB(custkey: String) {
