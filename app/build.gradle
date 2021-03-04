@@ -21,6 +21,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    allprojects {
+        repositories {
+            maven { url 'https://jitpack.io' }
+        }
+    }
 }
 
 dependencies {
@@ -42,6 +47,11 @@ dependencies {
     implementation files('libs\\jtds-1.2.7.jar')
     implementation files('libs\\ftp4j-1.7.2.jar')
 
+    //코루틴 의존성
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
+
+    //포어그라운드 리스너
+    implementation 'com.github.khirr:Android-Foreground-Detection:1.0.1'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.2-alpha01'

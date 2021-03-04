@@ -45,6 +45,7 @@ class BCallService : BroadcastReceiver() {
         if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
 
             Toast.makeText(context,"전화",Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,rectitle,Toast.LENGTH_SHORT).show()
             connect()
             sqlDB("ACTIVE")
 

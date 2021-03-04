@@ -16,6 +16,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
@@ -40,6 +41,12 @@ class MainActivity : AppCompatActivity()  {
     private val url = "jdbc:jtds:sqlserver://$ip:$port/$database"
     private var connection: Connection? = null
     private var data = ArrayList<String>()
+    private var CodeItem = ArrayList<String>()
+    private var CodeName = ArrayList<String>()
+    private var num = ""
+    private var gogeak = ""
+    private var count = ""
+    private var db = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,25 +133,73 @@ class MainActivity : AppCompatActivity()  {
             e.printStackTrace()
             Log.d("sqlDB", "ERROR")
         }
+
         sqlDB()
         var list = findViewById<ListView>(R.id.listview)
 
-        var adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
-        list.adapter = adapter
+        // 리스트뷰 헤더 추가
+        var header: View = layoutInflater.inflate(R.layout.listview_header, null, false)
+        list.addHeaderView(header,null,false)
 
-        adapter.addAll(data)
-        adapter.notifyDataSetChanged()
+        var adapter = Viewer()
+
+        var datalen = data
+        Log.d("DATA", "DATA: " + datalen)
+
+        for(i in datalen.indices){
+            var data1 = datalen.get(i).split(",")
+            Log.d("data1","DATA1:" + data1 )
+            for(j in data1.indices){
+                num = data1.get(0)
+                gogeak = data1.get(2)
+                count = data1.get(3)
+                db = data1.get(4)
+
+                Log.d("data1","num:" + num+", gogeak:"+gogeak+", count:"+count+", db:"+db)
+            }
+            adapter.addItem(num,gogeak,count,db)
+        }
+
+        list.setAdapter(adapter)
 
         Log.d("sqlCall", "적재성공")
 
         list.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
             var intent = Intent(this, WH_DialerActivity::class.java)
-            intent.putExtra("DB", data[position])
+            intent.putExtra("DB", data[position-1])
             startActivity(intent)
         }
     }
+
+    fun step(){
+        if(connection != null){
+            var statement: Statement?
+            try{
+                statement = connection!!.createStatement()
+                val sql =
+                    "select codeItem,codeName from code_manager"
+
+                val resultSet = statement.executeQuery(sql)
+
+                Log.d("Spinner", "Spinner")
+
+                while(resultSet.next()){
+                    var codeItem = resultSet.getString(1)
+                    var codeName = resultSet.getString(2)
+                    CodeName.add(codeName)
+                    CodeItem.add(codeItem)
+                }
+            } catch (e:SQLException){
+                e.printStackTrace()
+            }
+        } else{
+            Log.d("sqlDB", "Connection is null")
+        }
+    }
+
+
     fun sqlDB(){
-        data = ArrayList<String>()
+        step()
         if (connection != null) {
             var statement: Statement? = null
             try {
@@ -155,28 +210,27 @@ class MainActivity : AppCompatActivity()  {
                 val resultSet = statement.executeQuery(sql) // DB
 
                 Log.d("list", "list: " + sql)
+
+                var count = 0
+
                 while (resultSet.next()) {
-
                     var counStep:String? = resultSet.getString(2)
-
-
-                    Log.d("sqlDB", "counStep: " + counStep)
-
-                    counStep = when (resultSet.getString(2)){
-                        "00" -> "미접촉   "
-                        "01" -> "거부     "
-                        "02" -> "수신거부"
-                        "03" -> "결번     "
-                        "04" -> "부재중   "
-                        "05" -> "진행     "
-                        "06" -> "예약     "
-                        "30" -> "가입완료"
-                        else -> "   "
+                    var step = ""
+                    var codeitem = CodeItem
+                    var codename = CodeName
+                    for(i in codeitem.indices){
+                        var cd = codeitem.get(i)
+                        var cd2 = codename.get(i)
+                        if(cd == counStep){
+                            step = cd2
+                        }
                     }
 
                     var date = resultSet.getString(3)?.split(" ")
+                    count = (count+1)
+                    Log.d("count", "count: " + count)
 
-                    var str = resultSet.getString(1) + "  |   " +resultSet.getString(4) + "      |      " + counStep + "        |     " + date?.get(0)
+                    var str = count.toString()+","+ resultSet.getString(1)+"," + resultSet.getString(4)+"," + step+"," +  date?.get(0).toString()
                     Log.d("str", "STR: " + str)
                     data.add(str)
                 }
