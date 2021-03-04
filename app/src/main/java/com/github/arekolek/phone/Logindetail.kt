@@ -155,7 +155,7 @@ class Logindetail : AppCompatActivity() {
                     var Noncontact = resultSet2.getString(1)
 
                     if (countstep == "00") {
-                        sum11 = sum11 + allcallser.toInt()
+                        sum11 = sum11+ 1 + allcallser.toInt()
                         sum2 = sum2 + pastday.toInt()
 
                     }
@@ -177,14 +177,19 @@ class Logindetail : AppCompatActivity() {
 
                     }
 
-
                     val sum7 = sum6.toInt().toString() + "%"
 
                     val sum8 = sum2.toInt()
 
+                    if (countstep == "00"||countstep == "01"||countstep == "02"||countstep == "03"||countstep == "04"||countstep == "05"||
+                        countstep == "06"||countstep == "10"||countstep == "11"||countstep == "20"||countstep == "30") {
+                        sum12 = sum12+1
+                    }
+
+
                     count = countstep + "|" + sum1 + "|" + pastday + "|" + sum8 + "|" + sum3 + "|" + sum4 + "|" + sum7
 
-                    sum12 = sum12 + allcallser.toInt()
+                    //sum12 = sum12 + allcallser.toInt()
 
 
                     //sum13 = sum13.toInt()
