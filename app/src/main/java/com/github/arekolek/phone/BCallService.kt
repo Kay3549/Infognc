@@ -56,7 +56,6 @@ class BCallService : BroadcastReceiver() {
            connect()     //db connect
             sqlDB("DISCONNECTED")  // db 적재
             connFtp() //ftp 올리기
-
         }
     }
 
