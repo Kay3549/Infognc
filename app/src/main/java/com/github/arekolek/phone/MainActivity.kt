@@ -86,36 +86,6 @@ class MainActivity : AppCompatActivity()  {
             )
         }
 
-//        if (
-//        // 엑티비티 실행에만 사용할 예정이라서 이슈가 있는 10 버전인지 확인하기 위함
-//            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-//            &&
-//            // 다른 화면 위에 그리기 권한이 잇는지 확인
-//            !Settings.canDrawOverlays(this)
-//        ) {
-//            // 사용자에게 이 권한이 왜 필요한지에 대해 설명하기 위한 다이얼로그
-//            val builder = AlertDialog.Builder(this).apply {
-//                setMessage("다른 화면 위에 표시하는 권한이 필요합니다.\n수락 하시겠습니까?")
-//                setCancelable(false)
-//                setNegativeButton("취소") { dialog, _ ->
-//                    // 취소 버튼 터치
-//                    dialog.dismiss();
-//                }
-//                    .setPositiveButton("수락") { dialog, _ ->
-//                        val intent = Intent(
-//                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-//                            Uri.parse("package:$packageName")
-//                        )
-//                        startActivityForResult(intent, WH_DialerActivity.resultCode)
-//                        dialog.dismiss();
-//                    }
-//            }
-//            builder.show();
-//
-//        } else {
-//            // 기능 실행하기
-//        }
-
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
         try {
@@ -288,20 +258,4 @@ class MainActivity : AppCompatActivity()  {
             }
         }
     }
-
-//    override fun onResume() {
-//        super.onResume()
-//
-//        val filter = IntentFilter().apply {
-//            addAction("android.intent.action.PHONE_STATE")
-//            addAction("com.github.arekolek.phone")
-//        }
-//        registerReceiver(br, filter)
-//    }
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        unregisterReceiver(br)
-//    }
-
 }

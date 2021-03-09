@@ -197,100 +197,24 @@ class WH_DialerActivity : AppCompatActivity() {
         super.onStart()
 
         call1.setOnClickListener {
-
             number = phoneNum.text as String
             passdata(number)
             makeCall(phoneNum.text as String)
-            //makeCall()
-
-//            if (connect == 0) {
-//                call2.visibility = View.GONE
-//                call3.visibility = View.GONE
-//                callbutton = 1
-//                makeCall(phoneNum.text as String)
-//                number = phoneNum.text as String
-//                call1.text = "끊기"
-//                connect = 1
-//
-//            } else {
-//                CallManager.cancelCall()
-//                connect = 0
-//                call2.visibility = View.VISIBLE
-//                call3.visibility = View.VISIBLE
-//                call1.text = "통화"
-//            }
-
         }
         call2.setOnClickListener {
-
             number = callNum.text as String
             passdata(number)
             makeCall(callNum.text as String)
-            //makeCall()
-//            if (connect == 0) {
-//                call1.visibility = View.GONE
-//                call3.visibility = View.GONE
-//                makeCall(callNum.text as String)
-//                callbutton = 2
-//                number = callNum.text as String
-//                call2.text = "끊기"
-//                connect = 1
-//            } else {
-//                CallManager.cancelCall()
-//                call1.visibility = View.VISIBLE
-//                call3.visibility = View.VISIBLE
-//                connect = 0
-//                call2.text = "통화"
-//            }
-
         }
         call3.setOnClickListener {
-
             number = dirctNum.text.toString()
             passdata(number)
             makeCall(dirctNum.text.toString())
-            //makeCall()
-
-//            if (connect == 0) {
-//                call1.visibility = View.GONE
-//                call2.visibility = View.GONE
-//                makeCall(dirctNum.text.toString())
-//                callbutton = 3
-//                number = dirctNum.text.toString()
-//                call3.text = "끊기"
-//                connect = 1
-//            } else {
-//                CallManager.cancelCall()
-//                call2.visibility = View.VISIBLE
-//                call1.visibility = View.VISIBLE
-//                connect = 0
-//                call3.text = "통화"
-//            }
         }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        updatesDisposable = CallManager.updates()
-//
-//            .doOnEach { Timber.e("$it") }
-//            .doOnError { Timber.e("Error processing call") }
-//            .subscribe { updateView(it) }
-//    }
-
-//    private fun updateView(gsmCall: GsmCall) {
-//
-//        if (gsmCall.status == GsmCall.Status.DIALING) {
-//            passdata(number)
-//        }
-//    }
-
-
     private fun makeCall(number: String) {
         if (checkSelfPermission(this, CALL_PHONE) == PERMISSION_GRANTED) {
-            //val uri = "tel:${number}".toUri()
-//            startActivity(Intent(Intent.ACTION_CALL, uri))
-            //var num = number
             connectionCall()
         } else {
             requestPermissions(this, arrayOf(CALL_PHONE), REQUEST_PERMISSION)
@@ -330,7 +254,6 @@ class WH_DialerActivity : AppCompatActivity() {
     }
 
     private fun setTextView() {
-
         var sf:SharedPreferences  = getSharedPreferences(sfName,0)
         var fomet = sf.getString("formatted", "")
         if (fomet != null) {
