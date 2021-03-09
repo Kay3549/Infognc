@@ -19,12 +19,11 @@ import java.sql.Statement
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class BCallService : BroadcastReceiver() {
+class BCallService : BroadcastReceiver()  {
 
     private var mLastState: String = ""
     private var rectitle: String? = ""
     private var datetemp: kotlin.Long = 0
-    private var fileName: String = ""
     private var path = "/storage/emulated/0/Call"
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -56,7 +55,6 @@ class BCallService : BroadcastReceiver() {
            connect()     //db connect
             sqlDB("DISCONNECTED")  // db 적재
             connFtp() //ftp 올리기
-
         }
     }
 
