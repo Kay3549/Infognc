@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -26,8 +27,8 @@ class Logindetail : AppCompatActivity() {
     private val url = "jdbc:jtds:sqlserver://$ip:$port/$database"
     private var connection: Connection? = null
     private var count = ""
-    private var data = ArrayList<String>()
     private var custName:String? = ""
+    private var array = ArrayList<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,19 +56,21 @@ class Logindetail : AppCompatActivity() {
         }
 
         sqlDB()
-        var name=findViewById<TextView>(R.id.custName)
-        name.text = custName
+
+        var name = findViewById<TextView>(R.id.custName)
+        name.setText(custName)
 
         sqlDB2()
-        var a = count?.split("|")
-        Log.d("a","a : " +a)
 
-        var countste=findViewById<TextView>(R.id.countstep)
-        countste.text = a?.get(0)
-        var toda=findViewById<TextView>(R.id.allcallser)
-        toda.text = a?.get(1)
-        var pastda=findViewById<TextView>(R.id.pastday)
-        pastda.text = a?.get(2)
+        Log.d("ARRAY", "array: " + array.toString())
+
+        var a = count?.split("|")
+        Log.d("a", "a : " + a)
+
+        var toda = findViewById<TextView>(R.id.allcallser)
+        toda.setText(a?.get(1))
+        var pastda = findViewById<TextView>(R.id.pastday)
+        pastda.setText(a?.get(2))
 
         var Noncontac = findViewById<TextView>(R.id.Noncontact)
         Noncontac.setText(a?.get(3))
@@ -78,9 +81,27 @@ class Logindetail : AppCompatActivity() {
 
         var Contactrat = findViewById<TextView>(R.id.Contactrate)
         Contactrat.setText(a?.get(6))
+
+    }
+
+    // 뒤로가기 2번
+    private var backPressedTime : Long = 0
+    override fun onBackPressed() {
+        Log.d("TAG", "뒤로가기")
+
+        // 2초내 다시 클릭하면 앱 종료
+        if (System.currentTimeMillis() - backPressedTime < 2000) {
+            finish()
+            return
+        }
+
+        // 처음 클릭 메시지
+        Toast.makeText(this, "'뒤로' 버튼을 한번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
+        backPressedTime = System.currentTimeMillis()
     }
 
     fun sqlDB() {
+
         if (connection != null) {
             var statement: Statement? = null
             try {
@@ -91,16 +112,17 @@ class Logindetail : AppCompatActivity() {
 
                 Log.d("list", "list: " + sql)
                 while (resultSet.next()) {
-                    //var str = count.toString() + "," + resultSet.getString(1) + "," + resultSet.getString(4) + ","  + "," + date?.get(0).toString()
                     custName = resultSet.getString(7)
                     Log.d("name", "name: " + custName)
                 }
+
             } catch (e: SQLException) {
                 e.printStackTrace()
             }
         } else {
             Log.d("sqlDB", "Connection is null")
         }
+
     }
 
     fun sqlDB2() {
@@ -116,9 +138,9 @@ class Logindetail : AppCompatActivity() {
                 var datenow = LocalDate.parse(Strnow, DateTimeFormatter.ISO_DATE)
 
                 val sql2 =
-                        "select counstep, count(case when alocdate>'" + datenow + "'  then 'today' end) as " +
-                                "'today',count(case when alocdate<'" + datenow + "' then 'pastday' end) " +
-                                "as'pastday' from customer_db where alocdate>'2021-01-27' group by counstep"
+                    "select counstep, count(case when alocdate>'" + datenow + "'  then 'today' end) as " +
+                            "'today',count(case when alocdate<'" + datenow + "' then 'pastday' end) " +
+                            "as'pastday' from customer_db where alocdate>'2021-01-27' group by counstep"
 
 
                 val resultSet2 = statement.executeQuery(sql2)
@@ -127,79 +149,115 @@ class Logindetail : AppCompatActivity() {
                 var sum2: Double = 0.0
                 var sum3 = 0
                 var sum4 = 0
-
                 var sum5: Double = 0.0 //04의 갯수
                 var sum6: Double = 0.0
-
-                var sum11 = 0
-
+                var sum11=0
                 var sum12 = 0
                 var sum13 = 0
-                var sum14 = 0
+                var sum15=0
+                var sum16=0
+                var sum17 =0
+                var sum18=0
+                var sum19=0
+                var sum20=0
 
                 while (resultSet2.next()) {
-                    //var date = resultSet2
                     var countstep = resultSet2.getString(1)
                     Log.d("name", "name: " + countstep)
+
+                    var str = resultSet2.getString(1)+ "," + resultSet2.getString(2) + "," + resultSet2.getString(3)
+                    array.add(str)
+                    if (countstep == "00"||countstep == "01"||countstep == "02"||countstep == "03"||countstep == "04"||countstep == "05"||
+                        countstep == "06"||countstep == "10"||countstep == "11"||countstep == "20"||countstep == "30") {
+                    }
+
+
                     var allcallser = resultSet2.getString(2)
                     sum1 = sum1 + allcallser.toInt()
+
+
+                    sum17=  allcallser.toInt()
+                    Log.d("sum17", "sum17--- : " + sum17)
 
                     Log.d("Contactrate", "Contact rate: " + sum13)
 
                     Log.d("sum1", "sum1 " + sum1)
                     var pastday = resultSet2.getString(3)
-                    Log.d("name", "name: " + pastday)
-
+                    var today = resultSet2.getString(2)
+                    Log.d("today", "today: " + today)
+                    Log.d("pastday", "pastday: " + pastday)
 
                     Log.d("count", "count : " + count)
-                    var Noncontact = resultSet2.getString(1)
 
-                    if (countstep == "00") {
-                        sum11 = sum11+ 1 + allcallser.toInt()
-                        sum2 = sum2 + pastday.toInt()
-
-                    }
-
-                    if (countstep == "05") {
-                        var sum9 = allcallser.toInt()
-                        sum3 = sum3 + sum9
-                    }
-
-                    if (countstep == "10") {
-                        var sum10 = allcallser.toInt() + pastday.toInt()
-                        sum4 = sum4 + sum10
-
-                    }
-
-                    if (countstep == "04") {
-                        sum5 = sum5 + allcallser.toInt()
-                        sum14 = sum14 + 1
-
-                    }
-
-                    val sum7 = sum6.toInt().toString() + "%"
-
-                    val sum8 = sum2.toInt()
-
-                    if (countstep == "00"||countstep == "01"||countstep == "02"||countstep == "03"||countstep == "04"||countstep == "05"||
+                    if (today!=null&&countstep == "00"||countstep == "01"||countstep == "02"||countstep == "03"||countstep == "04"||countstep == "05"||
                         countstep == "06"||countstep == "10"||countstep == "11"||countstep == "20"||countstep == "30") {
-                        sum12 = sum12+1
+                        if(today != "0") {
+                            sum12 = sum12 + 1
+                        }
                     }
 
+                    if (today != null && countstep == "00") {
+                        Log.d("today","today = null")
+                        if(today != "0"){
+                            sum11= sum11 + 1
+                        }
+                        //sum11 = sum11 + allcallser.toInt()
 
-                    count = countstep + "|" + sum1 + "|" + pastday + "|" + sum8 + "|" + sum3 + "|" + sum4 + "|" + sum7
+                    }//미접촉
 
-                    //sum12 = sum12 + allcallser.toInt()
+                    if (today!=null&&countstep == "05") {
+                        if(today != "0") {
+                            var sum9 = allcallser.toInt()
+                            sum3 = sum3 + sum9
+                        }
+                    }//진행
 
+                    sum16=sum16+pastday.toInt()
 
-                    //sum13 = sum13.toInt()
-                    sum14 = sum14.toInt()
-                    //var sum9 = allcallser.toInt()
+                    if (today!=null&&countstep == "10") {
+                        if(today != "0") {
+                            var sum10 = allcallser.toInt() + pastday.toInt()
+                            sum4 = sum4 + sum10
+                        }
+                    }
 
-                    sum6 = ((sum12 - (sum5 + sum11)) / sum12) * 100
+                    if (today!=null&&countstep == "04") {
+                        if(today != "0") {
+                            sum5 = sum5 + allcallser.toInt()
+                        }
+                    }
+                    /*if(pastday!=null&&countstep=="04"||countstep == "05"||countstep == "06"||countstep == "30")
+                    {
+                        if(pastday != "0") {
+                            sum18 = sum18 + 1
+                        }
+                    }*/
+                    if(pastday!=null&&countstep == "04"||countstep == "05"||countstep == "06"||countstep == "10"||countstep == "11"||countstep == "20")
+                    {
+                        if(pastday != "0") {
+                            sum19 = sum19 + 1 //
+                        }
+                    }
+                    if(today!=null&&countstep == "04"||countstep == "05"||countstep == "06"||countstep == "10"||countstep == "20")
+                    {
+                        if(today != "0") {
+                            sum15 = sum15 + 1
+                        }
+                    }
+
+                    if(today!=null&&countstep == "00"|| countstep == "04"||countstep == "05"||countstep == "06"||countstep == "10"||countstep == "11"||countstep == "20")
+                    {//접촉률 01 02 03 30 을 제외한 나머지.
+                        if(today != "0") {
+                            sum20 = sum20 + 1
+                        }
+                    }
+
+                    sum6 = (((sum12.toDouble()- sum20.toDouble()) / sum12.toDouble()) * 100)
                     sum13 = sum6.toInt()
-                    Log.d("sum6", "sum6 : " + sum6)
-
+                    Log.d("sum12", "sum12--- : " + sum12)
+                    Log.d("sum20", "sum20--- : " + sum20)
+                    count =countstep + "|" + sum12 +"|" + sum19+ "|" + sum11+ "|" + sum3 + "|" + sum15 + "|" + sum13
+                    //1번째 countstep 2번째 총 3번쨰 지난 db 4번째 미접촉 5번째 진행중 6번째 가입건 7번째 접촉률
                 }
             } catch (e: SQLException) {
                 e.printStackTrace()
@@ -207,7 +265,6 @@ class Logindetail : AppCompatActivity() {
         } else {
             Log.d("sqlDB", "Connection is null")
         }
-
     }
 
 

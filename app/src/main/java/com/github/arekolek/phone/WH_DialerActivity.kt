@@ -5,13 +5,18 @@ import android.content.Intent
 import android.content.Intent.*
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
+import android.telephony.PhoneStateListener
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.Window
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.requestPermissions
@@ -26,20 +31,20 @@ import io.reactivex.disposables.Disposables
 import kotlinx.android.synthetic.main.activity_logindetail.*
 import kotlinx.android.synthetic.main.listview_item.*
 import kotlinx.android.synthetic.main.wh_activity_main_click.*
+import kotlinx.coroutines.*
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.sql.Statement
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import net.khirr.library.foreground.Foreground
 
 
 
 class WH_DialerActivity : AppCompatActivity() {
+
+    private var isCalling = false
 
     private var updatesDisposable = Disposables.empty()
     private var callbutton = 0
@@ -61,6 +66,7 @@ class WH_DialerActivity : AppCompatActivity() {
     private var CodeName = ArrayList<String>()
     private var phnum = ""
     private var sfName = "data"
+    private var counstep = ""
 
     companion object {
         const val ROLE_REQUEST_CODE = 2002
@@ -87,6 +93,9 @@ class WH_DialerActivity : AppCompatActivity() {
             Log.d("sqlDB", "ERROR")
         }
 
+        var telephoneManager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+        telephoneManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
+        
         //스피너
         var counStepsp = findViewById<Spinner>(R.id.counStep)
         spinner()
@@ -137,23 +146,39 @@ class WH_DialerActivity : AppCompatActivity() {
             var callNum = findViewById<TextView>(R.id.callNum)
             callNum.setText(c?.get(9))
 
+            counstep = c?.get(1).toString()
             idxCounDB = c?.get(10).toString()
         }
 
-        setTextView()
+        // 스피너 데이터 선택 유지
+        if(counstep.equals("00")){counStepsp.setSelection(0)}
+        else if(counstep.equals("01")){counStepsp.setSelection(1)}
+        else if(counstep.equals("02")){counStepsp.setSelection(2)}
+        else if(counstep.equals("03")){counStepsp.setSelection(3)}
+        else if(counstep.equals("04")){counStepsp.setSelection(4)}
+        else if(counstep.equals("05")){counStepsp.setSelection(5)}
+        else if(counstep.equals("06")){counStepsp.setSelection(6)}
+        else if(counstep.equals("10")){counStepsp.setSelection(7)}
+        else if(counstep.equals("11")){counStepsp.setSelection(8)}
+        else if(counstep.equals("20")){counStepsp.setSelection(9)}
+        else if(counstep.equals("30")){counStepsp.setSelection(10)}
 
+        setTextView()
 
         var insertbtn = findViewById<Button>(R.id.insertbtn)
         insertbtn.setOnClickListener {
             Log.d("click", "Click")
             Log.d("data","data: "+formatted)
             Log.d("data","아아아아아: "+idxCounDB)
+            Toast.makeText(this, "상담 저장 완료", Toast.LENGTH_SHORT).show()
 
             insertDB()
             update()
             super.onBackPressed()
             remove()
             finish()
+            var intent = Intent(this, MainActivity::class.java).addFlags(FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
         }
         call1.text = "통화"
         call2.text = "통화"
@@ -294,16 +319,15 @@ class WH_DialerActivity : AppCompatActivity() {
 
     private fun connectionCall() = runBlocking {
         val call = Intent(ACTION_CALL, Uri.parse("tel:${number}"))
-        launch {
-            if (Foreground.isBackground()) {
-                Log.e("tag",Foreground.isBackground().toString())
-                delay(2000)
-                reCreateMainActivity()
-            }
+            launch {
+                if (Foreground.isBackground()) {
+                    Log.e("tag",Foreground.isBackground().toString())
+                    delay(1100)
+                    reCreateMainActivity()
+                }
         }
         startActivity(call)
     }
-
 
     private fun setTextView() {
 
@@ -544,11 +568,37 @@ class WH_DialerActivity : AppCompatActivity() {
         } else{
             Log.d("sqlDB", "Connection is null")
         }
+
     }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private val phoneStateListener = object : PhoneStateListener() {
+        override fun onCallStateChanged(state: Int, incomingNumber: String) {
+            when(state){
+                // 통화중 아님
+                TelephonyManager.CALL_STATE_IDLE -> isCalling = false
+                // 통화중
+                TelephonyManager.CALL_STATE_OFFHOOK -> isCalling = true
+                // 통화벨울림
+                TelephonyManager.CALL_STATE_RINGING -> isCalling = true
+            }
+        }
+    }
+
 
     //액션바
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
+
+        var item = menu?.findItem(R.id.action_btn3)
+
+
+            if (isCalling == true) {
+                item?.setVisible(true)
+            } else {
+                item?.setVisible(false)
+            }
+
         return true
     }
 
@@ -570,9 +620,6 @@ class WH_DialerActivity : AppCompatActivity() {
             return true
         }
 
-        if(id == R.id.action_btn3){
-
-        }
         return super.onOptionsItemSelected(item)
     }
 }

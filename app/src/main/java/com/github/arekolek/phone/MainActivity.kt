@@ -63,7 +63,6 @@ class MainActivity : AppCompatActivity()  {
         }
         registerReceiver(br, filter)
 
-
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(
                 this,
@@ -86,9 +85,6 @@ class MainActivity : AppCompatActivity()  {
                 1
             )
         }
-
-
-
 
 //        if (
 //        // 엑티비티 실행에만 사용할 예정이라서 이슈가 있는 10 버전인지 확인하기 위함
@@ -159,7 +155,7 @@ class MainActivity : AppCompatActivity()  {
             }
             adapter.addItem(num,gogeak,count,db)
         }
-
+        adapter.notifyDataSetChanged()
         list.setAdapter(adapter)
 
         Log.d("sqlCall", "적재성공")
@@ -169,6 +165,22 @@ class MainActivity : AppCompatActivity()  {
             intent.putExtra("DB", data[position-1])
             startActivity(intent)
         }
+    }
+
+    // 뒤로가기 2번
+    private var backPressedTime : Long = 0
+    override fun onBackPressed() {
+        Log.d("TAG", "뒤로가기")
+
+        // 2초내 다시 클릭하면 앱 종료
+        if (System.currentTimeMillis() - backPressedTime < 2000) {
+            finish()
+            return
+        }
+
+        // 처음 클릭 메시지
+        Toast.makeText(this, "'뒤로' 버튼을 한번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
+        backPressedTime = System.currentTimeMillis()
     }
 
     fun step(){

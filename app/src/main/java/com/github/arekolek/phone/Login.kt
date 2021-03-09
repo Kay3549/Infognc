@@ -1,10 +1,12 @@
 package com.github.arekolek.phone
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -14,6 +16,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.concurrent.thread
 
+import com.github.arekolek.phone.Permission
 
 /**
  * 테스트 URL : http://192.168.1.206/login.asp?userName=agent1&password=1111
@@ -21,9 +24,16 @@ import kotlin.concurrent.thread
  * @since 2021-02-23
  * */
 class Login : AppCompatActivity() {
+
+    // 멀티퍼미션 추가
+    private var permission:Permission = Permission()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        //퍼미션 확인
+        permissionCheck()
 
         var inputId: EditText = findViewById(R.id.et_id)
         var inputPw: EditText = findViewById(R.id.et_pass)
@@ -98,6 +108,26 @@ class Login : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+
+
+    // 퍼미션 권한 체크
+    private fun permissionCheck(){
+        // SDK 23버전 이하 버전에서는 Permission이 필요없음
+        if(Build.VERSION.SDK_INT >= 23){
+            permission.PermissionSupport(this,this)
+
+            if(!permission.checkPermission()){
+                permission.requestPermission()
+            }
+        }
+    }
+
+
+    override fun onRequestPermissionsResult(requestCode:Int, @NonNull permissions:Array<String>, @NonNull grantResults:IntArray){
+        if(!permission.permissionResult(requestCode, permissions, grantResults)){
+            permission.requestPermission()
         }
     }
 
