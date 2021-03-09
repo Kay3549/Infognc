@@ -4,8 +4,6 @@
     package="com.github.arekolek.phone"
     >
 
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -13,13 +11,13 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        android:theme="@style/AppTheme">
-        <!--http 모두 허용 android:usesCleartextTraffic="true"-->
-
-        <!--<activity android:name=".Login"/>-->
-        <activity android:name=".Logindetail"/>
-        <activity android:name=".MainActivity"/>
+        >
+        <activity android:name=".Logindetail" />
+        <!-- http 모두 허용 android:usesCleartextTraffic="true" -->
+        <!-- <activity android:name=".Login"/> -->
+        <activity android:name=".MainActivity" />
         <activity android:name=".WH_DialerActivity" />
         <activity android:name=".MainActivity_list" />
         <activity android:name=".MainActivity_history" />
@@ -47,17 +45,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-<!--        <receiver android:name=".BCallService"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="true">-->
-
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.PHONE_STATE"/>-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
-
-
+        <service
+            android:name=".MyService"
+            android:enabled="true"
+            android:exported="true"
+            ></service>
     </application>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -67,6 +59,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.REORDER_TASKS"/>
+
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
 
 </manifest>

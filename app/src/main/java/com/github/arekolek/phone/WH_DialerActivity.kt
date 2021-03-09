@@ -6,6 +6,7 @@ import android.content.Intent.*
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.FileObserver
 import android.os.StrictMode
 import android.util.Log
 import android.view.Menu
@@ -36,14 +37,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.khirr.library.foreground.Foreground
-
+import java.io.File
 
 
 class WH_DialerActivity : AppCompatActivity() {
 
-    private var updatesDisposable = Disposables.empty()
-    private var callbutton = 0
-    private var connect = 0
     private var number = ""
     private var formatted = ""
 
@@ -61,11 +59,11 @@ class WH_DialerActivity : AppCompatActivity() {
     private var CodeName = ArrayList<String>()
     private var phnum = ""
     private var sfName = "data"
+    private var path = "/storage/emulated/0/Call"
 
     companion object {
         const val ROLE_REQUEST_CODE = 2002
         const val REQUEST_PERMISSION = 0
-        val resultCode = 12345
 
     }
 
@@ -175,97 +173,26 @@ class WH_DialerActivity : AppCompatActivity() {
 
             number = phoneNum.text as String
             passdata(number)
-            makeCall(phoneNum.text as String)
-            //makeCall()
-
-//            if (connect == 0) {
-//                call2.visibility = View.GONE
-//                call3.visibility = View.GONE
-//                callbutton = 1
-//                makeCall(phoneNum.text as String)
-//                number = phoneNum.text as String
-//                call1.text = "끊기"
-//                connect = 1
-//
-//            } else {
-//                CallManager.cancelCall()
-//                connect = 0
-//                call2.visibility = View.VISIBLE
-//                call3.visibility = View.VISIBLE
-//                call1.text = "통화"
-//            }
+            makeCall()
 
         }
         call2.setOnClickListener {
 
             number = callNum.text as String
             passdata(number)
-            makeCall(callNum.text as String)
-            //makeCall()
-//            if (connect == 0) {
-//                call1.visibility = View.GONE
-//                call3.visibility = View.GONE
-//                makeCall(callNum.text as String)
-//                callbutton = 2
-//                number = callNum.text as String
-//                call2.text = "끊기"
-//                connect = 1
-//            } else {
-//                CallManager.cancelCall()
-//                call1.visibility = View.VISIBLE
-//                call3.visibility = View.VISIBLE
-//                connect = 0
-//                call2.text = "통화"
-//            }
-
+            makeCall()
         }
         call3.setOnClickListener {
 
             number = dirctNum.text.toString()
             passdata(number)
-            makeCall(dirctNum.text.toString())
-            //makeCall()
-
-//            if (connect == 0) {
-//                call1.visibility = View.GONE
-//                call2.visibility = View.GONE
-//                makeCall(dirctNum.text.toString())
-//                callbutton = 3
-//                number = dirctNum.text.toString()
-//                call3.text = "끊기"
-//                connect = 1
-//            } else {
-//                CallManager.cancelCall()
-//                call2.visibility = View.VISIBLE
-//                call1.visibility = View.VISIBLE
-//                connect = 0
-//                call3.text = "통화"
-//            }
+            makeCall()
         }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        updatesDisposable = CallManager.updates()
-//
-//            .doOnEach { Timber.e("$it") }
-//            .doOnError { Timber.e("Error processing call") }
-//            .subscribe { updateView(it) }
-//    }
 
-//    private fun updateView(gsmCall: GsmCall) {
-//
-//        if (gsmCall.status == GsmCall.Status.DIALING) {
-//            passdata(number)
-//        }
-//    }
-
-
-    private fun makeCall(number: String) {
+    private fun makeCall() {
         if (checkSelfPermission(this, CALL_PHONE) == PERMISSION_GRANTED) {
-            //val uri = "tel:${number}".toUri()
-//            startActivity(Intent(Intent.ACTION_CALL, uri))
-            //var num = number
             connectionCall()
         } else {
             requestPermissions(this, arrayOf(CALL_PHONE), REQUEST_PERMISSION)
