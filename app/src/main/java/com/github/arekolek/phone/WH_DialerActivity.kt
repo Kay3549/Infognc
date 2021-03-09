@@ -4,10 +4,12 @@ import android.Manifest.permission.CALL_PHONE
 import android.content.Intent
 import android.content.Intent.*
 import android.content.SharedPreferences
+import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
+import android.provider.CallLog
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -39,13 +41,14 @@ import java.sql.Statement
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import net.khirr.library.foreground.Foreground
-
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class WH_DialerActivity : AppCompatActivity() {
 
     private var isCalling = false
-
     private var updatesDisposable = Disposables.empty()
     private var callbutton = 0
     private var connect = 0
@@ -71,8 +74,6 @@ class WH_DialerActivity : AppCompatActivity() {
     companion object {
         const val ROLE_REQUEST_CODE = 2002
         const val REQUEST_PERMISSION = 0
-        val resultCode = 12345
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,7 +96,7 @@ class WH_DialerActivity : AppCompatActivity() {
 
         var telephoneManager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
         telephoneManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
-        
+
         //스피너
         var counStepsp = findViewById<Spinner>(R.id.counStep)
         spinner()
@@ -197,23 +198,24 @@ class WH_DialerActivity : AppCompatActivity() {
         super.onStart()
 
         call1.setOnClickListener {
+
             number = phoneNum.text as String
-            passdata(number)
-            makeCall(phoneNum.text as String)
+            makeCall()
         }
         call2.setOnClickListener {
+
             number = callNum.text as String
-            passdata(number)
-            makeCall(callNum.text as String)
+            makeCall()
         }
         call3.setOnClickListener {
+
             number = dirctNum.text.toString()
             passdata(number)
-            makeCall(dirctNum.text.toString())
+            makeCall()
         }
     }
 
-    private fun makeCall(number: String) {
+    private fun makeCall() {
         if (checkSelfPermission(this, CALL_PHONE) == PERMISSION_GRANTED) {
             connectionCall()
         } else {
@@ -221,7 +223,7 @@ class WH_DialerActivity : AppCompatActivity() {
         }
     }
 
-    private fun passdata(number: String) {
+    private fun passdata(number:String) {
 
         var k = number.length
         var phoneNum: String? = ""
@@ -238,7 +240,7 @@ class WH_DialerActivity : AppCompatActivity() {
         formatted = current.format(formatter) // 녹취키
 
         Data.setdata(formatted)
-        Log.d("format", "format: " + formatter)
+
     }
 
     private fun connectionCall() = runBlocking {
@@ -254,6 +256,7 @@ class WH_DialerActivity : AppCompatActivity() {
     }
 
     private fun setTextView() {
+
         var sf:SharedPreferences  = getSharedPreferences(sfName,0)
         var fomet = sf.getString("formatted", "")
         if (fomet != null) {
@@ -499,11 +502,29 @@ class WH_DialerActivity : AppCompatActivity() {
         override fun onCallStateChanged(state: Int, incomingNumber: String) {
             when(state){
                 // 통화중 아님
-                TelephonyManager.CALL_STATE_IDLE -> isCalling = false
+                TelephonyManager.CALL_STATE_IDLE -> {
+                    isCalling = false
+                    insertbtn.visibility = View.VISIBLE
+                    call1.visibility = View.VISIBLE
+                    call2.visibility = View.VISIBLE
+                    call3.visibility = View.VISIBLE
+                }
                 // 통화중
-                TelephonyManager.CALL_STATE_OFFHOOK -> isCalling = true
+                TelephonyManager.CALL_STATE_OFFHOOK -> {
+                    isCalling = true
+                    insertbtn.visibility = View.GONE
+                    call1.visibility = View.GONE
+                    call2.visibility = View.GONE
+                    call3.visibility = View.GONE
+                }
                 // 통화벨울림
-                TelephonyManager.CALL_STATE_RINGING -> isCalling = true
+                TelephonyManager.CALL_STATE_RINGING -> {
+                    isCalling = true
+                    insertbtn.visibility = View.GONE
+                    call1.visibility = View.GONE
+                    call2.visibility = View.GONE
+                    call3.visibility = View.GONE
+                }
             }
         }
     }

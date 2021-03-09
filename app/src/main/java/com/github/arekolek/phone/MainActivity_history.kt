@@ -99,6 +99,7 @@ class MainActivity_history : AppCompatActivity() {
         }
 
         path = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
+        //path = "/storage/emulated/0/Call"
         id = Data.retundata()
 
         listen.setOnClickListener() {
@@ -137,30 +138,6 @@ class MainActivity_history : AppCompatActivity() {
             listen.text="듣기"
             val file = File(path)
             file.deleteRecursively()
-        }
-    }
-
-    private fun FileDownload() {
-
-        try {
-            var con = FTPClient()
-            con.connect("192.168.1.206")
-            con.login("administrator", ".Digital")
-            con.changeWorkingDirectory("/202102")
-            con.enterLocalPassiveMode();
-            con.setFileType(FTP.BINARY_FILE_TYPE);
-            val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "$id.m4a")
-
-            Log.d("file", "경로: " + file)
-
-            var fos = FileOutputStream(file)
-
-            con.retrieveFile("$id.m4a", fos)
-
-            con.logout()
-            con.disconnect()
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
         }
     }
 
@@ -254,6 +231,29 @@ class MainActivity_history : AppCompatActivity() {
             }
         } else{
             Log.d("sqlDB", "Connection is null")
+        }
+    }
+
+    private fun FileDownload() {
+
+        try {
+            var con = FTPClient()
+            con.connect("192.168.1.206")
+            con.login("administrator", ".Digital")
+            con.changeWorkingDirectory("/202102")
+            con.enterLocalPassiveMode();
+            con.setFileType(FTP.BINARY_FILE_TYPE);
+            val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "$id.m4a")
+
+            var fos = FileOutputStream(file)
+            con.retrieveFile("$id.m4a", fos)
+
+            con.logout()
+            con.disconnect()
+            Log.e("============", "dohfdhfidhfidhfidhfdhifhd")
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
         }
     }
 
