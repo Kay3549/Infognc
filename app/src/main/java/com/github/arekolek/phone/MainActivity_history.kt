@@ -9,7 +9,7 @@ import android.os.StrictMode
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.*
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main_history.*
 import org.apache.commons.net.ftp.FTP
@@ -35,7 +35,7 @@ class MainActivity_history : AppCompatActivity() {
     private var CodeItem = ArrayList<String>()
     private var CodeName = ArrayList<String>()
 
-    private var id = ""
+    private var id:String = ""
     var path = ""
     val arrayList = ArrayList<String>()
     val audioPlay = MediaPlayer()
@@ -100,7 +100,7 @@ class MainActivity_history : AppCompatActivity() {
 
         path = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
         //path = "/storage/emulated/0/Call"
-        id = Data.retundata()
+        id = recNum1.text as String
 
         listen.setOnClickListener() {
             if (start == 0) {
@@ -123,7 +123,6 @@ class MainActivity_history : AppCompatActivity() {
                     }
                 }
 
-
             } else {
                 start = 0
                 listen.text = "듣기"
@@ -131,7 +130,6 @@ class MainActivity_history : AppCompatActivity() {
                     audioPlay.pause()
                 }
             }
-
         }
 
         audioPlay.setOnCompletionListener {
@@ -157,7 +155,7 @@ class MainActivity_history : AppCompatActivity() {
                             "on coun.custNum = info.custNum\n" +
                             "where coun.agentNum = '1' and coun.custNum='"+phnum+"'"
                 val resultSet = statement.executeQuery(sql) // DB
-                Log.d("sql", "sql: "+sql)
+                Log.d("sql", "sql: " + sql)
 
                 while (resultSet.next()) {
                     var counStep:String? = resultSet.getString(9)
@@ -226,7 +224,7 @@ class MainActivity_history : AppCompatActivity() {
                     CodeName.add(codeName)
                     CodeItem.add(codeItem)
                 }
-            } catch (e:SQLException){
+            } catch (e: SQLException){
                 e.printStackTrace()
             }
         } else{
@@ -237,20 +235,37 @@ class MainActivity_history : AppCompatActivity() {
     private fun FileDownload() {
 
         try {
+            Log.e("============", "1")
             var con = FTPClient()
+            Log.e("============", "2")
             con.connect("192.168.1.206")
+            Log.e("============", "3")
             con.login("administrator", ".Digital")
+            Log.e("============", "4")
             con.changeWorkingDirectory("/202102")
+            Log.e("============", "5")
             con.enterLocalPassiveMode();
+            Log.e("============", "6")
             con.setFileType(FTP.BINARY_FILE_TYPE);
+            Log.e("============", id)
             val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "$id.m4a")
+            Log.e("============", "8")
+            val directory = File(path)
+
+            if (!directory.exists()) {       // 원하는 경로에 폴더가 있는지 확인
+                directory.mkdirs() // 하위폴더를 포함한 폴더를 전부 생성
+            }
 
             var fos = FileOutputStream(file)
+            Log.e("============", "9")
             con.retrieveFile("$id.m4a", fos)
+            Log.e("============", "10")
 
             con.logout()
+            Log.e("============", "11")
             con.disconnect()
-            Log.e("============", "dohfdhfidhfidhfidhfdhifhd")
+            Log.e("============", "12")
+
 
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
