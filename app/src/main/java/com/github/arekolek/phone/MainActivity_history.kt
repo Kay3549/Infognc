@@ -98,9 +98,9 @@ class MainActivity_history : AppCompatActivity() {
             counMemo.setText(c?.get(10))
         }
 
-        //path = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
-        path = "/storage/emulated/0/Call"
-        id = recNum1.text as String
+        path = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
+        //path = "/storage/emulated/0/Call"
+        id = Data.retundata()
 
         listen.setOnClickListener() {
             if (start == 0) {
@@ -246,15 +246,12 @@ class MainActivity_history : AppCompatActivity() {
             val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "$id.m4a")
 
             var fos = FileOutputStream(file)
-
-//            val destination = con.changeWorkingDirectory("192.168.1.206").toString()
-//            val daTa= file
-//            val path: String = con.printWorkingDirectory()
-
             con.retrieveFile("$id.m4a", fos)
 
             con.logout()
             con.disconnect()
+            Log.e("============", "dohfdhfidhfidhfidhfdhifhd")
+
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }

@@ -3,8 +3,9 @@ package com.github.arekolek.phone
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Environment
+import android.database.Cursor
 import android.os.StrictMode
+import android.provider.CallLog
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
@@ -43,15 +44,12 @@ class BCallService : BroadcastReceiver()  {
         //통화가 시작되었을 때
         if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
 
-            Toast.makeText(context,"전화",Toast.LENGTH_SHORT).show()
-            Toast.makeText(context,rectitle,Toast.LENGTH_SHORT).show()
             connect()
             sqlDB("ACTIVE")
 
             //통화중이 아닐 때
         } else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
 
-            Toast.makeText(context,"통화 종료",Toast.LENGTH_SHORT).show()
            connect()     //db connect
             sqlDB("DISCONNECTED")  // db 적재
             connFtp() //ftp 올리기
@@ -117,6 +115,10 @@ class BCallService : BroadcastReceiver()  {
 
 
     private fun connFtp() {
+        var managedCusor: Cursor? = contentResolver.query(CallLog.Calls.CONTENT_URI,null,null,null,null,null)
+//        managedCusor?.moveToNext()
+//        var callList : Int? = managedCusor?.getColumnIndex(CallLog.Calls.NUMBER) // 전화번호
+//        val recentNum = callList?.let { managedCusor?.getString(it) }
         try {
 
             val arrayList = ArrayList<String>()
