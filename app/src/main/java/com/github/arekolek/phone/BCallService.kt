@@ -30,6 +30,7 @@ class BCallService : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
+
         // 시스템에서 broadcast Receiver를 계속 호출함. 그래서 계속 호출한은 것을 방지하는 부분
         val state: String? = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
         if (state.equals(mLastState)) {
@@ -48,13 +49,11 @@ class BCallService : BroadcastReceiver() {
 
         //통화중이 아닐 때
         } else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+            Thread.sleep(1100)
             Data.callEndTime = System.currentTimeMillis()
-            val intent = Intent(context,WHservice::class.java)
-            context.startService(intent)
+            Getphonenum(context)
             rectitle = Data.retundata() // 녹취 키 가져오기
             Log.e("=============broad", Data.phonenumber)
-            Log.e("=============broad", "asdadsfasdfasfdadsf")
-            context.stopService(intent)
 
 //            connect()     //db connect
 //            sqlDB("DISCONNECTED")  // db 적재
@@ -155,5 +154,76 @@ class BCallService : BroadcastReceiver() {
             e.printStackTrace()
         }
     }
+
+    private fun Getphonenum(context: Context) {
+
+        var managedCusor: Cursor? = context.contentResolver.query(
+            CallLog.Calls.CONTENT_URI,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+
+        managedCusor?.moveToNext()
+
+        var callList: Int? = managedCusor?.getColumnIndex(CallLog.Calls.NUMBER) // 전화번호
+        var date: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DATE) // 전화 시작시간
+        var duration: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DURATION) // 통화 얼마나 했는지
+        var type: Int? = managedCusor?.getColumnIndex(CallLog.Calls.TYPE) // 콜타입
+
+
+        val AcallList = callList?.let { managedCusor?.getString(it) } //전화번호
+        if (AcallList != null) {
+            Log.e("=============전화", AcallList)
+            Data.phonenumber = AcallList
+            passdata(AcallList)
+        }
+
+        val Aduration = duration?.let { managedCusor?.getString(it) } //얼마나 통화했는지
+        if (Aduration != null) {
+            Data.duration = Aduration.toLong()
+            RingTime(Data.duration)
+        }
+    }
+
+
+    private fun passdata(number: String) {
+        Data.phonenumber = number
+        var k = number.length
+        var phoneNum: String? = ""
+        phoneNum = if (k <= 15) {
+            number
+        } else {
+            var ran = IntRange(0, 14)
+            var temp = number.slice(ran)
+            temp
+        }
+
+        val current = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS_$phoneNum")
+        val formatted = current.format(formatter) // 녹취키
+
+        Data.setdata(formatted)
+    }
+
+
+    private fun RingTime(Aduration: Long) {
+
+        Log.e("=================duration", Aduration.toString())
+
+        val start: Long = Data.callStartTime
+        val end: Long = Data.callEndTime
+        val duration: Long = Aduration
+
+        Data.ringtime = ((end - (duration * 1000)) - start) / 1000
+
+        Log.e("=================start타임", start.toString())
+        Log.e("=================end타임", end.toString())
+        Log.e("=================링타임", Data.ringtime.toString())
+
+    }
+
 
 }
