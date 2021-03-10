@@ -48,6 +48,12 @@ class BCallService : BroadcastReceiver() {
         //통화중이 아닐 때
         } else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
             Data.callEndTime = System.currentTimeMillis()
+
+            Log.d("===============","Ddata: " + Data.Ddata)
+            Log.d("===============","callEndTime: " + Data.callEndTime)
+            Log.d("===============","callStartTime: " + Data.callStartTime)
+            Log.d("===============","ringtime: " + Data.ringtime)
+            Log.d("===============","phonenumber: " + Data.phonenumber)
             val intent = Intent(context,WHservice::class.java)
             context.startService(intent)
             rectitle = Data.retundata() // 녹취 키 가져오기
@@ -107,6 +113,8 @@ class BCallService : BroadcastReceiver() {
                     val sql =
                         "update call_list set endTime='$formatted', duration='$durations' where recNum='$recNum'"
                     statement.executeQuery(sql) // DB에 정보 넣기
+
+                    Log.d("update", "UPDATE: " + sql)
                 }
 
             } catch (e: SQLException) {

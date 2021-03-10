@@ -83,7 +83,11 @@ class WH_DialerActivity : AppCompatActivity() {
         var susin = findViewById<Button>(R.id.recv)
 
         var action1 = findViewById<Button>(R.id.coun)
-        action1.isEnabled = false
+        action1.setOnClickListener {
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         var action2 = findViewById<Button>(R.id.history)
         action2.isEnabled = false
@@ -423,7 +427,7 @@ class WH_DialerActivity : AppCompatActivity() {
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "insert into counsel_list (agentNum,recNum,custNum,idxCounDB,custName,counStep,counMemo)values('1','$formatted','" + num + "','" + idxCounDB + "', '" + name + "','" + step + "','" + memo + "')"
+                    "insert into counsel_list (agentNum,custNum,idxCounDB,custName,counStep,counMemo)values('1','" + num + "','" + idxCounDB + "', '" + name + "','" + step + "','" + memo + "')"
                 Log.d("sql", "SQL: " + sql)
 
                 statement.executeQuery(sql) // DB
@@ -482,7 +486,7 @@ class WH_DialerActivity : AppCompatActivity() {
             try{
                 statement = connection!!.createStatement()
                 val sql =
-                    "select codeItem,codeName from code_manager"
+                    "select codeItem,codeName from code_manager where codePart='00' and delFlag='N'"
 
                 val resultSet = statement.executeQuery(sql)
 

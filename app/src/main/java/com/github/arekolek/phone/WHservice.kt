@@ -72,7 +72,7 @@ class WHservice : Service() {
 
 
     private fun passdata(number: String) {
-
+        Data.phonenumber = number
         var k = number.length
         var phoneNum: String? = ""
         phoneNum = if (k <= 15) {
