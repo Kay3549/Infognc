@@ -235,21 +235,13 @@ class MainActivity_history : AppCompatActivity() {
     private fun FileDownload() {
 
         try {
-            Log.e("============", "1")
             var con = FTPClient()
-            Log.e("============", "2")
             con.connect("192.168.1.206")
-            Log.e("============", "3")
             con.login("administrator", ".Digital")
-            Log.e("============", "4")
             con.changeWorkingDirectory("/202102")
-            Log.e("============", "5")
             con.enterLocalPassiveMode();
-            Log.e("============", "6")
             con.setFileType(FTP.BINARY_FILE_TYPE);
-            Log.e("============", id)
             val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "$id.m4a")
-            Log.e("============", "8")
             val directory = File(path)
 
             if (!directory.exists()) {       // 원하는 경로에 폴더가 있는지 확인
@@ -257,15 +249,10 @@ class MainActivity_history : AppCompatActivity() {
             }
 
             var fos = FileOutputStream(file)
-            Log.e("============", "9")
             con.retrieveFile("$id.m4a", fos)
-            Log.e("============", "10")
 
             con.logout()
-            Log.e("============", "11")
             con.disconnect()
-            Log.e("============", "12")
-
 
         } catch (e: java.lang.Exception) {
             e.printStackTrace()

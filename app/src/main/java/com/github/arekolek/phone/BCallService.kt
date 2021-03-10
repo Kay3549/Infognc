@@ -20,7 +20,7 @@ import java.sql.Statement
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class BCallService : BroadcastReceiver()  {
+class BCallService : BroadcastReceiver() {
 
     private var mLastState: String = ""
     private var rectitle: String? = ""
@@ -28,8 +28,6 @@ class BCallService : BroadcastReceiver()  {
     private var path = "/storage/emulated/0/Call"
 
     override fun onReceive(context: Context, intent: Intent) {
-
-            rectitle = Data.retundata()
 
         // 시스템에서 broadcast Receiver를 계속 호출함. 그래서 계속 호출한은 것을 방지하는 부분
         val state: String? = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
@@ -43,16 +41,20 @@ class BCallService : BroadcastReceiver()  {
 
         //통화가 시작되었을 때
         if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
+            Data.callStartTime = System.currentTimeMillis()
+//            connect()
+//            sqlDB("ACTIVE")
 
-            connect()
-            sqlDB("ACTIVE")
-
-            //통화중이 아닐 때
+        //통화중이 아닐 때
         } else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+            Data.callEndTime = System.currentTimeMillis()
+            val intent = Intent(context,WHservice::class.java)
+            context.startService(intent)
+            rectitle = Data.retundata() // 녹취 키 가져오기
 
-           connect()     //db connect
-            sqlDB("DISCONNECTED")  // db 적재
-            connFtp() //ftp 올리기
+//            connect()     //db connect
+//            sqlDB("DISCONNECTED")  // db 적재
+//            connFtp() //ftp 올리기
         }
     }
 
@@ -81,6 +83,7 @@ class BCallService : BroadcastReceiver()  {
     }
 
     private fun sqlDB(gubun: String) {
+
         val phoneNumber = rectitle?.split("_")?.get(1)
         val agentNum = "1"
         val recNum = rectitle
@@ -120,10 +123,10 @@ class BCallService : BroadcastReceiver()  {
 
             val arrayList = ArrayList<String>()
             File(path).walkBottomUp().forEach {
-            arrayList.add(it.name)
+                arrayList.add(it.name)
             }
 
-            val len = arrayList.size-2
+            val len = arrayList.size - 2
             val filename = arrayList[len]
 
             var con = FTPClient()
@@ -134,7 +137,7 @@ class BCallService : BroadcastReceiver()  {
             con.enterLocalPassiveMode() // important!
             con.setFileType(FTP.BINARY_FILE_TYPE)
 
-            val data = File(path,filename).toString()
+            val data = File(path, filename).toString()
 
             con.storeFile("$rectitle.m4a", FileInputStream(File(data)))
             FileInputStream(File(data)).close()
