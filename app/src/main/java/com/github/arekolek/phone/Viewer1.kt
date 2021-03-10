@@ -47,7 +47,12 @@ class Viewer1():BaseAdapter(){ //private val items: MutableList<Itemlist>
 
     fun addItem(num: String, startcall: String, gogeak: String, count: String){
         var item:Itemlist? = Itemlist()
-        item?.setNum(num)
+        if(num.length==1) {
+            item?.setNum("0" + num)
+        }
+        else{
+            item?.setNum(num)
+        }
         item?.setStartcall(startcall)
         item?.setGogeak(gogeak)
         item?.setCount(count)

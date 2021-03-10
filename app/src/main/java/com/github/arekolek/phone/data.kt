@@ -12,8 +12,5 @@ class Data {
         fun retundata():String{
             return Ddata
         }
-
-
-
     }
 }

@@ -6,38 +6,45 @@
     android:orientation="horizontal">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="61dp"
         android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
         android:text="No"
-        android:textSize="25dp"
-        android:paddingRight="20dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="통화시작시간"
-        android:textSize="25dp"
-        android:paddingRight="25dp"
-        android:textAlignment="center"
-        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="22dp"
+        android:textStyle="bold"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingRight="24dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="35dp"
         android:text="고객명"
-        android:textAlignment="center"
-        android:textSize="25dp"
+        android:textColor="@color/black"
+        android:textSize="22dp"
+        android:textStyle="bold"
         />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="right"
         android:text="진행단계"
-        android:textSize="25dp"
-        android:textAlignment="center"
-        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="22dp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:paddingLeft="18dp"
+        android:text="통화시작시간"
+        android:textColor="@color/black"
+        android:textSize="22dp"
+        android:textStyle="bold"
         />
 
 </LinearLayout>

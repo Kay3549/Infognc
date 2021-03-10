@@ -17,14 +17,12 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isInvisible
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -53,8 +51,6 @@ class MainActivity : AppCompatActivity()  {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         //checkDefaultDialer()
-
-
 
         val br : BroadcastReceiver = BCallService()
         val filter = IntentFilter().apply {
@@ -134,6 +130,20 @@ class MainActivity : AppCompatActivity()  {
             var intent = Intent(this, WH_DialerActivity::class.java)
             intent.putExtra("DB", data[position-1])
             startActivity(intent)
+        }
+
+        // 액션바 실행
+        var susin = findViewById<Button>(R.id.recv)
+        susin.isInvisible=true
+
+        var action1 = findViewById<Button>(R.id.coun)
+        action1.isEnabled = false
+
+        var action2 = findViewById<Button>(R.id.history)
+        action2.setOnClickListener {
+            val intent = Intent(applicationContext, MainActivity_list::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 
@@ -222,26 +232,6 @@ class MainActivity : AppCompatActivity()  {
         } else {
             Log.d("sqlDB", "Connection is null")
         }
-    }
-
-    //액션바
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        return true
-    }
-
-    //액션바 클릭시 동작
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id: Int = item.itemId
-        // 상담
-        //이력
-        if (id == R.id.action_btn2) {
-            val intent = Intent(applicationContext, MainActivity_list::class.java)
-            startActivity(intent)
-            finish()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun checkDefaultDialer() {

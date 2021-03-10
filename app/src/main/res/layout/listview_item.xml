@@ -1,44 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
->
-    
+    android:layout_centerVertical="true"
+    >
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/num"
+        android:layout_width="43dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:paddingLeft="5dp"
         android:text="No"
-        android:paddingLeft="10dp"
-        android:paddingRight="40dp"
-        android:textSize="20dp"/>
-    <TextView
-        android:id="@+id/gogaek"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="고객이름"
-        android:layout_below="@+id/num"
-        android:paddingRight="35dp"
+        android:textColor="@color/black"
         android:textSize="20dp"
         />
 
     <TextView
-        android:id="@+id/db"
+        android:id="@+id/gogaek"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="DB적재일"
-        android:layout_below="@+id/gogaek"
-        android:paddingRight="30dp"
-        android:textAlignment="center"
-        android:textSize="20dp"/>
+        android:layout_height="30dp"
+        android:gravity="left"
+        android:paddingLeft="50dp"
+        android:paddingRight="48dp"
+        android:text="고객이름"
+        android:textSize="14dp"
+        />
 
     <TextView
         android:id="@+id/count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="91dp"
+        android:layout_height="34dp"
+        android:gravity="center"
         android:text="진행단계"
-        android:layout_below="@+id/db"
-        android:textAlignment="center"
-        android:textSize="20dp"/>
+        android:textSize="14dp"
+        />
+
+    <TextView
+        android:id="@+id/db"
+        android:layout_width="120dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:paddingLeft="35dp"
+        android:text="DB적재일"
+        android:textSize="14dp"
+        />
+
 
 </LinearLayout>

@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isInvisible
 import kotlinx.android.synthetic.main.activity_main_history.*
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
@@ -46,6 +47,23 @@ class MainActivity_history : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_history)
+
+        // 액션바 실행
+        var susin = findViewById<Button>(R.id.recv)
+        susin.isInvisible=true
+
+        var action1 = findViewById<Button>(R.id.coun)
+        action1.setOnClickListener {
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        var action2 = findViewById<Button>(R.id.history)
+        action2.setOnClickListener {
+            val intent = Intent(applicationContext, MainActivity_list::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
@@ -100,7 +118,7 @@ class MainActivity_history : AppCompatActivity() {
 
         path = this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
         //path = "/storage/emulated/0/Call"
-        id = Data.retundata()
+        id = recNum1.text as String
 
         listen.setOnClickListener() {
             if (start == 0) {
@@ -138,6 +156,28 @@ class MainActivity_history : AppCompatActivity() {
             listen.text="듣기"
             val file = File(path)
             file.deleteRecursively()
+        }
+    }
+
+    private fun FileDownload() {
+
+        try {
+            var con = FTPClient()
+            con.connect("192.168.1.206")
+            con.login("administrator", ".Digital")
+            con.changeWorkingDirectory("/202102")
+            con.enterLocalPassiveMode();
+            con.setFileType(FTP.BINARY_FILE_TYPE);
+            val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "$id.m4a")
+
+            var fos = FileOutputStream(file)
+            con.retrieveFile("$id.m4a", fos)
+
+            con.logout()
+            con.disconnect()
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -233,57 +273,5 @@ class MainActivity_history : AppCompatActivity() {
             Log.d("sqlDB", "Connection is null")
         }
     }
-
-    private fun FileDownload() {
-
-        try {
-            var con = FTPClient()
-            con.connect("192.168.1.206")
-            con.login("administrator", ".Digital")
-            con.changeWorkingDirectory("/202102")
-            con.enterLocalPassiveMode();
-            con.setFileType(FTP.BINARY_FILE_TYPE);
-            val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "$id.m4a")
-
-            var fos = FileOutputStream(file)
-            con.retrieveFile("$id.m4a", fos)
-
-            con.logout()
-            con.disconnect()
-            Log.e("============", "dohfdhfidhfidhfidhfdhifhd")
-
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    //액션바
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        return true
-    }
-
-    //액션바 클릭시 동작
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id: Int = item.getItemId()
-        // 상담
-        if (id == R.id.action_btn1) {
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-            return true
-        }
-        //이력
-        if (id == R.id.action_btn2) {
-            val intent = Intent(applicationContext, MainActivity_list::class.java)
-            startActivity(intent)
-            finish()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-
-
 }
 

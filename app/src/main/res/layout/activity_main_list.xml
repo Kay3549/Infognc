@@ -7,6 +7,12 @@
     android:orientation="vertical"
     tools:context=".MainActivity_list">
 
+    <include
+        android:id="@+id/topView"
+        layout="@layout/infognc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <ListView
         android:id="@+id/listview_sangdam"
         android:layout_width="match_parent"

@@ -7,8 +7,10 @@ import android.os.StrictMode
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isInvisible
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -81,6 +83,24 @@ class Logindetail : AppCompatActivity() {
 
         var Contactrat = findViewById<TextView>(R.id.Contactrate)
         Contactrat.setText(a?.get(6))
+
+
+        // 액션바 실행
+        var susin = findViewById<Button>(R.id.recv)
+        susin.isInvisible=true
+
+        var action1 = findViewById<Button>(R.id.coun)
+        action1.setOnClickListener {
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        var action2 = findViewById<Button>(R.id.history)
+        action2.setOnClickListener {
+            val intent = Intent(applicationContext, MainActivity_list::class.java)
+            startActivity(intent)
+            finish()
+        }
 
     }
 
@@ -265,33 +285,5 @@ class Logindetail : AppCompatActivity() {
         } else {
             Log.d("sqlDB", "Connection is null")
         }
-    }
-
-
-    //액션바
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        return true
-    }
-
-    //액션바 클릭시 동작
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id: Int = item.getItemId()
-        // 상담
-        if (id == R.id.action_btn1) {
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            startActivity(intent)}
-        //상담이력
-        if (id == R.id.action_btn2) {
-            val intent = Intent(applicationContext, MainActivity_list::class.java)
-            startActivity(intent)
-            finish()
-            return true
-        }
-        // 수신
-//        if (id == R.id.action_btn3) {
-//            val intent = Intent(applicationContext, MainActivity::class.java)
-//            startActivity(intent)}
-        return super.onOptionsItemSelected(item)
     }
 }

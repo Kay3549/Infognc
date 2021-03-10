@@ -29,6 +29,7 @@ import androidx.core.graphics.red
 import androidx.core.graphics.toColor
 import androidx.core.net.toUri
 import androidx.core.view.get
+import androidx.core.view.isInvisible
 import io.reactivex.disposables.Disposables
 import kotlinx.android.synthetic.main.activity_logindetail.*
 import kotlinx.android.synthetic.main.listview_item.*
@@ -79,6 +80,15 @@ class WH_DialerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.wh_activity_main_click)
+
+        // 액션바 실행
+        var susin = findViewById<Button>(R.id.recv)
+
+        var action1 = findViewById<Button>(R.id.coun)
+        action1.isEnabled = false
+
+        var action2 = findViewById<Button>(R.id.history)
+        action2.isEnabled = false
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
@@ -504,66 +514,16 @@ class WH_DialerActivity : AppCompatActivity() {
                 // 통화중 아님
                 TelephonyManager.CALL_STATE_IDLE -> {
                     isCalling = false
-                    insertbtn.visibility = View.VISIBLE
-                    call1.visibility = View.VISIBLE
-                    call2.visibility = View.VISIBLE
-                    call3.visibility = View.VISIBLE
                 }
                 // 통화중
                 TelephonyManager.CALL_STATE_OFFHOOK -> {
                     isCalling = true
-                    insertbtn.visibility = View.GONE
-                    call1.visibility = View.GONE
-                    call2.visibility = View.GONE
-                    call3.visibility = View.GONE
                 }
                 // 통화벨울림
                 TelephonyManager.CALL_STATE_RINGING -> {
                     isCalling = true
-                    insertbtn.visibility = View.GONE
-                    call1.visibility = View.GONE
-                    call2.visibility = View.GONE
-                    call3.visibility = View.GONE
                 }
             }
         }
-    }
-
-
-    //액션바
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-
-        var item = menu?.findItem(R.id.action_btn3)
-
-
-            if (isCalling == true) {
-                item?.setVisible(true)
-            } else {
-                item?.setVisible(false)
-            }
-
-        return true
-    }
-
-    //액션바 클릭시 동작
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id: Int = item.getItemId()
-        // 상담
-        if (id == R.id.action_btn1) {
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-            return true
-        }
-        //이력
-        if (id == R.id.action_btn2) {
-            val intent = Intent(applicationContext, MainActivity_list::class.java)
-            startActivity(intent)
-            finish()
-            return true
-        }
-
-        return super.onOptionsItemSelected(item)
     }
 }

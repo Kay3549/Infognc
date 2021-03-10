@@ -7,11 +7,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isInvisible
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -92,6 +90,19 @@ class MainActivity_list : AppCompatActivity() {
             intent.putExtra("DB", data[position-1])
             startActivity(intent)
         }
+
+        // 액션바 실행
+        var susin = findViewById<Button>(R.id.recv)
+        susin.isInvisible=true
+
+        var action1 = findViewById<Button>(R.id.coun)
+        action1.setOnClickListener {
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        var action2 = findViewById<Button>(R.id.history)
+        action2.isEnabled = false
     }
 
     // 뒤로가기 2번
@@ -178,25 +189,5 @@ class MainActivity_list : AppCompatActivity() {
         } else{
             Log.d("sqlDB", "Connection is null")
         }
-    }
-
-
-    //액션바
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        return true
-    }
-
-    //액션바 클릭시 동작
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id: Int = item.getItemId()
-        // 상담
-        if (id == R.id.action_btn1) {
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
     }
 }

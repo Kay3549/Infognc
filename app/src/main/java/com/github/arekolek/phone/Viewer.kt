@@ -40,20 +40,23 @@ class Viewer():BaseAdapter(){ //private val items: MutableList<Itemlist>
         gogeaktextview.setText(item.getGogeak())
         counttextview.setText(item.getCount())
         dbtextview.setText(item.getDb())
-        /*convertView.num.text = item.num
-        convertView.gogaek.text = item.gogeak
-        convertView.count.text = item.count
-        convertView.db.text = item.db*/
 
         return convertView
     }
 
     fun addItem(num: String, gogeak: String, count: String, db: String){
         var item:Itemlist? = Itemlist()
-        item?.setNum(num)
+        if(num.length==1) {
+            item?.setNum("0" + num)
+        }
+        else{
+            item?.setNum(num)
+        }
         item?.setGogeak(gogeak)
         item?.setCount(count)
         item?.setDb(db)
+
+
 
         if (item != null) {
             listViewItemList.add(item)

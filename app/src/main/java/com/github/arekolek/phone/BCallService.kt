@@ -115,7 +115,7 @@ class BCallService : BroadcastReceiver()  {
 
 
     private fun connFtp() {
-        var managedCusor: Cursor? = contentResolver.query(CallLog.Calls.CONTENT_URI,null,null,null,null,null)
+        //var managedCusor: Cursor? = contentResolver.query(CallLog.Calls.CONTENT_URI,null,null,null,null,null)
 //        managedCusor?.moveToNext()
 //        var callList : Int? = managedCusor?.getColumnIndex(CallLog.Calls.NUMBER) // 전화번호
 //        val recentNum = callList?.let { managedCusor?.getString(it) }

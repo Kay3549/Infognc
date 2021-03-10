@@ -1,48 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
->
-    
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/num"
-        android:text="No"
-        android:paddingLeft="10dp"
-        android:paddingRight="35dp"
-        android:textSize="20dp"/>
+    android:layout_centerVertical="true"
+    >
 
     <TextView
-        android:id="@+id/startcall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="15dp"
-        android:text="통화시작시간"
-        android:layout_below="@+id/num"
-        android:paddingRight="30dp"
+        android:id="@+id/num"
+        android:layout_width="43dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:paddingLeft="5dp"
+        android:text="No"
+        android:textColor="@color/black"
+        android:textSize="20dp"
         />
 
     <TextView
         android:id="@+id/gogaek"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="103dp"
+        android:layout_height="34dp"
+        android:layout_marginLeft="10dp"
+        android:gravity="center"
+        android:paddingLeft="5dp"
         android:text="고객이름"
-        android:layout_below="@+id/startcall"
-        android:paddingRight="35dp"
-        android:textSize="20dp"
+        android:textSize="14dp"
         />
 
     <TextView
         android:id="@+id/count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/gogaek"
+        android:layout_width="105dp"
+        android:layout_height="30dp"
+        android:gravity="center"
         android:text="진행단계"
-        android:textAlignment="center"
-        android:textSize="20dp"
+        android:textSize="14dp"
         />
 
+    <TextView
+        android:id="@+id/startcall"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:paddingLeft="10dp"
+        android:text="통화시작시간"
+        android:textSize="14dp"
+        />
 
 
 </LinearLayout>

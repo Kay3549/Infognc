@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isInvisible
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.CookieHandler
@@ -34,6 +35,7 @@ class Login : AppCompatActivity() {
 
         //퍼미션 확인
         permissionCheck()
+        hide()
 
         var inputId: EditText = findViewById(R.id.et_id)
         var inputPw: EditText = findViewById(R.id.et_pass)
@@ -44,8 +46,21 @@ class Login : AppCompatActivity() {
         loginBtn.setOnClickListener() {
             loginConnection(inputId,inputPw)
         }
+
     }
 
+    /**
+     * 툴바 버튼 숨김
+     * */
+    private fun hide() {
+        var btn1: Button = findViewById(R.id.coun)
+        var btn2: Button = findViewById(R.id.recv)
+        var btn3: Button = findViewById(R.id.history)
+
+        btn1.isInvisible=true
+        btn2.isInvisible=true
+        btn3.isInvisible=true
+    }
 
     /**
      * 로그인 성공시 성공 메시지와 함께 다음 ACTIVITY 로 이동후 FINISH ,로그인 실패시 실패 메시지만 날림
