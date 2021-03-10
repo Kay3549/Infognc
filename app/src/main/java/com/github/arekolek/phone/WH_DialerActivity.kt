@@ -16,10 +16,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.Window
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
@@ -35,14 +33,14 @@ import kotlinx.android.synthetic.main.activity_logindetail.*
 import kotlinx.android.synthetic.main.listview_item.*
 import kotlinx.android.synthetic.main.wh_activity_main_click.*
 import kotlinx.coroutines.*
+import net.khirr.library.foreground.Foreground
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.sql.Statement
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import net.khirr.library.foreground.Foreground
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -179,8 +177,8 @@ class WH_DialerActivity : AppCompatActivity() {
         var insertbtn = findViewById<Button>(R.id.insertbtn)
         insertbtn.setOnClickListener {
             Log.d("click", "Click")
-            Log.d("data","data: "+formatted)
-            Log.d("data","아아아아아: "+idxCounDB)
+            Log.d("data", "data: " + formatted)
+            Log.d("data", "아아아아아: " + idxCounDB)
             Toast.makeText(this, "상담 저장 완료", Toast.LENGTH_SHORT).show()
 
             insertDB()
@@ -197,7 +195,7 @@ class WH_DialerActivity : AppCompatActivity() {
     }
 
     private fun remove(){
-        var sf:SharedPreferences  = getSharedPreferences(sfName,0)
+        var sf:SharedPreferences  = getSharedPreferences(sfName, 0)
         var editor:SharedPreferences.Editor = sf.edit()
         editor.remove("formatted")
         editor.commit()
@@ -233,7 +231,7 @@ class WH_DialerActivity : AppCompatActivity() {
         }
     }
 
-    private fun passdata(number:String) {
+    private fun passdata(number: String) {
 
         var k = number.length
         var phoneNum: String? = ""
@@ -257,7 +255,7 @@ class WH_DialerActivity : AppCompatActivity() {
         val call = Intent(ACTION_CALL, Uri.parse("tel:${number}"))
             launch {
                 if (Foreground.isBackground()) {
-                    Log.e("tag",Foreground.isBackground().toString())
+                    Log.e("tag", Foreground.isBackground().toString())
                     delay(1100)
                     reCreateMainActivity()
                 }
@@ -267,7 +265,7 @@ class WH_DialerActivity : AppCompatActivity() {
 
     private fun setTextView() {
 
-        var sf:SharedPreferences  = getSharedPreferences(sfName,0)
+        var sf:SharedPreferences  = getSharedPreferences(sfName, 0)
         var fomet = sf.getString("formatted", "")
         if (fomet != null) {
             formatted = fomet
@@ -321,7 +319,7 @@ class WH_DialerActivity : AppCompatActivity() {
         val launchIntent = Intent(this, WH_DialerActivity::class.java).addFlags(
             FLAG_ACTIVITY_CLEAR_TOP)
 
-        var sf: SharedPreferences = getSharedPreferences(sfName,0)
+        var sf: SharedPreferences = getSharedPreferences(sfName, 0)
         var editor: SharedPreferences.Editor = sf.edit()
         editor.putString("formatted", formatted)
         editor.commit()
@@ -405,14 +403,14 @@ class WH_DialerActivity : AppCompatActivity() {
         var name = custName.text.toString()
         var counStepsp = findViewById<Spinner>(R.id.counStep)
         var selcectstep = counStepsp.selectedItem.toString()
-        Log.d("selcectstep","selcectstep: " + selcectstep)
+        Log.d("selcectstep", "selcectstep: " + selcectstep)
         var step = ""
         var codeitem = CodeItem
         var codename = CodeName
         for(i in codeitem.indices){
             var cd = codeitem.get(i)
             var cd2 = codename.get(i)
-            Log.d("step", "cd: " + cd +" cd2: " + cd2)
+            Log.d("step", "cd: " + cd + " cd2: " + cd2)
             if(cd2 == selcectstep){
                 step = cd
             }
@@ -493,12 +491,12 @@ class WH_DialerActivity : AppCompatActivity() {
                 while(resultSet.next()){
                     var codeItem = resultSet.getString(1)
                     var codeName = resultSet.getString(2)
-                    Log.d("code","codeItem: " + codeItem+", codeName: "+ codeName)
+                    Log.d("code", "codeItem: " + codeItem + ", codeName: " + codeName)
 
                     CodeName.add(codeName)
                     CodeItem.add(codeItem)
                 }
-            } catch (e:SQLException){
+            } catch (e: SQLException){
                 e.printStackTrace()
             }
         } else{
@@ -514,14 +512,26 @@ class WH_DialerActivity : AppCompatActivity() {
                 // 통화중 아님
                 TelephonyManager.CALL_STATE_IDLE -> {
                     isCalling = false
+                    insertbtn.visibility = View.VISIBLE
+                    call1.visibility = View.VISIBLE
+                    call2.visibility = View.VISIBLE
+                    call3.visibility = View.VISIBLE
                 }
                 // 통화중
                 TelephonyManager.CALL_STATE_OFFHOOK -> {
                     isCalling = true
+                    insertbtn.visibility = View.GONE
+                    call1.visibility = View.GONE
+                    call2.visibility = View.GONE
+                    call3.visibility = View.GONE
                 }
                 // 통화벨울림
                 TelephonyManager.CALL_STATE_RINGING -> {
                     isCalling = true
+                    insertbtn.visibility = View.GONE
+                    call1.visibility = View.GONE
+                    call2.visibility = View.GONE
+                    call3.visibility = View.GONE
                 }
             }
         }

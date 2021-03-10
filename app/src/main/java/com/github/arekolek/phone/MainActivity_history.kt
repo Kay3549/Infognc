@@ -9,7 +9,7 @@ import android.os.StrictMode
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.*
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import kotlinx.android.synthetic.main.activity_main_history.*
@@ -36,7 +36,7 @@ class MainActivity_history : AppCompatActivity() {
     private var CodeItem = ArrayList<String>()
     private var CodeName = ArrayList<String>()
 
-    private var id = ""
+    private var id:String = ""
     var path = ""
     val arrayList = ArrayList<String>()
     val audioPlay = MediaPlayer()
@@ -141,7 +141,6 @@ class MainActivity_history : AppCompatActivity() {
                     }
                 }
 
-
             } else {
                 start = 0
                 listen.text = "듣기"
@@ -149,35 +148,12 @@ class MainActivity_history : AppCompatActivity() {
                     audioPlay.pause()
                 }
             }
-
         }
 
         audioPlay.setOnCompletionListener {
             listen.text="듣기"
             val file = File(path)
             file.deleteRecursively()
-        }
-    }
-
-    private fun FileDownload() {
-
-        try {
-            var con = FTPClient()
-            con.connect("192.168.1.206")
-            con.login("administrator", ".Digital")
-            con.changeWorkingDirectory("/202102")
-            con.enterLocalPassiveMode();
-            con.setFileType(FTP.BINARY_FILE_TYPE);
-            val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "$id.m4a")
-
-            var fos = FileOutputStream(file)
-            con.retrieveFile("$id.m4a", fos)
-
-            con.logout()
-            con.disconnect()
-
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
         }
     }
 
@@ -197,7 +173,7 @@ class MainActivity_history : AppCompatActivity() {
                             "on coun.custNum = info.custNum\n" +
                             "where coun.agentNum = '1' and coun.custNum='"+phnum+"'"
                 val resultSet = statement.executeQuery(sql) // DB
-                Log.d("sql", "sql: "+sql)
+                Log.d("sql", "sql: " + sql)
 
                 while (resultSet.next()) {
                     var counStep:String? = resultSet.getString(9)
@@ -266,12 +242,68 @@ class MainActivity_history : AppCompatActivity() {
                     CodeName.add(codeName)
                     CodeItem.add(codeItem)
                 }
-            } catch (e:SQLException){
+            } catch (e: SQLException){
                 e.printStackTrace()
             }
         } else{
             Log.d("sqlDB", "Connection is null")
         }
     }
+
+    private fun FileDownload() {
+
+        try {
+            var con = FTPClient()
+            con.connect("192.168.1.206")
+            con.login("administrator", ".Digital")
+            con.changeWorkingDirectory("/202102")
+            con.enterLocalPassiveMode();
+            con.setFileType(FTP.BINARY_FILE_TYPE);
+            val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "$id.m4a")
+            val directory = File(path)
+
+            if (!directory.exists()) {       // 원하는 경로에 폴더가 있는지 확인
+                directory.mkdirs() // 하위폴더를 포함한 폴더를 전부 생성
+            }
+
+            var fos = FileOutputStream(file)
+            con.retrieveFile("$id.m4a", fos)
+
+            con.logout()
+            con.disconnect()
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    //액션바
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    //액션바 클릭시 동작
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id: Int = item.getItemId()
+        // 상담
+        if (id == R.id.action_btn1) {
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return true
+        }
+        //이력
+        if (id == R.id.action_btn2) {
+            val intent = Intent(applicationContext, MainActivity_list::class.java)
+            startActivity(intent)
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
+
 }
 

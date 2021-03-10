@@ -16,10 +16,10 @@
         android:usesCleartextTraffic="true"
         >
         <activity android:name=".Logindetail" />
-        <!-- http 모두 허용 android:usesCleartextTraffic="true" -->
-        <!-- <activity android:name=".Login"/> -->
+
         <activity android:name=".MainActivity" />
-        <activity android:name=".WH_DialerActivity" />
+        <activity android:name=".WH_DialerActivity" /> <!-- http 모두 허용 android:usesCleartextTraffic="true" -->
+        <!-- <activity android:name=".Login"/> -->
         <activity android:name=".MainActivity_list" />
         <activity android:name=".MainActivity_history" />
         <activity
@@ -46,6 +46,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".WHservice"
+            android:enabled="true"
+            android:exported="true"
+            ></service>
 
     </application>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -56,7 +61,8 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+
     <uses-permission android:name="android.permission.REORDER_TASKS" />
 
 </manifest>

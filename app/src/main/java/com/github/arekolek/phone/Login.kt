@@ -1,8 +1,10 @@
 package com.github.arekolek.phone
 
 import android.content.Intent
+import android.database.Cursor
 import android.os.Build
 import android.os.Bundle
+import android.provider.CallLog
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -25,6 +27,8 @@ import com.github.arekolek.phone.Permission
  * @since 2021-02-23
  * */
 class Login : AppCompatActivity() {
+
+
 
     // 멀티퍼미션 추가
     private var permission:Permission = Permission()
