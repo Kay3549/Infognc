@@ -16,7 +16,7 @@ class WHservice : Service() {
 
     override fun onCreate() {
 
-        Thread.sleep(1100)
+        Thread.sleep(500)
 
         super.onCreate()
         var managedCusor: Cursor? = contentResolver.query(
@@ -39,6 +39,7 @@ class WHservice : Service() {
         val AcallList = callList?.let { managedCusor?.getString(it) } //전화번호
 
         if (AcallList != null) {
+            Data.phonenumber = AcallList
             Log.e("======전화번호",AcallList)
         }
         if (AcallList != null) {

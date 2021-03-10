@@ -91,9 +91,9 @@ class WH_DialerActivity : AppCompatActivity() {
         managedCusor?.moveToNext()
 
         var callList: Int? = managedCusor?.getColumnIndex(CallLog.Calls.NUMBER) // 전화번호
-        var date: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DATE) // 전화 시작시간
+/*        var date: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DATE) // 전화 시작시간
         var duration: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DURATION) // 통화 얼마나 했는지
-        var type: Int? = managedCusor?.getColumnIndex(CallLog.Calls.TYPE) // 콜타입
+        var type: Int? = managedCusor?.getColumnIndex(CallLog.Calls.TYPE) // 콜타입*/
 
         val AcallList = callList?.let { managedCusor?.getString(it) } //전화번호
 
@@ -232,11 +232,13 @@ class WH_DialerActivity : AppCompatActivity() {
         call1.setOnClickListener {
             Data.callStartTime = System.currentTimeMillis()
             number = phoneNum.text as String
+            passdata(number)
             makeCall()
         }
         call2.setOnClickListener {
             Data.callStartTime = System.currentTimeMillis()
             number = callNum.text as String
+            passdata(number)
             makeCall()
         }
         call3.setOnClickListener {
