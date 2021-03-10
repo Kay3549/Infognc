@@ -51,8 +51,9 @@ class BCallService : BroadcastReceiver() {
             Data.callEndTime = System.currentTimeMillis()
             val intent = Intent(context,WHservice::class.java)
             context.startService(intent)
-            Toast.makeText(context,"asdf",Toast.LENGTH_SHORT).show()
             rectitle = Data.retundata() // 녹취 키 가져오기
+            Log.e("=============broad", Data.phonenumber)
+            Log.e("=============broad", "asdadsfasdfasfdadsf")
             context.stopService(intent)
 
 //            connect()     //db connect
