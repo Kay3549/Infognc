@@ -79,6 +79,29 @@ class WH_DialerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.wh_activity_main_click)
 
+        var managedCusor: Cursor? = contentResolver.query(
+            CallLog.Calls.CONTENT_URI,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+
+        managedCusor?.moveToNext()
+
+        var callList: Int? = managedCusor?.getColumnIndex(CallLog.Calls.NUMBER) // 전화번호
+        var date: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DATE) // 전화 시작시간
+        var duration: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DURATION) // 통화 얼마나 했는지
+        var type: Int? = managedCusor?.getColumnIndex(CallLog.Calls.TYPE) // 콜타입
+
+        val AcallList = callList?.let { managedCusor?.getString(it) } //전화번호
+
+        if (AcallList != null) {
+            Log.e("======전화번호",AcallList)
+        }
+
+
         // 액션바 실행
         var susin = findViewById<Button>(R.id.recv)
 
@@ -180,9 +203,6 @@ class WH_DialerActivity : AppCompatActivity() {
 
         var insertbtn = findViewById<Button>(R.id.insertbtn)
         insertbtn.setOnClickListener {
-            Log.d("click", "Click")
-            Log.d("data", "data: " + formatted)
-            Log.d("data", "아아아아아: " + idxCounDB)
             Toast.makeText(this, "상담 저장 완료", Toast.LENGTH_SHORT).show()
 
             insertDB()
@@ -210,17 +230,17 @@ class WH_DialerActivity : AppCompatActivity() {
         super.onStart()
 
         call1.setOnClickListener {
-
+            Data.callStartTime = System.currentTimeMillis()
             number = phoneNum.text as String
             makeCall()
         }
         call2.setOnClickListener {
-
+            Data.callStartTime = System.currentTimeMillis()
             number = callNum.text as String
             makeCall()
         }
         call3.setOnClickListener {
-
+            Data.callStartTime = System.currentTimeMillis()
             number = dirctNum.text.toString()
             passdata(number)
             makeCall()

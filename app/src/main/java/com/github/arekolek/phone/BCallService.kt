@@ -9,6 +9,7 @@ import android.provider.CallLog
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
+import kotlinx.coroutines.delay
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import java.io.File
@@ -41,7 +42,7 @@ class BCallService : BroadcastReceiver() {
 
         //통화가 시작되었을 때
         if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
-            Data.callStartTime = System.currentTimeMillis()
+
 //            connect()
 //            sqlDB("ACTIVE")
 
@@ -56,7 +57,9 @@ class BCallService : BroadcastReceiver() {
             Log.d("===============","phonenumber: " + Data.phonenumber)
             val intent = Intent(context,WHservice::class.java)
             context.startService(intent)
+            Toast.makeText(context,"asdf",Toast.LENGTH_SHORT).show()
             rectitle = Data.retundata() // 녹취 키 가져오기
+            context.stopService(intent)
 
 //            connect()     //db connect
 //            sqlDB("DISCONNECTED")  // db 적재

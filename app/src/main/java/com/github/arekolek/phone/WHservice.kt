@@ -7,12 +7,16 @@ import android.os.Binder
 import android.os.IBinder
 import android.provider.CallLog
 import android.util.Log
+import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 class WHservice : Service() {
 
     override fun onCreate() {
+
+        Thread.sleep(1100)
 
         super.onCreate()
         var managedCusor: Cursor? = contentResolver.query(
@@ -23,7 +27,9 @@ class WHservice : Service() {
             null,
             null
         )
+
         managedCusor?.moveToNext()
+
         var callList: Int? = managedCusor?.getColumnIndex(CallLog.Calls.NUMBER) // 전화번호
         var date: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DATE) // 전화 시작시간
         var duration: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DURATION) // 통화 얼마나 했는지
@@ -31,23 +37,27 @@ class WHservice : Service() {
 
 
         val AcallList = callList?.let { managedCusor?.getString(it) } //전화번호
+
+        if (AcallList != null) {
+            Log.e("======전화번호",AcallList)
+        }
         if (AcallList != null) {
             passdata(AcallList)
         }
 
 
-        val Adate = date?.let { managedCusor?.getString(it) } //전화 시작시간
-        if (Adate != null) {
-            RingTime(Adate)
+        val Aduration = duration?.let { managedCusor?.getString(it) } //얼마나 통화했는지
+        if (Aduration != null) {
+            RingTime(Aduration)
         }
 
-
+        val Adate = date?.let { managedCusor?.getString(it) } //전화 시작시간
         val Atype = type?.let { managedCusor?.getString(it) } //콜타입
-        val Aduration = duration?.let { managedCusor?.getString(it) } //얼마나 통화했는지
+
 
 
 //        val callDate: String? = date?.let { managedCusor?.getString(it) }
-//        val callDayTime = Date(Long.valueOf(callDate))
+//        val callDayTime = Date(java.Long.valueOf(callDate))
 //        val formatter = SimpleDateFormat("yy-MM-dd_HH:mm:ss.SSS")
 //        val dateString = formatter.format(callDayTime)
     }
@@ -58,14 +68,15 @@ class WHservice : Service() {
 
     private fun RingTime(Aduration : String){
 
-        val start : Long = Data.callStartTime/1000
-        val end : Long = Data.callEndTime/1000
-        val duration :Long =Aduration.toLong()
+        val start : Long = Data.callStartTime
+        val end : Long = Data.callEndTime
+        val duration :Long =java.lang.Long.valueOf(Aduration)
 
-        Data.ringtime = ((end - duration)-start)/1000
+        Data.ringtime = (end-duration)/1000
 
-        Log.e("=================링타임", start.toString())
-        Log.e("=================링타임", end.toString())
+        Log.e("=================start타임", start.toString())
+        Log.e("=================end타임", end.toString())
+        Log.e("=================duration", duration.toString())
         Log.e("=================링타임", Data.ringtime.toString())
 
     }
