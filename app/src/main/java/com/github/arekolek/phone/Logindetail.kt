@@ -151,7 +151,6 @@ class Logindetail : AppCompatActivity() {
             try {
                 statement = connection!!.createStatement()
 
-
                 var now = LocalDate.now()
 
                 var Strnow = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -161,7 +160,6 @@ class Logindetail : AppCompatActivity() {
                     "select counstep, count(case when alocdate>'" + datenow + "'  then 'today' end) as " +
                             "'today',count(case when alocdate<'" + datenow + "' then 'pastday' end) " +
                             "as'pastday' from customer_db where alocdate>'2021-01-27' group by counstep"
-
 
                 val resultSet2 = statement.executeQuery(sql2)
 

@@ -52,7 +52,7 @@ class BCallService : BroadcastReceiver() {
             val intent = Intent(context,WHservice::class.java)
             context.startService(intent)
             rectitle = Data.retundata() // 녹취 키 가져오기
-            Log.e("=============broad", Data.phonenumber)
+            Log.e("=============broad","data"+ Data.phonenumber)
             Log.e("=============broad", "asdadsfasdfasfdadsf")
             context.stopService(intent)
 
