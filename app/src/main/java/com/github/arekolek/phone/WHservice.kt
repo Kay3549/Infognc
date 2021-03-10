@@ -37,19 +37,17 @@ class WHservice : Service() {
 
 
         val AcallList = callList?.let { managedCusor?.getString(it) } //전화번호
-
         if (AcallList != null) {
             Data.phonenumber = AcallList
-            Log.e("======전화번호",AcallList)
-        }
-        if (AcallList != null) {
+            Log.e("=============전화", AcallList)
             passdata(AcallList)
         }
 
 
         val Aduration = duration?.let { managedCusor?.getString(it) } //얼마나 통화했는지
         if (Aduration != null) {
-            RingTime(Aduration)
+            Data.duration = Aduration.toLong()
+            RingTime(Data.duration)
         }
 
         val Adate = date?.let { managedCusor?.getString(it) } //전화 시작시간
@@ -67,17 +65,18 @@ class WHservice : Service() {
         return Binder()
     }
 
-    private fun RingTime(Aduration : String){
+    private fun RingTime(Aduration : Long){
+
+        Log.e("=================duration", Aduration.toString())
 
         val start : Long = Data.callStartTime
         val end : Long = Data.callEndTime
-        val duration :Long =java.lang.Long.valueOf(Aduration)
+        val duration :Long  = Aduration
 
-        Data.ringtime = (end-duration)/1000
+        Data.ringtime = ((end-(duration*1000)) - start)/1000
 
         Log.e("=================start타임", start.toString())
         Log.e("=================end타임", end.toString())
-        Log.e("=================duration", duration.toString())
         Log.e("=================링타임", Data.ringtime.toString())
 
     }

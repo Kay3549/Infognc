@@ -43,30 +43,22 @@ class BCallService : BroadcastReceiver() {
         //통화가 시작되었을 때
         if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
 
-            connect()
+//            connect()
 //            sqlDB("ACTIVE")
 
         //통화중이 아닐 때
         } else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
             Data.callEndTime = System.currentTimeMillis()
-
             val intent = Intent(context,WHservice::class.java)
             context.startService(intent)
-            Toast.makeText(context,"asdf",Toast.LENGTH_SHORT).show()
             rectitle = Data.retundata() // 녹취 키 가져오기
-
-            Log.e("error", "phonenumber: " + Data.phonenumber)
-            Log.e("error", "data: " + Data.ringtime)
-            Log.e("error", "data: " + Data.callStartTime)
-            Log.e("error", "data: " + Data.callEndTime)
-            Log.e("error", "data: " + Data.Ddata)
-
-
-              connect()     //db connect
-//            sqlDB("DISCONNECTED")  // db 적재
-//            connFtp() //ftp 올리기
+            Log.e("=============broad", Data.phonenumber)
+            Log.e("=============broad", "asdadsfasdfasfdadsf")
             context.stopService(intent)
 
+//            connect()     //db connect
+//            sqlDB("DISCONNECTED")  // db 적재
+//            connFtp() //ftp 올리기
         }
     }
 
@@ -97,7 +89,6 @@ class BCallService : BroadcastReceiver() {
     private fun sqlDB(gubun: String) {
 
         val phoneNumber = rectitle?.split("_")?.get(1)
-        Log.e("phone","number: " + phoneNumber)
         val agentNum = "1"
         val recNum = rectitle
         val callNum = phoneNumber
@@ -120,8 +111,6 @@ class BCallService : BroadcastReceiver() {
                     val sql =
                         "update call_list set endTime='$formatted', duration='$durations' where recNum='$recNum'"
                     statement.executeQuery(sql) // DB에 정보 넣기
-
-                    Log.d("update", "UPDATE: " + sql)
                 }
 
             } catch (e: SQLException) {
