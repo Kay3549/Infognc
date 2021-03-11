@@ -11,11 +11,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import kotlinx.android.synthetic.main.activity_main_history.*
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
+import org.apache.commons.net.ftp.FTPFile
 import java.io.File
 import java.io.FileOutputStream
 import java.sql.Connection
@@ -137,8 +139,10 @@ class MainActivity_history : AppCompatActivity() {
                     File(path).walkBottomUp().forEach {
                         arrayList.add(it.toString())
                     }
-                    val pf = arrayList[0]
-                    audioPlay.setDataSource(pf)
+//                    val pf = arrayList[0]
+//                    Log.e("====list", pf)
+//                    Log.e("====list", path+"$id.m4a")
+                    audioPlay.setDataSource(path+"/"+"$id.m4a")
                     audioPlay.prepare()
                     audioPlay.start()
                     play = 0
@@ -159,8 +163,6 @@ class MainActivity_history : AppCompatActivity() {
 
         audioPlay.setOnCompletionListener {
             listen.text="듣기"
-            val file = File(path)
-            file.deleteRecursively()
         }
 
         listbtn.setOnClickListener{
@@ -272,7 +274,8 @@ class MainActivity_history : AppCompatActivity() {
             con.login("administrator", ".Digital")
             con.changeWorkingDirectory("/202102")
             con.enterLocalPassiveMode();
-            con.setFileType(FTP.BINARY_FILE_TYPE);
+            con.setFileType(FTP.BINARY_FILE_TYPE)
+
             val file = File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "$id.m4a")
             val directory = File(path)
 
@@ -282,6 +285,8 @@ class MainActivity_history : AppCompatActivity() {
 
             var fos = FileOutputStream(file)
             con.retrieveFile("$id.m4a", fos)
+
+            Toast.makeText(this,id,Toast.LENGTH_SHORT).show()
 
             con.logout()
             con.disconnect()

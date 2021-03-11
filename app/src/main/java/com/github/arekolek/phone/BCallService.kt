@@ -69,6 +69,7 @@ class BCallService : BroadcastReceiver() {
             rectitle = Data.retundata() // 녹취 키 가져오기
 
             when (Data.duration.toString()) {
+
                 //녹취 파일이 생성되지 않았을 때
                 "0" -> {
                     Data.recYN = "0"
@@ -222,6 +223,7 @@ class BCallService : BroadcastReceiver() {
         if (Aduration != null) {
 
             Data.duration = Aduration.toLong()
+            Log.e("==============DDDDDration",Data.duration.toString())
             RingTime(Data.duration)
         }
 
@@ -260,5 +262,6 @@ class BCallService : BroadcastReceiver() {
         val end: Long = Data.callEndTime
         val duration: Long = Aduration
         Data.ringtime = ((end - (duration * 1000)) - start) / 1000
+        Log.e("==============RRRRRingtime",Data.ringtime.toString())
     }
 }
