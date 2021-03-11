@@ -1,6 +1,7 @@
 package com.github.arekolek.phone
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +15,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import java.sql.Connection
 import java.sql.DriverManager
@@ -47,20 +49,23 @@ class Logindetail : AppCompatActivity() {
 
         }
 
-        // 본인 휴대폰 번호 가져오기
-        val manager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+        // 본인휴대폰 가져오기
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(
                 this,
-                Manifest.permission.READ_PHONE_NUMBERS
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED
-        ) {
-            phoneNumber = manager.line1Number
-            Data.setagentPhone(phoneNumber)
-            return
+                arrayOf(Manifest.permission.READ_PHONE_STATE),
+                1
+            )
         }
-
-        var ai = Data.returnagentPhone()
-        Log.e("=====================",ai)
+        //사용자 핸드폰 번호 가져오는 구간
+        val msg = applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        var PhoneNum = msg.line1Number
+        Data.setagentPhone(PhoneNum)
+        if (PhoneNum.startsWith("+82")) {
+            PhoneNum = PhoneNum.replace("+82", "0")
+            //Data.userPhoneNum = PhoneNum
+            Data.setagentPhone(PhoneNum)
+        }
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)

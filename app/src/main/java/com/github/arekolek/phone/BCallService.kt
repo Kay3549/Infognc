@@ -54,7 +54,7 @@ class BCallService : BroadcastReceiver() {
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
             val formatted = formatter.format(time)
             Log.e("=============시작시간", formatted)
-            connect()
+            //connect()
             // sqlDB("ACTIVE")
 
             //통화중이 아닐 때
@@ -72,15 +72,12 @@ class BCallService : BroadcastReceiver() {
                 //녹취 파일이 생성되지 않았을 때
                 "0" -> {
                     Data.recYN = "0"
-                    Toast.makeText(context, "장그레", Toast.LENGTH_SHORT).show()
                     connect()     //db connect
                     sqlDB("DISCONNECTED")  // d 적재
                 }
                 //녹취 파일이 생성되었을 때
                 else -> {
-
                     Data.recYN = "1"
-                    Toast.makeText(context, "빙그레", Toast.LENGTH_SHORT).show()
                     connFtp() //ftp 올리기
                     connect()     //db connect
                     sqlDB("DISCONNECTED")  // d 적재
@@ -144,10 +141,10 @@ class BCallService : BroadcastReceiver() {
 
                 } else if (gubun == "DISCONNECTED") {
                     statement = connection!!.createStatement()
-                    val durations = (System.currentTimeMillis() - datetemp) / 1000
+                    //val durations = (System.currentTimeMillis() - datetemp) / 1000
                     //val sql = "update call_list set recNum='$recNum', endTime='$formatted', duration='$durations', ringDuration='$$ringDuration' ,outCallnum='$$outCallnum',inCallnum='$$inCallnum',recYn='$$recYn'where agentNum='$&agentNum' and startTime='$$startTime'"
                     val sql =
-                        "insert into [smart_DB].[dbo].[call_list] (agentNum,recNum,callType,callNum,startTime,endTime,duration,ringDuration,outCallnum,inCallnum,recYn) values ('" + agentnum + "','$recNum','0','$callNum','" + start + "','" + end + "','" + Data.duration.toString() + "','" + Data.ringtime.toString() + "','" + Data.phonenumber + "','" + agentPhone + "','N')"
+                        "insert into [smart_DB].[dbo].[call_list] (agentNum,recNum,callType,callNum,startTime,endTime,duration,ringDuration,outCallnum,inCallnum,recYn) values ('" + agentnum + "','$recNum','0','$callNum','" + start + "','" + end + "','" + Data.duration.toString() + "','" + Data.ringtime.toString() + "','" + Data.phonenumber + "','" + agentPhone + "','"+Data.recYN+"')"
                     Log.e("sql", sql)
                     statement.executeQuery(sql) // DB에 정보 넣기
                 }

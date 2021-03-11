@@ -44,26 +44,12 @@ class Login : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_PHONE_STATE),
-                1
-            )
-        }
-
         //퍼미션 확인
         permissionCheck()
         hide()
 
 
-        //사용자 핸드폰 번호 가져오는 구간
-        val msg = applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        var PhoneNum = msg.line1Number
-        if (PhoneNum.startsWith("+82")) {
-            PhoneNum = PhoneNum.replace("+82", "0")
-            Data.userPhoneNum = PhoneNum
-        }
+
 
         var inputId: EditText = findViewById(R.id.et_id)
         var inputPw: EditText = findViewById(R.id.et_pass)
@@ -102,6 +88,9 @@ class Login : AppCompatActivity() {
             startActivity(secondIntent)
             finish()
             msg = "Login Success"
+        }
+        else if(result == "False"){
+           return
         }
         toast(msg)
     }
