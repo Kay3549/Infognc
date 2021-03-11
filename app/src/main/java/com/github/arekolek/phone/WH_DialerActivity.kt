@@ -70,6 +70,8 @@ class WH_DialerActivity : AppCompatActivity() {
     private var sfName = "data"
     private var counstep = ""
 
+    private var agentNum = Data.retunagentNum()
+
     companion object {
         const val ROLE_REQUEST_CODE = 2002
         const val REQUEST_PERMISSION = 0
@@ -230,19 +232,16 @@ class WH_DialerActivity : AppCompatActivity() {
         super.onStart()
 
         call1.setOnClickListener {
-            Data.callStartTime = System.currentTimeMillis()
             number = phoneNum.text as String
             passdata(number)
             makeCall()
         }
         call2.setOnClickListener {
-            Data.callStartTime = System.currentTimeMillis()
             number = callNum.text as String
             passdata(number)
             makeCall()
         }
         call3.setOnClickListener {
-            Data.callStartTime = System.currentTimeMillis()
             number = dirctNum.text.toString()
             passdata(number)
             makeCall()
@@ -379,22 +378,23 @@ class WH_DialerActivity : AppCompatActivity() {
     }
 
     fun sqlDB(phnum: String) {
+
         if (connection != null) {
             var statement: Statement? = null
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "select db.custNum,db.counStep,db.alocdate,info.custName,info.custSex,info.custBirth,info.agreeDate,info.agreeType,info.cellNum,info.tellNum,db.idxCounDB \n" +
+                        "select db.custNum,db.counStep,db.alocdate,info.custName,info.custSex,info.custBirth,info.agreeDate,info.agreeType,info.cellNum,info.tellNum,db.idxCounDB \n" +
                             "from customer_db as db  left outer join customer_info as info \n" +
                             "on db.custnum = info.custnum\n" +
-                            "where db.agentNum = '1' and db.custNum = '" + phnum + "'\n"
+                            "where db.delFlag='N' and db.agentNum = '"+agentNum+"' and db.custNum = '" + phnum + "'\n"
                 val resultSet = statement.executeQuery(sql) // DB
 
                 while (resultSet.next()) {
                     var custSex = resultSet.getString(5)
                     custSex = when (resultSet.getString(5)) {
-                        "0" -> "여자"
                         "1" -> "남자"
+                        "2" -> "여자"
                         else -> "  "
                     }
                     var custnum = resultSet.getString(1)
@@ -422,7 +422,7 @@ class WH_DialerActivity : AppCompatActivity() {
     }
 
     fun insertDB() {
-
+        var recnum = Data.retundata()
         var custNum = findViewById<TextView>(R.id.custNum)
         var num = custNum.text.toString()
         var custName = findViewById<TextView>(R.id.custName)
@@ -449,7 +449,8 @@ class WH_DialerActivity : AppCompatActivity() {
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "insert into counsel_list (agentNum,custNum,idxCounDB,custName,counStep,counMemo)values('1','" + num + "','" + idxCounDB + "', '" + name + "','" + step + "','" + memo + "')"
+                    "insert into counsel_list (agentNum,recNum,custNum,idxCounDB,custName,counStep,counMemo)values('"+agentNum+"','"+recnum+"','" + num + "','" + idxCounDB + "', '" + name + "','" + step + "','" + memo + "')"
+
                 Log.d("sql", "SQL: " + sql)
 
                 statement.executeQuery(sql) // DB
@@ -486,7 +487,7 @@ class WH_DialerActivity : AppCompatActivity() {
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "update customer_db set counStep='" + step + "' where custNum='" + num + "' and agentNum='1'"
+                    "update customer_db set counStep='" + step + "' where custNum='" + num + "' and agentNum='"+agentNum+"'"
                 Log.d("sql", "SQL: " + sql)
 
                 statement.executeQuery(sql) // DB

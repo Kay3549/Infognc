@@ -1,15 +1,19 @@
 package com.github.arekolek.phone
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.StrictMode
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.view.isInvisible
 import java.sql.Connection
 import java.sql.DriverManager
@@ -29,8 +33,8 @@ class Logindetail : AppCompatActivity() {
     private val url = "jdbc:jtds:sqlserver://$ip:$port/$database"
     private var connection: Connection? = null
     private var count = ""
-    private var custName:String? = ""
     private var array = ArrayList<String>()
+    private var phoneNumber = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +46,21 @@ class Logindetail : AppCompatActivity() {
             Log.e("TESTACTIVITY:", " 아이디:$id 패스워드:$pw")
 
         }
+
+        // 본인 휴대폰 번호 가져오기
+        val manager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_NUMBERS
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED
+        ) {
+            phoneNumber = manager.line1Number
+            Data.setagentPhone(phoneNumber)
+            return
+        }
+
+        var ai = Data.returnagentPhone()
+        Log.e("=====================",ai)
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
@@ -59,8 +78,9 @@ class Logindetail : AppCompatActivity() {
 
         sqlDB()
 
+        var agentName = Data.retunagentName()
         var name = findViewById<TextView>(R.id.custName)
-        name.setText(custName)
+        name.setText(agentName)
 
         sqlDB2()
 
@@ -132,8 +152,11 @@ class Logindetail : AppCompatActivity() {
 
                 Log.d("list", "list: " + sql)
                 while (resultSet.next()) {
-                    custName = resultSet.getString(7)
-                    Log.d("name", "name: " + custName)
+                    Data.setagentNum(resultSet.getString(1))
+                    Data.setagentID(resultSet.getString(2))
+                    Data.setpart(resultSet.getString(3))
+                    Data.setlevel(resultSet.getString(4))
+                    Data.setagentName(resultSet.getString(7))
                 }
 
             } catch (e: SQLException) {
@@ -148,6 +171,9 @@ class Logindetail : AppCompatActivity() {
     fun sqlDB2() {
         if (connection != null) {
             var statement: Statement? = null
+
+            var agentNum = Data.retunagentNum()
+
             try {
                 statement = connection!!.createStatement()
 
@@ -159,7 +185,9 @@ class Logindetail : AppCompatActivity() {
                 val sql2 =
                     "select counstep, count(case when alocdate>'" + datenow + "'  then 'today' end) as " +
                             "'today',count(case when alocdate<'" + datenow + "' then 'pastday' end) " +
-                            "as'pastday' from customer_db where alocdate>'2021-01-27' group by counstep"
+                            "as'pastday' from customer_db where agentNum = '"+agentNum+"' group by counstep"
+
+                Log.e("sql2",sql2)
 
                 val resultSet2 = statement.executeQuery(sql2)
 
