@@ -134,7 +134,11 @@ class MainActivity : AppCompatActivity()  {
 
         // 액션바 실행
         var susin = findViewById<Button>(R.id.recv)
-        susin.isInvisible=true
+        susin.setOnClickListener{
+            val intent = Intent(applicationContext, Logindetail::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+            finish()
+        }
 
         var action1 = findViewById<Button>(R.id.coun)
         action1.isEnabled = false

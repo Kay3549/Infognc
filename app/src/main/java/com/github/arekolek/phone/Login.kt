@@ -105,7 +105,8 @@ class Login : AppCompatActivity() {
      * */
     private fun loginConnection(inputId: EditText, inputPw: EditText) {
         thread(true) {
-            val inputUrl: String = " http://192.168.1.206/login.asp?userName=${inputId.text}&password=${inputPw.text}"
+//            val inputUrl: String = " http://192.168.1.206/login.asp?userName=${inputId.text}&password=${inputPw.text}"
+            val inputUrl: String = " http://192.168.1.220:8080/api/userid/${inputId.text}/password/${inputPw.text}"
             val url = URL(inputUrl)
             val urlConnection = url.openConnection() as HttpURLConnection
             val streamReader = InputStreamReader(urlConnection.inputStream)

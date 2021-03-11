@@ -192,7 +192,6 @@ class Logindetail : AppCompatActivity() {
                 val resultSet2 = statement.executeQuery(sql2)
 
                 var sum1 = 0
-                var sum2: Double = 0.0
                 var sum3 = 0
                 var sum4 = 0
                 var sum5: Double = 0.0 //04의 갯수
@@ -203,7 +202,6 @@ class Logindetail : AppCompatActivity() {
                 var sum15=0
                 var sum16=0
                 var sum17 =0
-                var sum18=0
                 var sum19=0
 
 
@@ -240,25 +238,27 @@ class Logindetail : AppCompatActivity() {
                     if (today!=null&&countstep == "00"||countstep == "01"||countstep == "02"||countstep == "03"||countstep == "04"||countstep == "05"||
                         countstep == "06"||countstep == "10"||countstep == "11"||countstep == "20"||countstep == "30") {
                         if(today != "0") {
-                            sum12 = sum12 + 1
-                        }
+                            sum12 = sum12 + today.toInt()
+                        } //sum12 총
                     }
 
                     if (today != null && countstep == "00") {
                         Log.d("today","today = null")
                         if(today != "0"){
-                            sum11= sum11 + 1
+
+                            sum11=sum11+today.toInt() //
+//                            sum11= sum11 + 1
                         }
                         //sum11 = sum11 + allcallser.toInt()
 
-                    }//미접촉
+                    }//sum11 미접촉
 
                     if (today!=null&&countstep == "05") {
                         if(today != "0") {
                             var sum9 = allcallser.toInt()
                             sum3 = sum3 + sum9
                         }
-                    }//진행
+                    }//sum3 진행중
 
                     sum16=sum16+pastday.toInt()
 
@@ -278,24 +278,27 @@ class Logindetail : AppCompatActivity() {
                     {
                         if(pastday != "0") {
                             sum19 = sum19 + pastday.toInt() //
-                        }
+                        }//sum19 db미접촉
                     }
                     if(today!=null&&countstep == "04"||countstep == "05"||countstep == "06"||countstep == "10"||countstep == "20")
                     {
                         if(today != "0") {
-                            sum15 = sum15 + 1
-                        }
+                            sum15 =sum15 + today.toInt()
+//                            sum15 = sum15 + 1
+                        }//sum15 가입건
                     }
 
                     if(today!=null&&countstep == "00"|| countstep == "04"||countstep == "05"||countstep == "06"||countstep == "10"||countstep == "11"||countstep == "20")
                     {//접촉률 01 02 03 30 을 제외한 나머지.
                         if(today != "0") {
-                            sum20 = sum20 + 1
+                            sum20 = sum20 + today.toInt()
                         }
                     }
 
                     sum6 = (((sum12.toDouble()- sum20.toDouble()) / sum12.toDouble()) * 100)
                     sum13 = sum6.toInt()
+                    //sum13 접촉률
+
                     Log.d("sum12", "sum12--- : " + sum12)
                     Log.d("sum20", "sum20--- : " + sum20)
                     count =countstep + "|" + sum12 +"|" + sum19+ "|" + sum11+ "|" + sum3 + "|" + sum15 + "|" + sum13

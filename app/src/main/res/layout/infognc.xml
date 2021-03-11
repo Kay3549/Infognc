@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
             android:background="@drawable/shape"
-            android:text="수신"
+            android:text="Info"
             android:textColor="@color/black"
             android:textSize="8pt"
             android:textStyle="bold"

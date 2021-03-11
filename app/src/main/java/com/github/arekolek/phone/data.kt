@@ -67,5 +67,14 @@ class Data {
             return agentPhone
         }
 
+        fun reset(){
+            Ddata=""
+            callStartTime=0
+            callEndTime=0
+            ringtime =0
+            phonenumber =""
+            duration=0
+        }
+
     }
 }
