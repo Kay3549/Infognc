@@ -9,13 +9,64 @@ class Data {
         var ringtime : Long =0
         var phonenumber =""
         var duration : Long =0
+        var recYN = ""
+
+        var agentNum:String = ""
+        var agentID:String = ""
+        var part:String = ""
+        var level:String = ""
+        var agentName:String = ""
+
+        var agentPhone:String = ""
 
         fun setdata(data :String) {
             Ddata =data
         }
-
         fun retundata():String{
             return Ddata
         }
+
+        fun setagentNum(data :String) {
+            agentNum = data
+        }
+        fun retunagentNum():String{
+            return agentNum
+        }
+
+        fun setagentID(data :String) {
+            agentID =data
+        }
+        fun retunagentID():String{
+            return agentID
+        }
+
+        fun setpart(data :String) {
+            part =data
+        }
+        fun retunpart():String{
+            return part
+        }
+
+        fun setlevel(data :String) {
+            level =data
+        }
+        fun retunlevel():String{
+            return level
+        }
+
+        fun setagentName(data :String) {
+            agentName =data
+        }
+        fun retunagentName():String{
+            return agentName
+        }
+
+        fun setagentPhone(data:String){
+            agentPhone = data
+        }
+        fun returnagentPhone():String{
+            return agentPhone
+        }
+
     }
 }

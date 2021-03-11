@@ -31,6 +31,9 @@ class BCallService : BroadcastReceiver() {
     private var datetemp: kotlin.Long = 0
     private var path = "/storage/emulated/0/Call"
 
+    private var agentPhone = Data.returnagentPhone()
+    private var agentnum = Data.retunagentNum()
+
     override fun onReceive(context: Context, intent: Intent) {
 
 
@@ -52,9 +55,9 @@ class BCallService : BroadcastReceiver() {
             val formatted = formatter.format(time)
             Log.e("=============시작시간", formatted)
             connect()
-            sqlDB("ACTIVE")
+            // sqlDB("ACTIVE")
 
-        //통화중이 아닐 때b
+            //통화중이 아닐 때
         } else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
             Thread.sleep(1100)
             Data.callEndTime = System.currentTimeMillis()
@@ -65,10 +68,24 @@ class BCallService : BroadcastReceiver() {
             Getphonenum(context)
             rectitle = Data.retundata() // 녹취 키 가져오기
 
+            when (Data.duration.toString()) {
+                //녹취 파일이 생성되지 않았을 때
+                "0" -> {
+                    Data.recYN = "0"
+                    Toast.makeText(context, "장그레", Toast.LENGTH_SHORT).show()
+                    connect()     //db connect
+                    sqlDB("DISCONNECTED")  // d 적재
+                }
+                //녹취 파일이 생성되었을 때
+                else -> {
 
-            connFtp() //ftp 올리기
-            connect()     //db connect
-            sqlDB("DISCONNECTED")  // d 적재
+                    Data.recYN = "1"
+                    Toast.makeText(context, "빙그레", Toast.LENGTH_SHORT).show()
+                    connFtp() //ftp 올리기
+                    connect()     //db connect
+                    sqlDB("DISCONNECTED")  // d 적재
+                }
+            }
         }
     }
 
@@ -99,27 +116,39 @@ class BCallService : BroadcastReceiver() {
     private fun sqlDB(gubun: String) {
 
         val phoneNumber = rectitle?.split("_")?.get(1)
-        val agentNum = "1"
-        val recNum = rectitle
+        //val agentNum = "1"
+        val recNum = Data.retundata()
+        Log.e("recnum", recNum)
         val callNum = phoneNumber
+
+
         val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-        val formatted = current.format(formatter)
+        //val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+        //val formatted = current.format(formatter)
+
+        var startTime = Data.callStartTime
+        var endTime = Data.callEndTime
+
+        var start = formatter.format(startTime)
+        var end = formatter.format(endTime)
+
         if (connection != null) {
             var statement: Statement? = null
             try {
                 if (gubun == "ACTIVE") {
                     statement = connection!!.createStatement()
                     datetemp = System.currentTimeMillis()
-                    val sql =
-                        "insert into [smart_DB].[dbo].[call_list] (agentNum, recNum,callType,callNum,startTime,endTime,duration) values ('$agentNum','$recNum','0','$callNum','$formatted','','')"
-                    statement.executeQuery(sql) // DB에 정보 넣기
+                    //val sql =  "insert into [smart_DB].[dbo].[call_list] (agentNum, callType,callNum,startTime,outCallnum,inCallnum) values ('$agentNum','0','$callNum','$formatted','$$outCallnum','$$inCallnum')"
+                    //statement.executeQuery(sql) // DB에 정보 넣기
 
                 } else if (gubun == "DISCONNECTED") {
                     statement = connection!!.createStatement()
                     val durations = (System.currentTimeMillis() - datetemp) / 1000
+                    //val sql = "update call_list set recNum='$recNum', endTime='$formatted', duration='$durations', ringDuration='$$ringDuration' ,outCallnum='$$outCallnum',inCallnum='$$inCallnum',recYn='$$recYn'where agentNum='$&agentNum' and startTime='$$startTime'"
                     val sql =
-                        "update call_list set endTime='$formatted', duration='$durations' where recNum='$recNum'"
+                        "insert into [smart_DB].[dbo].[call_list] (agentNum,recNum,callType,callNum,startTime,endTime,duration,ringDuration,outCallnum,inCallnum,recYn) values ('" + agentnum + "','$recNum','0','$callNum','" + start + "','" + end + "','" + Data.duration.toString() + "','" + Data.ringtime.toString() + "','" + Data.phonenumber + "','" + agentPhone + "','N')"
+                    Log.e("sql", sql)
                     statement.executeQuery(sql) // DB에 정보 넣기
                 }
 
@@ -200,7 +229,10 @@ class BCallService : BroadcastReceiver() {
         }
 
         val Adate = date?.let { managedCusor?.getString(it) } //전화시간
-        Log.e("=============목록에서 가져온 전화시간", Adate.toString())
+        var calldaytime = Date(java.lang.Long.valueOf(Adate))
+        var formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+        var callDaydate = formatter.format(calldaytime)
+
 
     }
 
@@ -227,19 +259,9 @@ class BCallService : BroadcastReceiver() {
 
     private fun RingTime(Aduration: Long) {
 
-        Log.e("=================duration", Aduration.toString())
-
         val start: Long = Data.callStartTime
         val end: Long = Data.callEndTime
         val duration: Long = Aduration
-
         Data.ringtime = ((end - (duration * 1000)) - start) / 1000
-
-        Log.e("=================start타임", start.toString())
-        Log.e("=================end타임", end.toString())
-        Log.e("=================링타임", Data.ringtime.toString())
-
     }
-
-
 }

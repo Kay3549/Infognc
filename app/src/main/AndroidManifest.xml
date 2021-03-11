@@ -16,7 +16,6 @@
         android:usesCleartextTraffic="true"
         >
         <activity android:name=".Logindetail" />
-
         <activity android:name=".MainActivity" />
         <activity android:name=".WH_DialerActivity" /> <!-- http 모두 허용 android:usesCleartextTraffic="true" -->
         <!-- <activity android:name=".Login"/> -->
@@ -46,11 +45,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <service
-            android:name=".WHservice"
-            android:enabled="true"
-            android:exported="true"
-            ></service>
 
     </application>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

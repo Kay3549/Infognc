@@ -1,21 +1,17 @@
 package com.github.arekolek.phone
 
 import android.Manifest.permission.CALL_PHONE
-import android.content.Context
 import android.content.Intent
-import android.content.Intent.*
+import android.content.Intent.ACTION_CALL
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 import android.content.SharedPreferences
-import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
-import android.provider.CallLog
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
@@ -23,27 +19,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
-import androidx.core.graphics.green
-import androidx.core.graphics.red
-import androidx.core.graphics.toColor
-import androidx.core.net.toUri
-import androidx.core.view.get
-import androidx.core.view.isInvisible
 import io.reactivex.disposables.Disposables
-import kotlinx.android.synthetic.main.activity_logindetail.*
-import kotlinx.android.synthetic.main.listview_item.*
 import kotlinx.android.synthetic.main.wh_activity_main_click.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.khirr.library.foreground.Foreground
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.sql.Statement
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class WH_DialerActivity : AppCompatActivity() {
@@ -71,6 +58,8 @@ class WH_DialerActivity : AppCompatActivity() {
     private var sfName = "data"
     private var counstep = ""
 
+    private var agentNum = Data.retunagentNum()
+
     companion object {
         const val ROLE_REQUEST_CODE = 2002
         const val REQUEST_PERMISSION = 0
@@ -84,7 +73,11 @@ class WH_DialerActivity : AppCompatActivity() {
         var susin = findViewById<Button>(R.id.recv)
 
         var action1 = findViewById<Button>(R.id.coun)
-        action1.isEnabled = false
+        action1.setOnClickListener {
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         var action2 = findViewById<Button>(R.id.history)
         action2.isEnabled = false
@@ -161,29 +154,17 @@ class WH_DialerActivity : AppCompatActivity() {
         }
 
         // 스피너 데이터 선택 유지
-        if (counstep.equals("00")) {
-            counStepsp.setSelection(0)
-        } else if (counstep.equals("01")) {
-            counStepsp.setSelection(1)
-        } else if (counstep.equals("02")) {
-            counStepsp.setSelection(2)
-        } else if (counstep.equals("03")) {
-            counStepsp.setSelection(3)
-        } else if (counstep.equals("04")) {
-            counStepsp.setSelection(4)
-        } else if (counstep.equals("05")) {
-            counStepsp.setSelection(5)
-        } else if (counstep.equals("06")) {
-            counStepsp.setSelection(6)
-        } else if (counstep.equals("10")) {
-            counStepsp.setSelection(7)
-        } else if (counstep.equals("11")) {
-            counStepsp.setSelection(8)
-        } else if (counstep.equals("20")) {
-            counStepsp.setSelection(9)
-        } else if (counstep.equals("30")) {
-            counStepsp.setSelection(10)
-        }
+        if(counstep.equals("00")){counStepsp.setSelection(0)}
+        else if(counstep.equals("01")){counStepsp.setSelection(1)}
+        else if(counstep.equals("02")){counStepsp.setSelection(2)}
+        else if(counstep.equals("03")){counStepsp.setSelection(3)}
+        else if(counstep.equals("04")){counStepsp.setSelection(4)}
+        else if(counstep.equals("05")){counStepsp.setSelection(5)}
+        else if(counstep.equals("06")){counStepsp.setSelection(6)}
+        else if(counstep.equals("10")){counStepsp.setSelection(7)}
+        else if(counstep.equals("11")){counStepsp.setSelection(8)}
+        else if(counstep.equals("20")){counStepsp.setSelection(9)}
+        else if(counstep.equals("30")){counStepsp.setSelection(10)}
 
         setTextView()
 
@@ -311,29 +292,17 @@ class WH_DialerActivity : AppCompatActivity() {
         }
 
         var spin = intent.getStringExtra("counStep")
-        if (spin.equals("미접촉")) {
-            counStepsp.setSelection(0)
-        } else if (spin.equals("거부")) {
-            counStepsp.setSelection(1)
-        } else if (spin.equals("수신거부")) {
-            counStepsp.setSelection(2)
-        } else if (spin.equals("결번")) {
-            counStepsp.setSelection(3)
-        } else if (spin.equals("부재중")) {
-            counStepsp.setSelection(4)
-        } else if (spin.equals("진행")) {
-            counStepsp.setSelection(5)
-        } else if (spin.equals("예약")) {
-            counStepsp.setSelection(6)
-        } else if (spin.equals("가입신청")) {
-            counStepsp.setSelection(7)
-        } else if (spin.equals("보안요청")) {
-            counStepsp.setSelection(8)
-        } else if (spin.equals("보완완료")) {
-            counStepsp.setSelection(9)
-        } else if (spin.equals("가입완료")) {
-            counStepsp.setSelection(10)
-        }
+        if(spin.equals("미접촉")){counStepsp.setSelection(0)}
+        else if(spin.equals("거부")){counStepsp.setSelection(1)}
+        else if(spin.equals("수신거부")){counStepsp.setSelection(2)}
+        else if(spin.equals("결번")){counStepsp.setSelection(3)}
+        else if(spin.equals("부재중")){counStepsp.setSelection(4)}
+        else if(spin.equals("진행")){counStepsp.setSelection(5)}
+        else if(spin.equals("예약")){counStepsp.setSelection(6)}
+        else if(spin.equals("가입신청")){counStepsp.setSelection(7)}
+        else if(spin.equals("보안요청")){counStepsp.setSelection(8)}
+        else if(spin.equals("보완완료")){counStepsp.setSelection(9)}
+        else if(spin.equals("가입완료")){counStepsp.setSelection(10)}
     }
 
     private fun reCreateMainActivity() {
@@ -346,17 +315,17 @@ class WH_DialerActivity : AppCompatActivity() {
         editor.putString("formatted", formatted)
         editor.commit()
 
-        val dirctNum: TextView = findViewById(R.id.dirctNum)
-        val memoView: TextView = findViewById(R.id.counMemo)
-        val custNum: TextView = findViewById(R.id.custNum)
-        val custBirth: TextView = findViewById(R.id.custBirth)
-        val custName: TextView = findViewById(R.id.custName)
-        val custSex: TextView = findViewById(R.id.custSex)
-        val agreeDate: TextView = findViewById(R.id.agreeDate)
-        val agreeType: TextView = findViewById(R.id.agreeType)
-        val phoneNum: TextView = findViewById(R.id.phoneNum)
-        val callNum: TextView = findViewById(R.id.callNum)
-        val counStepsp: Spinner = findViewById(R.id.counStep)
+        val dirctNum:TextView     = findViewById(R.id.dirctNum)
+        val memoView:TextView     = findViewById(R.id.counMemo)
+        val custNum:TextView      = findViewById(R.id.custNum)
+        val custBirth:TextView    = findViewById(R.id.custBirth)
+        val custName:TextView     = findViewById(R.id.custName)
+        val custSex:TextView      = findViewById(R.id.custSex)
+        val agreeDate:TextView    = findViewById(R.id.agreeDate)
+        val agreeType:TextView    = findViewById(R.id.agreeType)
+        val phoneNum:TextView     = findViewById(R.id.phoneNum)
+        val callNum:TextView      = findViewById(R.id.callNum)
+        val counStepsp:Spinner    = findViewById(R.id.counStep)
 
         launchIntent.putExtra("dirctNum", dirctNum.text.toString())
         launchIntent.putExtra("memoView", memoView.text.toString())
@@ -375,22 +344,23 @@ class WH_DialerActivity : AppCompatActivity() {
     }
 
     fun sqlDB(phnum: String) {
+
         if (connection != null) {
             var statement: Statement? = null
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "select db.custNum,db.counStep,db.alocdate,info.custName,info.custSex,info.custBirth,info.agreeDate,info.agreeType,info.cellNum,info.tellNum,db.idxCounDB \n" +
+                        "select db.custNum,db.counStep,db.alocdate,info.custName,info.custSex,info.custBirth,info.agreeDate,info.agreeType,info.cellNum,info.tellNum,db.idxCounDB \n" +
                             "from customer_db as db  left outer join customer_info as info \n" +
                             "on db.custnum = info.custnum\n" +
-                            "where db.agentNum = '1' and db.custNum = '" + phnum + "'\n"
+                            "where db.delFlag='N' and db.agentNum = '"+agentNum+"' and db.custNum = '" + phnum + "'\n"
                 val resultSet = statement.executeQuery(sql) // DB
 
                 while (resultSet.next()) {
                     var custSex = resultSet.getString(5)
                     custSex = when (resultSet.getString(5)) {
-                        "0" -> "여자"
                         "1" -> "남자"
+                        "2" -> "여자"
                         else -> "  "
                     }
                     var custnum = resultSet.getString(1)
@@ -418,7 +388,7 @@ class WH_DialerActivity : AppCompatActivity() {
     }
 
     fun insertDB() {
-
+        var recnum = Data.retundata()
         var custNum = findViewById<TextView>(R.id.custNum)
         var num = custNum.text.toString()
         var custName = findViewById<TextView>(R.id.custName)
@@ -445,7 +415,8 @@ class WH_DialerActivity : AppCompatActivity() {
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "insert into counsel_list (agentNum,recNum,custNum,idxCounDB,custName,counStep,counMemo)values('1','$formatted','" + num + "','" + idxCounDB + "', '" + name + "','" + step + "','" + memo + "')"
+                    "insert into counsel_list (agentNum,recNum,custNum,idxCounDB,custName,counStep,counMemo)values('"+agentNum+"','"+recnum+"','" + num + "','" + idxCounDB + "', '" + name + "','" + step + "','" + memo + "')"
+
                 Log.d("sql", "SQL: " + sql)
 
                 statement.executeQuery(sql) // DB
@@ -468,11 +439,11 @@ class WH_DialerActivity : AppCompatActivity() {
         var step = ""
         var codeitem = CodeItem
         var codename = CodeName
-        for (i in codeitem.indices) {
+        for(i in codeitem.indices){
             var cd = codeitem.get(i)
             var cd2 = codename.get(i)
-            Log.d("step", "cd: " + cd + " cd2: " + cd2)
-            if (cd2 == selcectstep) {
+            Log.d("step", "cd: " + cd +" cd2: " + cd2)
+            if(cd2 == selcectstep){
                 step = cd
             }
         }
@@ -482,7 +453,7 @@ class WH_DialerActivity : AppCompatActivity() {
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "update customer_db set counStep='" + step + "' where custNum='" + num + "' and agentNum='1'"
+                    "update customer_db set counStep='" + step + "' where custNum='" + num + "' and agentNum='"+agentNum+"'"
                 Log.d("sql", "SQL: " + sql)
 
                 statement.executeQuery(sql) // DB
@@ -498,19 +469,19 @@ class WH_DialerActivity : AppCompatActivity() {
 
     }
 
-    fun spinner() {
-        if (connection != null) {
+    fun spinner(){
+        if(connection != null){
             var statement: Statement?
-            try {
+            try{
                 statement = connection!!.createStatement()
                 val sql =
-                    "select codeItem,codeName from code_manager"
+                    "select codeItem,codeName from code_manager where codePart='00' and delFlag='N'"
 
                 val resultSet = statement.executeQuery(sql)
 
                 Log.d("Spinner", "Spinner")
 
-                while (resultSet.next()) {
+                while(resultSet.next()){
                     var codeItem = resultSet.getString(1)
                     var codeName = resultSet.getString(2)
                     Log.d("code", "codeItem: " + codeItem + ", codeName: " + codeName)
@@ -518,10 +489,10 @@ class WH_DialerActivity : AppCompatActivity() {
                     CodeName.add(codeName)
                     CodeItem.add(codeItem)
                 }
-            } catch (e: SQLException) {
+            } catch (e: SQLException){
                 e.printStackTrace()
             }
-        } else {
+        } else{
             Log.d("sqlDB", "Connection is null")
         }
 
@@ -530,7 +501,7 @@ class WH_DialerActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     private val phoneStateListener = object : PhoneStateListener() {
         override fun onCallStateChanged(state: Int, incomingNumber: String) {
-            when (state) {
+            when(state){
                 // 통화중 아님
                 TelephonyManager.CALL_STATE_IDLE -> {
                     isCalling = false

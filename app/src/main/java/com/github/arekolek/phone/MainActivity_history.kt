@@ -44,6 +44,8 @@ class MainActivity_history : AppCompatActivity() {
     var start = 0
     var play = 1
 
+    private var agentNum = Data.retunagentNum()
+
     @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,7 +174,7 @@ class MainActivity_history : AppCompatActivity() {
                             "on coun.recNum = cal.recNum\n" +
                             "inner join customer_info as info\n" +
                             "on coun.custNum = info.custNum\n" +
-                            "where coun.agentNum = '1' and coun.custNum='"+phnum+"'"
+                            "where coun.agentNum = '"+agentNum+"' and coun.custNum='"+phnum+"'"
                 val resultSet = statement.executeQuery(sql) // DB
                 Log.d("sql", "sql: " + sql)
 
@@ -198,8 +200,8 @@ class MainActivity_history : AppCompatActivity() {
                     }
                     var custSex = resultSet.getString(3)
                     custSex = when(resultSet.getString(3)){
-                        "0" -> "여자"
                         "1" -> "남자"
+                        "2" -> "여자"
                         else -> "  "
                     }
 
@@ -231,7 +233,7 @@ class MainActivity_history : AppCompatActivity() {
             try{
                 statement = connection!!.createStatement()
                 val sql =
-                    "select codeItem,codeName from code_manager"
+                    "select codeItem,codeName from code_manager where codePart='00' and delFlag='N'"
 
                 val resultSet = statement.executeQuery(sql)
 

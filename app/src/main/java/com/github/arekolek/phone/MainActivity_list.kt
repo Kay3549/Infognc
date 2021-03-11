@@ -36,6 +36,8 @@ class MainActivity_list : AppCompatActivity() {
     private var gogeak = ""
     private var count = ""
 
+    private var agentNum = Data.retunagentNum()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_list)
@@ -132,7 +134,7 @@ class MainActivity_list : AppCompatActivity() {
                     "select coun.custNum,cal.startTime,coun.custName,coun.counStep from counsel_list as coun \n" +
                             "inner join call_list as cal\n" +
                             "on coun.recNum = cal.recNum\n" +
-                            "where coun.agentNum = '1'"
+                            "where coun.agentNum = '"+agentNum+"'"
                 val resultSet = statement.executeQuery(sql) // DB
 
                 Log.d("list", "list: " + sql)
@@ -171,7 +173,7 @@ class MainActivity_list : AppCompatActivity() {
             try{
                 statement = connection!!.createStatement()
                 val sql =
-                    "select codeItem,codeName from code_manager"
+                    "select codeItem,codeName from code_manager where codePart='00' and delFlag='N'"
 
                 val resultSet = statement.executeQuery(sql)
 

@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity()  {
             try{
                 statement = connection!!.createStatement()
                 val sql =
-                    "select codeItem,codeName from code_manager"
+                    "select codeItem,codeName from code_manager where codePart='00' and delFlag='N'"
 
                 val resultSet = statement.executeQuery(sql)
 
@@ -201,16 +201,18 @@ class MainActivity : AppCompatActivity()  {
 
     fun sqlDB(){
         step()
+        var agentNum = Data.retunagentNum()
         if (connection != null) {
             var statement: Statement? = null
             try {
                 statement = connection!!.createStatement()
                 val sql =
                     "select db.custNum,db.counStep,db.alocdate,info.custName from customer_db as db  left outer join customer_info as info \n" +
-                            "on db.custnum = info.custnum\n where agentNum = '1'"
+                        "on db.custnum = info.custnum\n where db.delFlag='N' and db.agentNum = '"+ agentNum +"'"
+                Log.e("list",  sql)
                 val resultSet = statement.executeQuery(sql) // DB
 
-                Log.d("list", "list: " + sql)
+
 
                 var count = 0
 
