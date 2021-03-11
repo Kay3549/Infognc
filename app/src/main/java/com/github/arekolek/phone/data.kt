@@ -3,6 +3,7 @@ package com.github.arekolek.phone
 class Data {
 
     companion object{
+        var userPhoneNum = ""
         var Ddata: String =""
         var callStartTime : Long =0
         var callEndTime : Long =0
