@@ -83,13 +83,6 @@ class MainActivity : AppCompatActivity()  {
             )
         }
 
-        val msg = applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        var PhoneNum = msg.line1Number
-        if (PhoneNum.startsWith("+82")) {
-            PhoneNum = PhoneNum.replace("+82", "0");
-        }
-
-        Log.e("==== 내 전화 번호 ",PhoneNum)
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
