@@ -15,7 +15,8 @@ class Permission {
 
     private val permissions = arrayOf<String>(
         Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE, Manifest.permission.READ_CALL_LOG
+        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE, Manifest.permission.READ_CALL_LOG,Manifest.permission.READ_SMS,
+        Manifest.permission.READ_PHONE_NUMBERS
     )
 
     private var permissionList:List<String>? = null

@@ -18,8 +18,11 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.sql.Statement
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.ArrayList
 
 class BCallService : BroadcastReceiver() {
 
@@ -43,21 +46,29 @@ class BCallService : BroadcastReceiver() {
 
         //통화가 시작되었을 때
         if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
+            Data.callStartTime = System.currentTimeMillis()
+            val time = Date(Data.callStartTime)
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+            val formatted = formatter.format(time)
+            Log.e("=============시작시간", formatted)
+            connect()
+            sqlDB("ACTIVE")
 
-//            connect()
-//            sqlDB("ACTIVE")
-
-        //통화중이 아닐 때
+        //통화중이 아닐 때b
         } else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
             Thread.sleep(1100)
             Data.callEndTime = System.currentTimeMillis()
+            val time = Date(Data.callEndTime)
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+            val formatted = formatter.format(time)
+            Log.e("=============종료시간", formatted)
             Getphonenum(context)
             rectitle = Data.retundata() // 녹취 키 가져오기
-            Log.e("=============broad", Data.phonenumber)
 
-//            connect()     //db connect
-//            sqlDB("DISCONNECTED")  // db 적재
-//            connFtp() //ftp 올리기
+
+            connFtp() //ftp 올리기
+            connect()     //db connect
+            sqlDB("DISCONNECTED")  // d 적재
         }
     }
 
@@ -176,16 +187,21 @@ class BCallService : BroadcastReceiver() {
 
         val AcallList = callList?.let { managedCusor?.getString(it) } //전화번호
         if (AcallList != null) {
-            Log.e("=============전화", AcallList)
+
             Data.phonenumber = AcallList
             passdata(AcallList)
         }
 
         val Aduration = duration?.let { managedCusor?.getString(it) } //얼마나 통화했는지
         if (Aduration != null) {
+
             Data.duration = Aduration.toLong()
             RingTime(Data.duration)
         }
+
+        val Adate = date?.let { managedCusor?.getString(it) } //전화시간
+        Log.e("=============목록에서 가져온 전화시간", Adate.toString())
+
     }
 
 

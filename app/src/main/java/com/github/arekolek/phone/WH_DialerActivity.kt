@@ -1,6 +1,7 @@
 package com.github.arekolek.phone
 
 import android.Manifest.permission.CALL_PHONE
+import android.content.Context
 import android.content.Intent
 import android.content.Intent.*
 import android.content.SharedPreferences
@@ -79,29 +80,6 @@ class WH_DialerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.wh_activity_main_click)
 
-        var managedCusor: Cursor? = contentResolver.query(
-            CallLog.Calls.CONTENT_URI,
-            null,
-            null,
-            null,
-            null,
-            null
-        )
-
-        managedCusor?.moveToNext()
-
-        var callList: Int? = managedCusor?.getColumnIndex(CallLog.Calls.NUMBER) // 전화번호
-        var date: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DATE) // 전화 시작시간
-        var duration: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DURATION) // 통화 얼마나 했는지
-        var type: Int? = managedCusor?.getColumnIndex(CallLog.Calls.TYPE) // 콜타입
-
-        val AcallList = callList?.let { managedCusor?.getString(it) } //전화번호
-
-        if (AcallList != null) {
-            Log.e("======전화번호",AcallList)
-        }
-
-
         // 액션바 실행
         var susin = findViewById<Button>(R.id.recv)
 
@@ -132,8 +110,8 @@ class WH_DialerActivity : AppCompatActivity() {
         var counStepsp = findViewById<Spinner>(R.id.counStep)
         spinner()
         var spinnerName = CodeName
-        Log.d("spinnerName" , spinnerName.toString())
-        var spinneradapter:ArrayAdapter<String>
+        Log.d("spinnerName", spinnerName.toString())
+        var spinneradapter: ArrayAdapter<String>
         spinneradapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerName)
         counStepsp.setAdapter(spinneradapter)
 
@@ -183,17 +161,29 @@ class WH_DialerActivity : AppCompatActivity() {
         }
 
         // 스피너 데이터 선택 유지
-        if(counstep.equals("00")){counStepsp.setSelection(0)}
-        else if(counstep.equals("01")){counStepsp.setSelection(1)}
-        else if(counstep.equals("02")){counStepsp.setSelection(2)}
-        else if(counstep.equals("03")){counStepsp.setSelection(3)}
-        else if(counstep.equals("04")){counStepsp.setSelection(4)}
-        else if(counstep.equals("05")){counStepsp.setSelection(5)}
-        else if(counstep.equals("06")){counStepsp.setSelection(6)}
-        else if(counstep.equals("10")){counStepsp.setSelection(7)}
-        else if(counstep.equals("11")){counStepsp.setSelection(8)}
-        else if(counstep.equals("20")){counStepsp.setSelection(9)}
-        else if(counstep.equals("30")){counStepsp.setSelection(10)}
+        if (counstep.equals("00")) {
+            counStepsp.setSelection(0)
+        } else if (counstep.equals("01")) {
+            counStepsp.setSelection(1)
+        } else if (counstep.equals("02")) {
+            counStepsp.setSelection(2)
+        } else if (counstep.equals("03")) {
+            counStepsp.setSelection(3)
+        } else if (counstep.equals("04")) {
+            counStepsp.setSelection(4)
+        } else if (counstep.equals("05")) {
+            counStepsp.setSelection(5)
+        } else if (counstep.equals("06")) {
+            counStepsp.setSelection(6)
+        } else if (counstep.equals("10")) {
+            counStepsp.setSelection(7)
+        } else if (counstep.equals("11")) {
+            counStepsp.setSelection(8)
+        } else if (counstep.equals("20")) {
+            counStepsp.setSelection(9)
+        } else if (counstep.equals("30")) {
+            counStepsp.setSelection(10)
+        }
 
         setTextView()
 
@@ -214,9 +204,9 @@ class WH_DialerActivity : AppCompatActivity() {
         call3.text = "통화"
     }
 
-    private fun remove(){
-        var sf:SharedPreferences  = getSharedPreferences(sfName, 0)
-        var editor:SharedPreferences.Editor = sf.edit()
+    private fun remove() {
+        var sf: SharedPreferences = getSharedPreferences(sfName, 0)
+        var editor: SharedPreferences.Editor = sf.edit()
         editor.remove("formatted")
         editor.commit()
     }
@@ -226,17 +216,17 @@ class WH_DialerActivity : AppCompatActivity() {
         super.onStart()
 
         call1.setOnClickListener {
-            Data.callStartTime = System.currentTimeMillis()
             number = phoneNum.text as String
+            passdata(number)
             makeCall()
         }
         call2.setOnClickListener {
-            Data.callStartTime = System.currentTimeMillis()
             number = callNum.text as String
+            passdata(number)
             makeCall()
         }
         call3.setOnClickListener {
-            Data.callStartTime = System.currentTimeMillis()
+
             number = dirctNum.text.toString()
             passdata(number)
             makeCall()
@@ -273,42 +263,41 @@ class WH_DialerActivity : AppCompatActivity() {
 
     private fun connectionCall() = runBlocking {
         val call = Intent(ACTION_CALL, Uri.parse("tel:${number}"))
-            launch {
-                if (Foreground.isBackground()) {
-                    Log.e("tag", Foreground.isBackground().toString())
-                    delay(1100)
-                    reCreateMainActivity()
-                }
+        launch {
+            if (Foreground.isBackground()) {
+                Log.e("tag", Foreground.isBackground().toString())
+                delay(1100)
+                reCreateMainActivity()
+            }
         }
         startActivity(call)
     }
 
     private fun setTextView() {
 
-        var sf:SharedPreferences  = getSharedPreferences(sfName, 0)
+        var sf: SharedPreferences = getSharedPreferences(sfName, 0)
         var fomet = sf.getString("formatted", "")
         if (fomet != null) {
             formatted = fomet
         }
         val memoView: TextView = findViewById(R.id.counMemo)
         val dirctNum: TextView = findViewById(R.id.dirctNum)
-        val custNum:TextView      = findViewById(R.id.custNum)
-        val custBirth:TextView    = findViewById(R.id.custBirth)
-        val custName:TextView     = findViewById(R.id.custName)
-        val custSex:TextView      = findViewById(R.id.custSex)
-        val agreeDate:TextView    = findViewById(R.id.agreeDate)
-        val agreeType:TextView    = findViewById(R.id.agreeType)
-        val phoneNum:TextView     = findViewById(R.id.phoneNum)
-        val callNum:TextView      = findViewById(R.id.callNum)
-        val counStepsp:Spinner    = findViewById(R.id.counStep)
+        val custNum: TextView = findViewById(R.id.custNum)
+        val custBirth: TextView = findViewById(R.id.custBirth)
+        val custName: TextView = findViewById(R.id.custName)
+        val custSex: TextView = findViewById(R.id.custSex)
+        val agreeDate: TextView = findViewById(R.id.agreeDate)
+        val agreeType: TextView = findViewById(R.id.agreeType)
+        val phoneNum: TextView = findViewById(R.id.phoneNum)
+        val callNum: TextView = findViewById(R.id.callNum)
+        val counStepsp: Spinner = findViewById(R.id.counStep)
 
         var idx = intent.getStringExtra("idxCounDB")
         if (idx != null) {
             idxCounDB = idx
         }
 
-        if (intent.hasExtra("dirctNum") && intent.hasExtra("phoneNum") && intent.hasExtra("callNum"))
-        {
+        if (intent.hasExtra("dirctNum") && intent.hasExtra("phoneNum") && intent.hasExtra("callNum")) {
             dirctNum.text = intent.getStringExtra("dirctNum")
             memoView.text = intent.getStringExtra("memoView")
             custNum.text = intent.getStringExtra("custNum")
@@ -322,39 +311,52 @@ class WH_DialerActivity : AppCompatActivity() {
         }
 
         var spin = intent.getStringExtra("counStep")
-        if(spin.equals("미접촉")){counStepsp.setSelection(0)}
-        else if(spin.equals("거부")){counStepsp.setSelection(1)}
-        else if(spin.equals("수신거부")){counStepsp.setSelection(2)}
-        else if(spin.equals("결번")){counStepsp.setSelection(3)}
-        else if(spin.equals("부재중")){counStepsp.setSelection(4)}
-        else if(spin.equals("진행")){counStepsp.setSelection(5)}
-        else if(spin.equals("예약")){counStepsp.setSelection(6)}
-        else if(spin.equals("가입신청")){counStepsp.setSelection(7)}
-        else if(spin.equals("보안요청")){counStepsp.setSelection(8)}
-        else if(spin.equals("보완완료")){counStepsp.setSelection(9)}
-        else if(spin.equals("가입완료")){counStepsp.setSelection(10)}
+        if (spin.equals("미접촉")) {
+            counStepsp.setSelection(0)
+        } else if (spin.equals("거부")) {
+            counStepsp.setSelection(1)
+        } else if (spin.equals("수신거부")) {
+            counStepsp.setSelection(2)
+        } else if (spin.equals("결번")) {
+            counStepsp.setSelection(3)
+        } else if (spin.equals("부재중")) {
+            counStepsp.setSelection(4)
+        } else if (spin.equals("진행")) {
+            counStepsp.setSelection(5)
+        } else if (spin.equals("예약")) {
+            counStepsp.setSelection(6)
+        } else if (spin.equals("가입신청")) {
+            counStepsp.setSelection(7)
+        } else if (spin.equals("보안요청")) {
+            counStepsp.setSelection(8)
+        } else if (spin.equals("보완완료")) {
+            counStepsp.setSelection(9)
+        } else if (spin.equals("가입완료")) {
+            counStepsp.setSelection(10)
+        }
     }
 
     private fun reCreateMainActivity() {
         val launchIntent = Intent(this, WH_DialerActivity::class.java).addFlags(
-            FLAG_ACTIVITY_CLEAR_TOP)
+            FLAG_ACTIVITY_CLEAR_TOP
+        )
 
         var sf: SharedPreferences = getSharedPreferences(sfName, 0)
         var editor: SharedPreferences.Editor = sf.edit()
         editor.putString("formatted", formatted)
         editor.commit()
 
-        val dirctNum:TextView     = findViewById(R.id.dirctNum)
-        val memoView:TextView     = findViewById(R.id.counMemo)
-        val custNum:TextView      = findViewById(R.id.custNum)
-        val custBirth:TextView    = findViewById(R.id.custBirth)
-        val custName:TextView     = findViewById(R.id.custName)
-        val custSex:TextView      = findViewById(R.id.custSex)
-        val agreeDate:TextView    = findViewById(R.id.agreeDate)
-        val agreeType:TextView    = findViewById(R.id.agreeType)
-        val phoneNum:TextView     = findViewById(R.id.phoneNum)
-        val callNum:TextView      = findViewById(R.id.callNum)
-        val counStepsp:Spinner    = findViewById(R.id.counStep)
+        val dirctNum: TextView = findViewById(R.id.dirctNum)
+        val memoView: TextView = findViewById(R.id.counMemo)
+        val custNum: TextView = findViewById(R.id.custNum)
+        val custBirth: TextView = findViewById(R.id.custBirth)
+        val custName: TextView = findViewById(R.id.custName)
+        val custSex: TextView = findViewById(R.id.custSex)
+        val agreeDate: TextView = findViewById(R.id.agreeDate)
+        val agreeType: TextView = findViewById(R.id.agreeType)
+        val phoneNum: TextView = findViewById(R.id.phoneNum)
+        val callNum: TextView = findViewById(R.id.callNum)
+        val counStepsp: Spinner = findViewById(R.id.counStep)
 
         launchIntent.putExtra("dirctNum", dirctNum.text.toString())
         launchIntent.putExtra("memoView", memoView.text.toString())
@@ -427,11 +429,11 @@ class WH_DialerActivity : AppCompatActivity() {
         var step = ""
         var codeitem = CodeItem
         var codename = CodeName
-        for(i in codeitem.indices){
+        for (i in codeitem.indices) {
             var cd = codeitem.get(i)
             var cd2 = codename.get(i)
             Log.d("step", "cd: " + cd + " cd2: " + cd2)
-            if(cd2 == selcectstep){
+            if (cd2 == selcectstep) {
                 step = cd
             }
         }
@@ -466,11 +468,11 @@ class WH_DialerActivity : AppCompatActivity() {
         var step = ""
         var codeitem = CodeItem
         var codename = CodeName
-        for(i in codeitem.indices){
+        for (i in codeitem.indices) {
             var cd = codeitem.get(i)
             var cd2 = codename.get(i)
-            Log.d("step", "cd: " + cd +" cd2: " + cd2)
-            if(cd2 == selcectstep){
+            Log.d("step", "cd: " + cd + " cd2: " + cd2)
+            if (cd2 == selcectstep) {
                 step = cd
             }
         }
@@ -496,10 +498,10 @@ class WH_DialerActivity : AppCompatActivity() {
 
     }
 
-    fun spinner(){
-        if(connection != null){
+    fun spinner() {
+        if (connection != null) {
             var statement: Statement?
-            try{
+            try {
                 statement = connection!!.createStatement()
                 val sql =
                     "select codeItem,codeName from code_manager"
@@ -508,7 +510,7 @@ class WH_DialerActivity : AppCompatActivity() {
 
                 Log.d("Spinner", "Spinner")
 
-                while(resultSet.next()){
+                while (resultSet.next()) {
                     var codeItem = resultSet.getString(1)
                     var codeName = resultSet.getString(2)
                     Log.d("code", "codeItem: " + codeItem + ", codeName: " + codeName)
@@ -516,10 +518,10 @@ class WH_DialerActivity : AppCompatActivity() {
                     CodeName.add(codeName)
                     CodeItem.add(codeItem)
                 }
-            } catch (e: SQLException){
+            } catch (e: SQLException) {
                 e.printStackTrace()
             }
-        } else{
+        } else {
             Log.d("sqlDB", "Connection is null")
         }
 
@@ -528,7 +530,7 @@ class WH_DialerActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     private val phoneStateListener = object : PhoneStateListener() {
         override fun onCallStateChanged(state: Int, incomingNumber: String) {
-            when(state){
+            when (state) {
                 // 통화중 아님
                 TelephonyManager.CALL_STATE_IDLE -> {
                     isCalling = false
