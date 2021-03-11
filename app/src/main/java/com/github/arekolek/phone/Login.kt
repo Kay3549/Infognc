@@ -56,6 +56,8 @@ class Login : AppCompatActivity() {
         permissionCheck()
         hide()
 
+
+        //사용자 핸드폰 번호 가져오는 구간
         val msg = applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         var PhoneNum = msg.line1Number
         if (PhoneNum.startsWith("+82")) {
