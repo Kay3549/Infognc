@@ -205,6 +205,8 @@ class Logindetail : AppCompatActivity() {
                 var sum17 =0
                 var sum18=0
                 var sum19=0
+
+
                 var sum20=0
 
                 while (resultSet2.next()) {
@@ -272,10 +274,10 @@ class Logindetail : AppCompatActivity() {
                             sum5 = sum5 + allcallser.toInt()
                         }
                     }
-                    if(pastday!=null&&countstep == "04"||countstep == "05"||countstep == "06"||countstep == "10"||countstep == "11"||countstep == "20")
+                    if(pastday!=null&&countstep == "00"||countstep == "04"||countstep == "05"||countstep == "06"||countstep == "10"||countstep == "11"||countstep == "20")
                     {
                         if(pastday != "0") {
-                            sum19 = sum19 + 1 //
+                            sum19 = sum19 + pastday.toInt() //
                         }
                     }
                     if(today!=null&&countstep == "04"||countstep == "05"||countstep == "06"||countstep == "10"||countstep == "20")
