@@ -2,19 +2,16 @@ package com.github.arekolek.phone
 
 import android.Manifest.permission.CALL_PHONE
 import android.content.Intent
-import android.content.Intent.*
+import android.content.Intent.ACTION_CALL
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 import android.content.SharedPreferences
-import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
-import android.provider.CallLog
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
@@ -22,27 +19,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
-import androidx.core.graphics.green
-import androidx.core.graphics.red
-import androidx.core.graphics.toColor
-import androidx.core.net.toUri
-import androidx.core.view.get
-import androidx.core.view.isInvisible
 import io.reactivex.disposables.Disposables
-import kotlinx.android.synthetic.main.activity_logindetail.*
-import kotlinx.android.synthetic.main.listview_item.*
 import kotlinx.android.synthetic.main.wh_activity_main_click.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.khirr.library.foreground.Foreground
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.sql.Statement
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class WH_DialerActivity : AppCompatActivity() {
@@ -80,29 +68,6 @@ class WH_DialerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.wh_activity_main_click)
-
-        var managedCusor: Cursor? = contentResolver.query(
-            CallLog.Calls.CONTENT_URI,
-            null,
-            null,
-            null,
-            null,
-            null
-        )
-
-        managedCusor?.moveToNext()
-
-        var callList: Int? = managedCusor?.getColumnIndex(CallLog.Calls.NUMBER) // 전화번호
-/*        var date: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DATE) // 전화 시작시간
-        var duration: Int? = managedCusor?.getColumnIndex(CallLog.Calls.DURATION) // 통화 얼마나 했는지
-        var type: Int? = managedCusor?.getColumnIndex(CallLog.Calls.TYPE) // 콜타입*/
-
-        val AcallList = callList?.let { managedCusor?.getString(it) } //전화번호
-
-        if (AcallList != null) {
-            Log.e("======전화번호", AcallList)
-        }
-
 
         // 액션바 실행
         var susin = findViewById<Button>(R.id.recv)
@@ -143,8 +108,8 @@ class WH_DialerActivity : AppCompatActivity() {
         var counStepsp = findViewById<Spinner>(R.id.counStep)
         spinner()
         var spinnerName = CodeName
-        Log.d("spinnerName", spinnerName.toString())
-        var spinneradapter: ArrayAdapter<String>
+        Log.d("spinnerName" , spinnerName.toString())
+        var spinneradapter:ArrayAdapter<String>
         spinneradapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerName)
         counStepsp.setAdapter(spinneradapter)
 
@@ -231,9 +196,9 @@ class WH_DialerActivity : AppCompatActivity() {
         call3.text = "통화"
     }
 
-    private fun remove() {
-        var sf: SharedPreferences = getSharedPreferences(sfName, 0)
-        var editor: SharedPreferences.Editor = sf.edit()
+    private fun remove(){
+        var sf:SharedPreferences  = getSharedPreferences(sfName, 0)
+        var editor:SharedPreferences.Editor = sf.edit()
         editor.remove("formatted")
         editor.commit()
     }
@@ -289,41 +254,42 @@ class WH_DialerActivity : AppCompatActivity() {
 
     private fun connectionCall() = runBlocking {
         val call = Intent(ACTION_CALL, Uri.parse("tel:${number}"))
-        launch {
-            if (Foreground.isBackground()) {
-                Log.e("tag", Foreground.isBackground().toString())
-                delay(1100)
-                reCreateMainActivity()
-            }
+            launch {
+                if (Foreground.isBackground()) {
+                    Log.e("tag", Foreground.isBackground().toString())
+                    delay(1100)
+                    reCreateMainActivity()
+                }
         }
         startActivity(call)
     }
 
     private fun setTextView() {
 
-        var sf: SharedPreferences = getSharedPreferences(sfName, 0)
+        var sf:SharedPreferences  = getSharedPreferences(sfName, 0)
         var fomet = sf.getString("formatted", "")
         if (fomet != null) {
             formatted = fomet
         }
         val memoView: TextView = findViewById(R.id.counMemo)
         val dirctNum: TextView = findViewById(R.id.dirctNum)
-        val custNum: TextView = findViewById(R.id.custNum)
-        val custBirth: TextView = findViewById(R.id.custBirth)
-        val custName: TextView = findViewById(R.id.custName)
-        val custSex: TextView = findViewById(R.id.custSex)
-        val agreeDate: TextView = findViewById(R.id.agreeDate)
-        val agreeType: TextView = findViewById(R.id.agreeType)
-        val phoneNum: TextView = findViewById(R.id.phoneNum)
-        val callNum: TextView = findViewById(R.id.callNum)
-        val counStepsp: Spinner = findViewById(R.id.counStep)
+        val custNum:TextView      = findViewById(R.id.custNum)
+        val custBirth:TextView    = findViewById(R.id.custBirth)
+        val custName:TextView     = findViewById(R.id.custName)
+        val custSex:TextView      = findViewById(R.id.custSex)
+        val agreeDate:TextView    = findViewById(R.id.agreeDate)
+        val agreeType:TextView    = findViewById(R.id.agreeType)
+        val phoneNum:TextView     = findViewById(R.id.phoneNum)
+        val callNum:TextView      = findViewById(R.id.callNum)
+        val counStepsp:Spinner    = findViewById(R.id.counStep)
 
         var idx = intent.getStringExtra("idxCounDB")
         if (idx != null) {
             idxCounDB = idx
         }
 
-        if (intent.hasExtra("dirctNum") && intent.hasExtra("phoneNum") && intent.hasExtra("callNum")) {
+        if (intent.hasExtra("dirctNum") && intent.hasExtra("phoneNum") && intent.hasExtra("callNum"))
+        {
             dirctNum.text = intent.getStringExtra("dirctNum")
             memoView.text = intent.getStringExtra("memoView")
             custNum.text = intent.getStringExtra("custNum")
@@ -358,25 +324,24 @@ class WH_DialerActivity : AppCompatActivity() {
 
     private fun reCreateMainActivity() {
         val launchIntent = Intent(this, WH_DialerActivity::class.java).addFlags(
-            FLAG_ACTIVITY_CLEAR_TOP
-        )
+            FLAG_ACTIVITY_CLEAR_TOP)
 
         var sf: SharedPreferences = getSharedPreferences(sfName, 0)
         var editor: SharedPreferences.Editor = sf.edit()
         editor.putString("formatted", formatted)
         editor.commit()
 
-        val dirctNum: TextView = findViewById(R.id.dirctNum)
-        val memoView: TextView = findViewById(R.id.counMemo)
-        val custNum: TextView = findViewById(R.id.custNum)
-        val custBirth: TextView = findViewById(R.id.custBirth)
-        val custName: TextView = findViewById(R.id.custName)
-        val custSex: TextView = findViewById(R.id.custSex)
-        val agreeDate: TextView = findViewById(R.id.agreeDate)
-        val agreeType: TextView = findViewById(R.id.agreeType)
-        val phoneNum: TextView = findViewById(R.id.phoneNum)
-        val callNum: TextView = findViewById(R.id.callNum)
-        val counStepsp: Spinner = findViewById(R.id.counStep)
+        val dirctNum:TextView     = findViewById(R.id.dirctNum)
+        val memoView:TextView     = findViewById(R.id.counMemo)
+        val custNum:TextView      = findViewById(R.id.custNum)
+        val custBirth:TextView    = findViewById(R.id.custBirth)
+        val custName:TextView     = findViewById(R.id.custName)
+        val custSex:TextView      = findViewById(R.id.custSex)
+        val agreeDate:TextView    = findViewById(R.id.agreeDate)
+        val agreeType:TextView    = findViewById(R.id.agreeType)
+        val phoneNum:TextView     = findViewById(R.id.phoneNum)
+        val callNum:TextView      = findViewById(R.id.callNum)
+        val counStepsp:Spinner    = findViewById(R.id.counStep)
 
         launchIntent.putExtra("dirctNum", dirctNum.text.toString())
         launchIntent.putExtra("memoView", memoView.text.toString())
@@ -401,10 +366,10 @@ class WH_DialerActivity : AppCompatActivity() {
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "select db.custNum,db.counStep,db.alocdate,info.custName,info.custSex,info.custBirth,info.agreeDate,info.agreeType,info.cellNum,info.tellNum,db.idxCounDB \n" +
+                        "select db.custNum,db.counStep,db.alocdate,info.custName,info.custSex,info.custBirth,info.agreeDate,info.agreeType,info.cellNum,info.tellNum,db.idxCounDB \n" +
                             "from customer_db as db  left outer join customer_info as info \n" +
                             "on db.custnum = info.custnum\n" +
-                            "where db.delFlag='N' and db.agentNum = '" + agentNum + "' and db.custNum = '" + phnum + "'\n"
+                            "where db.delFlag='N' and db.agentNum = '"+agentNum+"' and db.custNum = '" + phnum + "'\n"
                 val resultSet = statement.executeQuery(sql) // DB
 
                 while (resultSet.next()) {
@@ -450,11 +415,11 @@ class WH_DialerActivity : AppCompatActivity() {
         var step = ""
         var codeitem = CodeItem
         var codename = CodeName
-        for (i in codeitem.indices) {
+        for(i in codeitem.indices){
             var cd = codeitem.get(i)
             var cd2 = codename.get(i)
             Log.d("step", "cd: " + cd + " cd2: " + cd2)
-            if (cd2 == selcectstep) {
+            if(cd2 == selcectstep){
                 step = cd
             }
         }
@@ -466,7 +431,7 @@ class WH_DialerActivity : AppCompatActivity() {
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "insert into counsel_list (agentNum,recNum,custNum,idxCounDB,custName,counStep,counMemo)values('" + agentNum + "','" + recnum + "','" + num + "','" + idxCounDB + "', '" + name + "','" + step + "','" + memo + "')"
+                    "insert into counsel_list (agentNum,recNum,custNum,idxCounDB,custName,counStep,counMemo)values('"+agentNum+"','"+recnum+"','" + num + "','" + idxCounDB + "', '" + name + "','" + step + "','" + memo + "')"
 
                 Log.d("sql", "SQL: " + sql)
 
@@ -490,11 +455,11 @@ class WH_DialerActivity : AppCompatActivity() {
         var step = ""
         var codeitem = CodeItem
         var codename = CodeName
-        for (i in codeitem.indices) {
+        for(i in codeitem.indices){
             var cd = codeitem.get(i)
             var cd2 = codename.get(i)
-            Log.d("step", "cd: " + cd + " cd2: " + cd2)
-            if (cd2 == selcectstep) {
+            Log.d("step", "cd: " + cd +" cd2: " + cd2)
+            if(cd2 == selcectstep){
                 step = cd
             }
         }
@@ -504,7 +469,7 @@ class WH_DialerActivity : AppCompatActivity() {
             try {
                 statement = connection!!.createStatement()
                 val sql =
-                    "update customer_db set counStep='" + step + "' where custNum='" + num + "' and agentNum='" + agentNum + "'"
+                    "update customer_db set counStep='" + step + "' where custNum='" + num + "' and agentNum='"+agentNum+"'"
                 Log.d("sql", "SQL: " + sql)
 
                 statement.executeQuery(sql) // DB
@@ -520,10 +485,10 @@ class WH_DialerActivity : AppCompatActivity() {
 
     }
 
-    fun spinner() {
-        if (connection != null) {
+    fun spinner(){
+        if(connection != null){
             var statement: Statement?
-            try {
+            try{
                 statement = connection!!.createStatement()
                 val sql =
                     "select codeItem,codeName from code_manager where codePart='00' and delFlag='N'"
@@ -532,7 +497,7 @@ class WH_DialerActivity : AppCompatActivity() {
 
                 Log.d("Spinner", "Spinner")
 
-                while (resultSet.next()) {
+                while(resultSet.next()){
                     var codeItem = resultSet.getString(1)
                     var codeName = resultSet.getString(2)
                     Log.d("code", "codeItem: " + codeItem + ", codeName: " + codeName)
@@ -540,10 +505,10 @@ class WH_DialerActivity : AppCompatActivity() {
                     CodeName.add(codeName)
                     CodeItem.add(codeItem)
                 }
-            } catch (e: SQLException) {
+            } catch (e: SQLException){
                 e.printStackTrace()
             }
-        } else {
+        } else{
             Log.d("sqlDB", "Connection is null")
         }
 
@@ -552,7 +517,7 @@ class WH_DialerActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     private val phoneStateListener = object : PhoneStateListener() {
         override fun onCallStateChanged(state: Int, incomingNumber: String) {
-            when (state) {
+            when(state){
                 // 통화중 아님
                 TelephonyManager.CALL_STATE_IDLE -> {
                     isCalling = false

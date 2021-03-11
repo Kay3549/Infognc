@@ -9,6 +9,7 @@ class Data {
         var ringtime : Long =0
         var phonenumber =""
         var duration : Long =0
+        var recYN = ""
 
         var agentNum:String = ""
         var agentID:String = ""

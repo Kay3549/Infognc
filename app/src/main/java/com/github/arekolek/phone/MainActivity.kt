@@ -3,6 +3,7 @@ package com.github.arekolek.phone
 import android.Manifest
 import android.app.role.RoleManager
 import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
@@ -13,6 +14,7 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.provider.CallLog
 import android.provider.Settings
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -50,7 +52,6 @@ class MainActivity : AppCompatActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //checkDefaultDialer()
 
         val br : BroadcastReceiver = BCallService()
         val filter = IntentFilter().apply {
@@ -81,6 +82,14 @@ class MainActivity : AppCompatActivity()  {
                 1
             )
         }
+
+        val msg = applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        var PhoneNum = msg.line1Number
+        if (PhoneNum.startsWith("+82")) {
+            PhoneNum = PhoneNum.replace("+82", "0");
+        }
+
+        Log.e("==== 내 전화 번호 ",PhoneNum)
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
@@ -238,12 +247,6 @@ class MainActivity : AppCompatActivity()  {
         } else {
             Log.d("sqlDB", "Connection is null")
         }
-    }
-
-    private fun checkDefaultDialer() {
-        val mRoleManager = getSystemService(RoleManager::class.java)
-        val mRoleIntent = mRoleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
-        startActivityForResult(mRoleIntent, WH_DialerActivity.ROLE_REQUEST_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
