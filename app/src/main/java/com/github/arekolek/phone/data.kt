@@ -20,10 +20,7 @@ class Data {
         var agentPhone:String = ""
 
         fun setdata(data :String) {
-            when(Ddata){
-                "" -> Ddata = data
-            }
-
+            Ddata = data
         }
         fun retundata():String{
             return Ddata

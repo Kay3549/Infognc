@@ -65,23 +65,34 @@ class BCallService : BroadcastReceiver() {
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
             val formatted = formatter.format(time)
             Log.e("=============종료시간", formatted)
-            Getphonenum(context)
-            rectitle = Data.retundata() // 녹취 키 가져오기
 
-            when (Data.duration.toString()) {
 
-                //녹취 파일이 생성되지 않았을 때
-                "0" -> {
-                    Data.recYN = "0"
-                    connect()     //db connect
-                    sqlDB("DISCONNECTED")  // d 적재
-                }
-                //녹취 파일이 생성되었을 때
-                else -> {
-                    Data.recYN = "1"
-                    connFtp() //ftp 올리기
-                    connect()     //db connect
-                    sqlDB("DISCONNECTED")  // d 적재
+            Log.e("======bbbbbb",Data.Ddata)
+            when(Data.Ddata){
+                "" -> {
+                    Log.e("======bbbbbb","들어옴")
+                    Getphonenum(context) // 최근 전화 목록에 값(전화번호, duration, 등등...)을 가져옴, 키 값도 생성.
+                    rectitle = Data.retundata() // 녹취 키 가져오기
+                    when (Data.duration.toString()) {
+
+                        //녹취 파일이 생성되지 않았을 때
+                        "0" -> {
+                            Data.recYN = "N"
+                            connect()     //db connect
+                            sqlDB("DISCONNECTED")  // d 적재
+                        }
+
+                        //녹취 파일이 생성되었을 때
+                        else -> {
+                            Data.recYN = "Y"
+                            connFtp() //ftp 올리기
+                            connect()     //db connect
+                            sqlDB("DISCONNECTED")  // d 적재
+                        }
+                    }
+                }else -> {
+                Log.e("======bbbbbb","아니되오")
+                    return
                 }
             }
         }
@@ -216,7 +227,9 @@ class BCallService : BroadcastReceiver() {
         if (AcallList != null) {
 
             Data.phonenumber = AcallList
-            passdata(AcallList)
+            when(Data.Ddata){
+                "" -> passdata(AcallList)
+            }
         }
 
         val Aduration = duration?.let { managedCusor?.getString(it) } //얼마나 통화했는지
@@ -231,6 +244,10 @@ class BCallService : BroadcastReceiver() {
         var calldaytime = Date(java.lang.Long.valueOf(Adate))
         var formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
         var callDaydate = formatter.format(calldaytime)
+
+
+
+
 
 
     }
@@ -264,4 +281,7 @@ class BCallService : BroadcastReceiver() {
         Data.ringtime = ((end - (duration * 1000)) - start) / 1000
         Log.e("==============RRRRRingtime",Data.ringtime.toString())
     }
+
+
+
 }

@@ -209,17 +209,14 @@ class WH_DialerActivity : AppCompatActivity() {
 
         call1.setOnClickListener {
             number = phoneNum.text as String
-            passdata(number)
             makeCall()
         }
         call2.setOnClickListener {
             number = callNum.text as String
-            passdata(number)
             makeCall()
         }
         call3.setOnClickListener {
             number = dirctNum.text.toString()
-            passdata(number)
             makeCall()
         }
     }
@@ -232,25 +229,6 @@ class WH_DialerActivity : AppCompatActivity() {
         }
     }
 
-    private fun passdata(number: String) {
-
-        var k = number.length
-        var phoneNum: String? = ""
-        phoneNum = if (k <= 15) {
-            number
-        } else {
-            var ran = IntRange(0, 14)
-            var temp = number.slice(ran)
-            temp
-        }
-
-        val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS_$phoneNum")
-        formatted = current.format(formatter) // 녹취키
-
-        Data.setdata(formatted)
-
-    }
 
     private fun connectionCall() = runBlocking {
         val call = Intent(ACTION_CALL, Uri.parse("tel:${number}"))
