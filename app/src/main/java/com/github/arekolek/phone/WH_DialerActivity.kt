@@ -181,6 +181,7 @@ class WH_DialerActivity : AppCompatActivity() {
 
         var insertbtn = findViewById<Button>(R.id.insertbtn)
         insertbtn.setOnClickListener {
+            Data.reset()
             Toast.makeText(this, "상담 저장 완료", Toast.LENGTH_SHORT).show()
 
             insertDB()

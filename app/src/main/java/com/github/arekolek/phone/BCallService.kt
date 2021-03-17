@@ -204,6 +204,8 @@ class BCallService : BroadcastReceiver() {
         }
     }
 
+
+    //최근 전화목록에 접근해서 , 키값과 링타임을 구함.
     private fun Getphonenum(context: Context) {
 
         var managedCusor: Cursor? = context.contentResolver.query(
@@ -228,7 +230,7 @@ class BCallService : BroadcastReceiver() {
 
             Data.phonenumber = AcallList
             when(Data.Ddata){
-                "" -> passdata(AcallList)
+                "" -> passdata(AcallList) // 키값 만드는 함수
             }
         }
 
@@ -252,7 +254,7 @@ class BCallService : BroadcastReceiver() {
 
     }
 
-
+    //키값 만드는 함수
     private fun passdata(number: String) {
         Data.phonenumber = number
         var k = number.length
@@ -272,7 +274,7 @@ class BCallService : BroadcastReceiver() {
         Data.setdata(formatted)
     }
 
-
+    //링타임 산출 함수
     private fun RingTime(Aduration: Long) {
 
         val start: Long = Data.callStartTime
